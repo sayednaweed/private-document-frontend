@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import NastranCard, { ModelSize } from "./NastranCard";
 import { ModelContextProvider } from "./context/ModelContext";
+import { cn } from "@/lib/utils";
 
 export interface INastranModelProps {
   button: any;
@@ -11,6 +12,7 @@ export interface INastranModelProps {
   size: ModelSize;
   visible?: boolean;
   showDialog: () => Promise<boolean>;
+  className?: string;
 }
 
 const NastranModel: React.FunctionComponent<INastranModelProps> = ({
@@ -18,7 +20,8 @@ const NastranModel: React.FunctionComponent<INastranModelProps> = ({
   ...props
 }) => {
   const [modelVisible, setModelVisible] = useState(false);
-  const { children, isDismissable, button, size, showDialog } = props;
+  const { children, isDismissable, button, size, showDialog, className } =
+    props;
   const dismissOnClick = () => {
     if (isDismissable) setModelVisible(false);
   };
@@ -43,7 +46,11 @@ const NastranModel: React.FunctionComponent<INastranModelProps> = ({
         <ModelContextProvider modelOnRequestHide={buttonOnClick}>
           <div
             onClick={dismissOnClick}
-            className="fixed z-40 grid grid-cols-1 justify-items-center content-center overflow-y-auto left-0 top-0 h-screen w-screen [backdrop-filter:blur(10px)]"
+            // className="fixed z-40 grid grid-cols-1 justify-items-center content-center overflow-y-auto left-0 top-0 h-screen w-screen [backdrop-filter:blur(10px)]"
+            className={cn(
+              "fixed z-40 grid grid-cols-1 justify-items-center items-center overflow-y-auto left-0 top-0 h-screen w-screen [backdrop-filter:blur(10px)]",
+              className
+            )}
           >
             <NastranCard size={size}>{children}</NastranCard>
           </div>

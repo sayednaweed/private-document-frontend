@@ -35,6 +35,7 @@ export interface IStepperProps {
     pending: string;
     step: string;
   };
+  isCardActive?: boolean;
 }
 
 export default function Stepper(props: IStepperProps) {
@@ -51,6 +52,7 @@ export default function Stepper(props: IStepperProps) {
     nextText,
     confirmText,
     progressText,
+    isCardActive,
   } = props;
   const [currentStep, setCurrentStep] = useState(1);
   const [userData, setUserData] = useState<any>([]);
@@ -98,16 +100,23 @@ export default function Stepper(props: IStepperProps) {
       )}
     >
       {/* Stepper */}
-      <div className="mt-4 sm:container">
+      <div className={`${!isCardActive && "mt-4 sm:container"}`}>
         <StepperSteps
+          isCardActive={isCardActive}
           progressText={progressText}
           steps={steps}
           currentStep={currentStep}
         />
         {/* Display components */}
         <div
-          className={`mt-12 container mb-4 overflow-y-auto ${
-            size === "sm"
+          className={`container overflow-y-auto ${
+            isCardActive
+              ? "bg-card rounded-md border border-primary/10 dark:border-primary/20"
+              : "mb-4 mt-12"
+          } ${
+            size === "wrap-height"
+              ? " h-fit pt-6 pb-12"
+              : size === "sm"
               ? "max-h-[40vh] min-h-[40vh]"
               : size === "md"
               ? "max-h-[50vh] min-h-[60vh]"
@@ -138,6 +147,7 @@ export default function Stepper(props: IStepperProps) {
       {/* StepperControl */}
       {currentStep != steps.length && (
         <StepperControl
+          isCardActive={isCardActive}
           backText={backText}
           nextText={nextText}
           confirmText={confirmText}

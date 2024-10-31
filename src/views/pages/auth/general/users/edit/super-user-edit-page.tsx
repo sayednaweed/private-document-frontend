@@ -18,6 +18,7 @@ import { userWithPermissions } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Database, KeyRound } from "lucide-react";
 import UserEditHeader from "./user-edit-header";
+import EditUserPermissions from "./steps/edit-user-permissions";
 
 export default function SuperUserEditPage() {
   const navigate = useNavigate();
@@ -30,7 +31,9 @@ export default function SuperUserEditPage() {
     try {
       setFailed(false);
       const response = await axiosClient.get(`user/${id}`);
-      if (response.status == 200) setUserData(userWithPermissions(response));
+      if (response.status == 200) {
+        setUserData(userWithPermissions(response));
+      }
     } catch (error: any) {
       toast({
         toastType: "ERROR",
@@ -53,7 +56,7 @@ data-[state=active]:after:border-r-[19px] data-[state=active]:after:border-r-ter
 w-[95%] ltr:py-2 rtl:py-[5px] bg-card-foreground/5 data-[state=active]:bg-tertiary font-semibold data-[state=active]:text-primary-foreground gap-x-3 justify-start`;
   return (
     <div className="flex flex-col gap-y-6 px-3 mt-2">
-      <Breadcrumb className="rtl:text-2xl-rtl ltr:text-xl-ltr">
+      <Breadcrumb className="rtl:text-2xl-rtl ltr:text-xl-ltr bg-card w-fit py-1 px-3 rounded-md border">
         <BreadcrumbList>
           <BreadcrumbItem>
             <Link to="/dashboard">
@@ -71,7 +74,9 @@ w-[95%] ltr:py-2 rtl:py-[5px] bg-card-foreground/5 data-[state=active]:bg-tertia
           </BreadcrumbItem>
           <BreadcrumbSeparator className="rtl:rotate-180" />
           <BreadcrumbItem>
-            <BreadcrumbPage>{userData?.username}</BreadcrumbPage>
+            <BreadcrumbPage className="text-tertiary">
+              {userData?.username}
+            </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -101,6 +106,13 @@ w-[95%] ltr:py-2 rtl:py-[5px] bg-card-foreground/5 data-[state=active]:bg-tertia
             <KeyRound className="size-[18px]" />
             {t("Update account password")}
           </TabsTrigger>
+          <TabsTrigger
+            className={`rtl:text-2xl-rtl ltr:text-2xl-ltr${selectedTabStyle}`}
+            value="permissions"
+          >
+            <KeyRound className="size-[18px]" />
+            {t("Update account permissions")}
+          </TabsTrigger>
         </TabsList>
         <TabsContent className="flex-1 m-0" value="Account">
           <EditUserInformation
@@ -115,6 +127,15 @@ w-[95%] ltr:py-2 rtl:py-[5px] bg-card-foreground/5 data-[state=active]:bg-tertia
           <EditUserPassword
             id={id}
             userData={userData}
+            failed={failed}
+            refreshPage={loadInformation}
+          />
+        </TabsContent>
+        <TabsContent className="flex-1 m-0" value="permissions">
+          <EditUserPermissions
+            id={id}
+            userData={userData}
+            setUserData={setUserData}
             failed={failed}
             refreshPage={loadInformation}
           />

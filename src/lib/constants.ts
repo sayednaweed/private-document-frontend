@@ -3,6 +3,9 @@ export const SECTION_NAMES = {
   dashboard: "dashboard",
   reports: "reports",
   settings: "settings",
+  logs: "logs",
+  audit: "audit",
+  documents: "documents",
 };
 
 export const PERMISSIONS_OPERATION = ["Add", "Edit", "Delete", "View"];
@@ -52,4 +55,5 @@ export const CALENDAR_FORMAT = {
   format_3: "YYYY/MM/dddd",
 };
 export const PAGINATION_COUNT = "pagination_count";
+export const DOCUMENT_PAGINATION_COUNT = "doc_pagination_count";
 export const SYSTEM_CALENDAR = "system_calendar";

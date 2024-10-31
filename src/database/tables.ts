@@ -8,7 +8,7 @@ export type UserPermission = {
   view: boolean;
   delete: boolean;
   add: boolean;
-  permission_name: string;
+  permission: string;
   icon: string;
   priority: number;
 };
@@ -46,5 +46,45 @@ export type Department = {
 export type Job = {
   id: string;
   name: string;
+  createdAt: string;
+};
+// APPLICATION
+
+export type Status = {
+  id: string;
+  name: string;
+  color: string;
+};
+export type Urgency = {
+  id: string;
+  name: string;
+};
+export type Source = {
+  id: string;
+  name: string;
+};
+export type Scan = {
+  id: string;
+  initailScan: string;
+  muqamScan: string;
+  finalScan: string;
+};
+export type DocumentModel = {
+  id: string;
+  documentNumber: string;
+  summary: string;
+  muqamStatement: string;
+  qaidWaridaNumber: string;
+  qaidSadiraNumber: string;
+  savedFile: string;
+  documentDate: string;
+  userRecievedDate: string;
+  qaidSadiraDate: string;
+  type: string;
+  status: Status;
+  urgency: Urgency;
+  source: Source;
+  scan: Scan;
+  reciverUserId: User;
   createdAt: string;
 };

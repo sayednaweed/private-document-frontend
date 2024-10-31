@@ -1,4 +1,19 @@
+import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
+import SecondaryButton from "@/components/custom-ui/button/SecondaryButton";
+import AnimHomeIcon from "@/components/custom-ui/icons/AnimHomeIcon";
+import CustomInput from "@/components/custom-ui/input/CustomInput";
+import NastranModel from "@/components/custom-ui/model/NastranModel";
+import CustomSelect from "@/components/custom-ui/select/CustomSelect";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
+import Pagination from "@/components/custom-ui/table/Pagination";
+import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import {
   Table,
   TableBody,
@@ -10,36 +25,31 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { useAuthState } from "@/context/AuthContextProvider";
 import { useGlobalState } from "@/context/GlobalStateContext";
-import { User, UserPermission } from "@/database/tables";
-import { PAGINATION_COUNT, SECTION_NAMES } from "@/lib/constants";
+import { DocumentModel, UserPermission } from "@/database/tables";
+import axiosClient from "@/lib/axois-client";
+import {
+  DOCUMENT_PAGINATION_COUNT,
+  PAGINATION_COUNT,
+  SECTION_NAMES,
+} from "@/lib/constants";
 import useUserDB from "@/lib/indexeddb/useUserDB";
+import {
+  DocumentFilter,
+  DocumentPaginationData,
+  DocumentSearch,
+  DocumentSort,
+  Order,
+} from "@/lib/types";
+import { toLocaleDate } from "@/lib/utils";
+import { ListFilter, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import axiosClient from "@/lib/axois-client";
-
-import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
-import Pagination from "@/components/custom-ui/table/Pagination";
-import CachedImage from "@/components/custom-ui/image/CachedImage";
-import { toLocaleDate } from "@/lib/utils";
-import NastranModel from "@/components/custom-ui/model/NastranModel";
-import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
-import { ListFilter, Search } from "lucide-react";
-import CustomInput from "@/components/custom-ui/input/CustomInput";
-import SecondaryButton from "@/components/custom-ui/button/SecondaryButton";
-import UserFilterDialog from "./user-filter-dialog";
-import AddUser from "./add/add-user";
-import CustomSelect from "@/components/custom-ui/select/CustomSelect";
 import { DateObject } from "react-multi-date-picker";
-import {
-  Order,
-  UserFilter,
-  UserPaginationData,
-  UserSearch,
-  UserSort,
-} from "@/lib/types";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import AddDocument from "./add/add-document";
+import DocumentFilterDialog from "./document-filter-dialog";
 
-export function UserTable() {
+export default function DocumentTable() {
   const { user } = useAuthState();
   const navigate = useNavigate();
   const searchRef = useRef<HTMLInputElement>(null);
@@ -50,17 +60,21 @@ export function UserTable() {
   const search = searchParams.get("search");
   const sort = searchParams.get("sort");
   const order = searchParams.get("order");
-  const [filters, setFilters] = useState<UserFilter>({
-    sort: sort == null ? "created_at" : (sort as UserSort),
+  const [filters, setFilters] = useState<DocumentFilter>({
+    sort: sort == null ? "created_at" : (sort as DocumentSort),
     order: order == null ? "Ascending" : (order as Order),
     search: {
-      column: search == null ? "username" : (search as UserSearch),
+      column: search == null ? "username" : (search as DocumentSearch),
       value: "",
     },
     date: [],
   });
 
-  const loadList = async (count: number, dataFilters: UserFilter, page = 1) => {
+  const loadList = async (
+    count: number,
+    dataFilters: DocumentFilter,
+    page = 1
+  ) => {
     try {
       if (loading) return;
       setLoading(true);
@@ -103,12 +117,13 @@ export function UserTable() {
           },
         },
       });
-      const fetch = response.data.users.data as User[];
+      const fetch: any = [];
+      // const fetch = response.data.users.data as DocumentModel[];
       const lastPage = response.data.users.last_page;
       const totalItems = response.data.users.total;
       const perPage = response.data.users.per_page;
       const currentPage = response.data.users.current_page;
-      setUsers({
+      setDocuments({
         filterList: {
           data: fetch,
           lastPage: lastPage,
@@ -134,16 +149,16 @@ export function UserTable() {
       setLoading(false);
     }
   };
-  const initialize = async (dataFilters: UserFilter) => {
-    const count = await getAppCache(PAGINATION_COUNT);
+  const initialize = async (dataFilters: DocumentFilter) => {
+    const count = await getAppCache(DOCUMENT_PAGINATION_COUNT);
     loadList(count ? count.value : 10, dataFilters);
   };
   useEffect(() => {
     initialize(filters);
   }, [filters.order, filters.sort]);
-  const [users, setUsers] = useState<{
-    filterList: UserPaginationData;
-    unFilterList: UserPaginationData;
+  const [documents, setDocuments] = useState<{
+    filterList: DocumentPaginationData;
+    unFilterList: DocumentPaginationData;
   }>({
     filterList: {
       data: [],
@@ -165,8 +180,8 @@ export function UserTable() {
 
   const [state] = useGlobalState();
 
-  const addItem = (user: User) => {
-    setUsers((prevState) => ({
+  const addItem = (user: DocumentModel) => {
+    setDocuments((prevState) => ({
       filterList: {
         ...prevState.filterList,
         data: [user, ...prevState.filterList.data],
@@ -178,22 +193,22 @@ export function UserTable() {
     }));
   };
 
-  const deleteOnClick = async (user: User) => {
+  const deleteOnClick = async (user: DocumentModel) => {
     try {
       const userId = user.id;
       const response = await axiosClient.delete("user/" + userId);
       if (response.status == 200) {
-        const filtered = users.unFilterList.data.filter(
-          (item: User) => userId != item?.id
+        const filtered = documents.unFilterList.data.filter(
+          (item: DocumentModel) => userId != item?.id
         );
         const item = {
           data: filtered,
-          lastPage: users.unFilterList.lastPage,
-          totalItems: users.unFilterList.totalItems,
-          perPage: users.unFilterList.perPage,
-          currentPage: users.unFilterList.currentPage,
+          lastPage: documents.unFilterList.lastPage,
+          totalItems: documents.unFilterList.totalItems,
+          perPage: documents.unFilterList.perPage,
+          currentPage: documents.unFilterList.currentPage,
         };
-        setUsers({ ...users, filterList: item, unFilterList: item });
+        setDocuments({ ...documents, filterList: item, unFilterList: item });
       }
       toast({
         toastType: "SUCCESS",
@@ -233,44 +248,37 @@ export function UserTable() {
       </TableCell>
     </TableRow>
   );
+  const editOnClick = async (user: DocumentModel) => {
+    const userId = user.id;
+    navigate(`/documents/${userId}`);
+  };
+  const watchOnClick = async (user: DocumentModel) => {
+    const userId = user.id;
+    navigate(`/documents/${userId}`);
+  };
   const per: UserPermission | undefined = user?.permissions.get(
-    SECTION_NAMES.users
+    SECTION_NAMES.documents
   );
   const view = per ? per?.view : false;
   const remove = per ? per?.delete : false;
   const edit = per ? per?.edit : false;
   const add = per ? per?.add : false;
-  const editOnClick = async (user: User) => {
-    const userId = user.id;
-    navigate(`/users/${userId}`);
-  };
-  const watchOnClick = async (user: User) => {
-    const userId = user.id;
-    navigate(`/users/${userId}`);
-  };
   return (
-    <>
+    <div className="px-2 pt-2 flex flex-col gap-y-[2px] relative select-none rtl:text-2xl-rtl ltr:text-xl-ltr">
       <div className="flex flex-col sm:items-baseline sm:flex-row rounded-md bg-card gap-2 flex-1 px-2 py-2 mt-4">
         {add && (
           <NastranModel
             size="lg"
+            className="bg-transparent pt-2"
             isDismissable={false}
             button={
               <PrimaryButton className="rtl:text-lg-rtl font-semibold ltr:text-md-ltr">
-                {t("Add")}
+                {t("Add Document")}
               </PrimaryButton>
             }
-            showDialog={async () => {
-              if (user?.permissions.get(SECTION_NAMES.users)?.add) return true;
-              toast({
-                toastType: "ERROR",
-                title: "Error!",
-                description: t("You don't have the permission to add"),
-              });
-              return false;
-            }}
+            showDialog={async () => true}
           >
-            <AddUser onComplete={addItem} />
+            <AddDocument onComplete={addItem} />
           </NastranModel>
         )}
 
@@ -320,9 +328,9 @@ export function UserTable() {
             }
             showDialog={async () => true}
           >
-            <UserFilterDialog
+            <DocumentFilterDialog
               filters={filters}
-              sortOnComplete={async (filterName: UserSort) => {
+              sortOnComplete={async (filterName: DocumentSort) => {
                 if (filterName != filters.sort) {
                   setFilters({
                     ...filters,
@@ -332,22 +340,22 @@ export function UserTable() {
                   queryParams.set("search", filters.search.column);
                   queryParams.set("sort", filterName);
                   queryParams.set("order", filters.order);
-                  navigate(`/users?${queryParams.toString()}`);
+                  navigate(`/documents?${queryParams.toString()}`);
                   // sortList
                   const item = {
-                    data: users.filterList.data,
-                    lastPage: users.unFilterList.lastPage,
-                    totalItems: users.unFilterList.totalItems,
-                    perPage: users.unFilterList.perPage,
-                    currentPage: users.unFilterList.currentPage,
+                    data: documents.filterList.data,
+                    lastPage: documents.unFilterList.lastPage,
+                    totalItems: documents.unFilterList.totalItems,
+                    perPage: documents.unFilterList.perPage,
+                    currentPage: documents.unFilterList.currentPage,
                   };
-                  setUsers({
-                    ...users,
+                  setDocuments({
+                    ...documents,
                     filterList: item,
                   });
                 }
               }}
-              searchOnComplete={async (filterName: UserSearch) => {
+              searchOnComplete={async (filterName: DocumentSearch) => {
                 const search = filters.search;
                 setFilters({
                   ...filters,
@@ -363,7 +371,7 @@ export function UserTable() {
                   const queryParams = new URLSearchParams();
                   queryParams.set("sort", filters.sort);
                   queryParams.set("order", filterName);
-                  navigate(`/users?${queryParams.toString()}`, {
+                  navigate(`/documents?${queryParams.toString()}`, {
                     replace: true,
                   });
                 }
@@ -394,17 +402,18 @@ export function UserTable() {
           }}
         />
       </div>
-      <Table className="bg-card rounded-md my-[2px] py-8">
+      <Table className="bg-card rounded-md my-[2px] py-8 table-fixed">
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
-            <TableHead className="text-center px-1 w-[60px]">
-              {t("Profile")}
+            <TableHead className="px-1 text-center w-[60px]">
+              {t("id")}
             </TableHead>
-            <TableHead className="text-start px-1">{t("username")}</TableHead>
-            <TableHead className="text-start px-1">{t("role")}</TableHead>
-            <TableHead className="text-start px-1">{t("email")}</TableHead>
-            <TableHead className="text-start px-1">{t("contact")}</TableHead>
-            <TableHead className="text-start px-1">{t("Join date")}</TableHead>
+            <TableHead className="text-start px-1">{t("type")}</TableHead>
+            <TableHead className="text-start px-1">{t("urgency")}</TableHead>
+            <TableHead className="text-start px-1">{t("source")}</TableHead>
+            <TableHead className="text-start px-1">
+              {t("remaining duration")}
+            </TableHead>
             <TableHead className="text-start px-1 w-[60px]">
               {t("status")}
             </TableHead>
@@ -418,7 +427,7 @@ export function UserTable() {
               {skeleton}
             </>
           ) : (
-            users.filterList.data.map((item: User) => (
+            documents.filterList.data.map((item: DocumentModel) => (
               <TableRowIcon
                 read={view}
                 remove={remove}
@@ -429,30 +438,18 @@ export function UserTable() {
                 onRemove={deleteOnClick}
                 onRead={watchOnClick}
               >
-                <TableCell className="px-1  py-0">
-                  <CachedImage
-                    src={item?.profile}
-                    alt="Avatar"
-                    iconClassName="size-[18px]"
-                    loaderClassName="size-[36px] mx-auto shadow-lg border border-tertiary rounded-full"
-                    className="size-[36px] object-center object-cover mx-auto shadow-lg border border-tertiary rounded-full"
-                  />
-                </TableCell>
-                <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
-                  {item.username}
+                <TableCell className="rtl:text-md-rtl px-1 py-0">
+                  {item.muqamStatement}
                 </TableCell>
                 <TableCell className="px-1 py-0">
-                  <h1 className="truncate">{item?.department}</h1>
-                  <h1 className="truncate">{item?.job}</h1>
+                  <h1 className="truncate">{item.qaidSadiraDate}</h1>
+                  <h1 className="truncate">{item.createdAt}</h1>
                 </TableCell>
                 <TableCell
                   dir="ltr"
                   className="rtl:text-md-rtl truncate rtl:text-end px-0 py-0"
                 >
-                  {item.email}
-                </TableCell>
-                <TableCell dir="ltr" className="px-1 rtl:text-end">
-                  {item?.contact == "null" ? "" : item?.contact}
+                  {item.scan.muqamScan}
                 </TableCell>
                 <TableCell className="px-1 py-0">
                   {toLocaleDate(new Date(item.createdAt), state)}
@@ -476,11 +473,11 @@ export function UserTable() {
       <div className="flex justify-between rounded-md bg-card flex-1 p-3 items-center">
         <h1 className="rtl:text-lg-rtl ltr:text-md-ltr font-medium">{`${t(
           "page"
-        )} ${users.unFilterList.currentPage} ${t("of")} ${
-          users.unFilterList.lastPage
+        )} ${documents.unFilterList.currentPage} ${t("of")} ${
+          documents.unFilterList.lastPage
         }`}</h1>
         <Pagination
-          lastPage={users.unFilterList.lastPage}
+          lastPage={documents.unFilterList.lastPage}
           onPageChange={async (page) => {
             try {
               const count = await getAppCache(PAGINATION_COUNT);
@@ -489,16 +486,16 @@ export function UserTable() {
                   per_page: count ? count.value : 10,
                 },
               });
-              const fetch = response.data.users.data as User[];
+              const fetch = response.data.documents.data as DocumentModel[];
 
               const item = {
                 currentPage: page,
                 data: fetch,
-                lastPage: users.unFilterList.lastPage,
-                totalItems: users.unFilterList.totalItems,
-                perPage: users.unFilterList.perPage,
+                lastPage: documents.unFilterList.lastPage,
+                totalItems: documents.unFilterList.totalItems,
+                perPage: documents.unFilterList.perPage,
               };
-              setUsers({
+              setDocuments({
                 filterList: item,
                 unFilterList: item,
               });
@@ -512,6 +509,6 @@ export function UserTable() {
           }}
         />
       </div>
-    </>
+    </div>
   );
 }

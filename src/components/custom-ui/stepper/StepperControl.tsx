@@ -9,21 +9,36 @@ export interface IStepperControlProps {
     icon: any;
   }[];
   currentStep: number;
+  isCardActive?: boolean;
   handleClick: (direction: string) => void;
 }
 function StepperControl(props: IStepperControlProps) {
-  const { steps, currentStep, handleClick, backText, nextText, confirmText } =
-    props;
+  const {
+    steps,
+    currentStep,
+    handleClick,
+    backText,
+    nextText,
+    confirmText,
+    isCardActive,
+  } = props;
   return (
-    <div className="container flex justify-around mb-4 text-[13px]">
+    <div
+      className={`${
+        isCardActive &&
+        "mt-[3px] rounded-md bg-card py-4 border border-primary/10 dark:border-primary/20"
+      } container flex justify-around mb-4 text-[13px]`}
+    >
       {/* Back Button */}
       <button
         onClick={() => {
           if (currentStep != 1) handleClick("back");
         }}
         className={`${
-          currentStep == 1 && "opacity-50 cursor-not-allowed"
-        } bg-primary rounded-md hover:shadow transition text-[14px] font-semibold w-fit text-primary-foreground/80 shadow-md shadow-primary/50 px-4 py-2 hover:bg-primary hover:text-primary-foreground`}
+          currentStep == 1
+            ? "opacity-50 cursor-not-allowed"
+            : "hover:shadow shadow-md shadow-primary/50 hover:text-primary-foreground"
+        } bg-primary rounded-md transition text-[14px] font-semibold w-fit text-primary-foreground/80 px-4 py-2 hover:bg-primary`}
       >
         {backText}
       </button>

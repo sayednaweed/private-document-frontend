@@ -12,11 +12,12 @@ export interface IStepperProps {
     pending: string;
     step: string;
   };
+  isCardActive?: boolean;
 }
 function StepperSteps(props: IStepperProps) {
   const [newStep, setNewStep] = useState<any>([]);
   const stepRef = useRef<any>();
-  const { steps, currentStep, progressText } = props;
+  const { steps, currentStep, progressText, isCardActive } = props;
   const updateStep = (stepNumber: number, steps: any) => {
     const newSteps = [...steps];
     let count = 0;
@@ -78,7 +79,7 @@ function StepperSteps(props: IStepperProps) {
     return (
       <div
         key={index}
-        className={`${
+        className={` ${
           index != newStep.length - 1
             ? "w-full flex items-center"
             : "flex items-center"
@@ -108,7 +109,7 @@ function StepperSteps(props: IStepperProps) {
             className={`${
               step.completed || step.highlighted
                 ? "text-primary"
-                : " text-gray-400"
+                : "text-gray-400"
             } ${
               step.highlighted && "!visible"
             } invisible sm:visible absolute top-[6px] mt-11 text-start line-clamp-1 w-32 rtl:text-xl-rtl ltr:text-lg-ltr font-semibold capitalize`}
@@ -151,7 +152,13 @@ function StepperSteps(props: IStepperProps) {
   });
 
   return (
-    <div className="mx-4 p-4 flex justify-between items-center">
+    <div
+      className={`${
+        isCardActive
+          ? "bg-card mb-[3px] h-[116px] border border-primary/10 dark:border-primary/20 rounded-md"
+          : "mx-4"
+      } p-4 flex justify-between items-start`}
+    >
       {displaySteps}
     </div>
   );

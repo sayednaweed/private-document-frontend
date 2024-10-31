@@ -1,20 +1,56 @@
 import HeaderCard from "@/components/custom-ui/card/HeaderCard";
+import { toast } from "@/components/ui/use-toast";
+import axiosClient from "@/lib/axois-client";
+import { UserRecordCount } from "@/lib/types";
 import {
   UserRoundPen,
   UserRoundPlus,
   UserRoundX,
   UsersRound,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function UserHeader() {
   const { t } = useTranslation();
+  const [recordCount, setRecordCount] = useState<UserRecordCount>({
+    activeUserCount: null,
+    inActiveUserCount: null,
+    userCount: null,
+    todayCount: null,
+  });
+  const [loading, setLoading] = useState(true);
+  const fetchCount = async () => {
+    try {
+      const response = await axiosClient.get(`users/record/count`);
+      if (response.status == 200) {
+        setRecordCount({
+          activeUserCount: response.data.counts.activeUserCount,
+          inActiveUserCount: response.data.counts.inActiveUserCount,
+          userCount: response.data.counts.userCount,
+          todayCount: response.data.counts.todayCount,
+        });
+      }
+    } catch (error: any) {
+      toast({
+        toastType: "ERROR",
+        title: "Error!",
+        description: error.response.data.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchCount();
+  }, []);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 justify-items-center gap-y-2 mt-4">
       <HeaderCard
+        loading={loading}
         title={t("Total Users")}
-        total={"1000"}
+        total={recordCount.userCount}
         description1={t("total")}
         description2={t("user")}
         icon={
@@ -22,8 +58,9 @@ export default function UserHeader() {
         }
       />
       <HeaderCard
+        loading={loading}
         title={t("Total Registered Today")}
-        total={"10"}
+        total={recordCount.todayCount}
         description1={t("total")}
         description2={t("user today")}
         icon={
@@ -31,8 +68,9 @@ export default function UserHeader() {
         }
       />
       <HeaderCard
-        title={t("Total Deleted Today")}
-        total={"40"}
+        loading={loading}
+        title={t("Total Active")}
+        total={recordCount.activeUserCount}
         description1={t("total")}
         description2={t("user")}
         icon={
@@ -40,8 +78,9 @@ export default function UserHeader() {
         }
       />
       <HeaderCard
-        title={t("Total Edited Today")}
-        total={"70"}
+        loading={loading}
+        title={t("Total Inactive")}
+        total={recordCount.inActiveUserCount}
         description1={t("total")}
         description2={t("user")}
         icon={

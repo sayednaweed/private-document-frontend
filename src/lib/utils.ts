@@ -32,13 +32,13 @@ export const returnPermissions = (
       const item: any = permissions[i];
       const permission: UserPermission = {
         id: item.id,
-        edit: item.edit == 1,
-        view: item.view == 1,
-        delete: item.delete == 1,
-        add: item.add == 1,
+        edit: item.edit,
+        view: item.view,
+        delete: item.delete,
+        add: item.add,
         icon: item.icon,
         priority: item.priority,
-        permission_name: item.permission,
+        permission: item.permission,
       };
       permissionMap.set(item.permission, permission);
     }
@@ -55,11 +55,11 @@ export const userWithPermissions = (response: any): UserInformation => {
     let counter: number = 0;
     for (let i = 0; i < permissions.length; i++) {
       const item: any = permissions[i];
-      const edit = item.edit == 1;
-      const view = item.view == 1;
+      const edit = item.edit;
+      const view = item.view;
       // When variable name is delete arises delete is not allowed
-      const erase = item.delete == 1;
-      const add = item.add == 1;
+      const erase = item.delete;
+      const add = item.add;
       allSelected = edit && view && erase && add ? true : false;
       if (!allSelected) counter++;
       const permission: SelectUserPermission = {
@@ -70,10 +70,10 @@ export const userWithPermissions = (response: any): UserInformation => {
         add: add,
         icon: item.icon,
         priority: item.priority,
-        permission_name: item.permission_name,
+        permission: item.permission,
         allSelected: allSelected,
       };
-      permissionMap.set(item.permission_name, permission);
+      permissionMap.set(permission.permission, permission);
     }
     user.allSelected = counter == 0 ? true : false;
   }

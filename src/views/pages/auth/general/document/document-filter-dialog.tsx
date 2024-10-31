@@ -11,16 +11,21 @@ import { Button } from "@/components/ui/button";
 import { FilterItem } from "@/components/custom-ui/filter/FilterItem";
 import CustomMultiDatePicker from "@/components/custom-ui/DatePicker/CustomMultiDatePicker";
 import { DateObject } from "react-multi-date-picker";
-import { Order, UserFilter, UserSearch, UserSort } from "@/lib/types";
+import {
+  DocumentFilter,
+  DocumentSearch,
+  DocumentSort,
+  Order,
+} from "@/lib/types";
 
-export interface UserFilterDialogProps {
-  sortOnComplete: (itemName: UserSort) => void;
-  searchOnComplete: (itemName: UserSearch) => void;
+export interface DocumentFilterDialogProps {
+  sortOnComplete: (itemName: DocumentSort) => void;
+  searchOnComplete: (itemName: DocumentSearch) => void;
   orderOnComplete: (itemName: Order) => void;
   dateOnComplete: (selectedDates: DateObject[]) => void;
-  filters: UserFilter;
+  filters: DocumentFilter;
 }
-export default function UserFilterDialog(props: UserFilterDialogProps) {
+export default function DocumentFilterDialog(props: DocumentFilterDialogProps) {
   const {
     sortOnComplete,
     searchOnComplete,
@@ -31,11 +36,11 @@ export default function UserFilterDialog(props: UserFilterDialogProps) {
   const { modelOnRequestHide } = useModelOnRequestHide();
   const { t } = useTranslation();
   const handleSort = (itemName: string) => {
-    sortOnComplete(itemName as UserSort);
+    sortOnComplete(itemName as DocumentSort);
     modelOnRequestHide();
   };
   const handleSearch = (itemName: string) => {
-    searchOnComplete(itemName as UserSearch);
+    searchOnComplete(itemName as DocumentSearch);
     modelOnRequestHide();
   };
   const handleOrder = (itemName: string) => {

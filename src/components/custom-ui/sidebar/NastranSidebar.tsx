@@ -27,11 +27,11 @@ export default function NastranSidebar() {
     if (user?.permissions != undefined) {
       let items: JSX.Element[] = [];
       for (const [key, value] of user?.permissions) {
-        const path = `/${value.permission_name}`;
+        const path = `/${value.permission}`;
         const active = activeTab === "/" ? `/dashboard` : activeTab;
         const isActive = active.startsWith(path);
 
-        if (value.permission_name == SECTION_NAMES.settings)
+        if (value.permission == SECTION_NAMES.settings)
           items.push(
             <Separator className="opacity-90 my-4 relative" key="Separator" />
           );

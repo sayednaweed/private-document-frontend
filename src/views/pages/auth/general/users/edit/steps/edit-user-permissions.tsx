@@ -14,11 +14,12 @@ import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
 import { RefreshCcw } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
-import { SelectUserPermission } from "@/database/tables";
+import { SelectUserPermission, UserPermission } from "@/database/tables";
 import axiosClient from "@/lib/axois-client";
 import { toast } from "@/components/ui/use-toast";
 import CustomCheckbox from "@/components/custom-ui/checkbox/CustomCheckbox";
 import ButtonSpinner from "@/components/custom-ui/spinner/ButtonSpinner";
+import { SECTION_NAMES } from "@/lib/constants";
 export interface EditUserPermissionsProps {
   id: string | undefined;
   refreshPage: () => Promise<void>;
@@ -32,9 +33,6 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
   const { user } = useAuthState();
   const { id, userData, failed, refreshPage, setUserData } = props;
   const [loading, setLoading] = useState(false);
-  const lockField = !user.grantPermission;
-  const adminLockField = user.id == id || lockField;
-
   const handleChange = (key: string, permission: SelectUserPermission) => {
     if (userData != undefined)
       setUserData({
@@ -56,10 +54,10 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
           add: value,
           icon: "", // No need to be added
           priority: 0, // No need to be added
-          permission_name: item.permission_name,
+          permission: item.permission,
           allSelected: value,
         };
-        permissionMap.set(item.permission_name, permission);
+        permissionMap.set(item.permission, permission);
       }
       setUserData({
         ...userData,
@@ -78,16 +76,14 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
       setLoading(true);
       const formData = new FormData();
       formData.append("user_id", id);
-
       // Convert map to JSON object
       if (userData?.permission != undefined) {
         const jsonObject = mapToJsonObject(userData?.permission);
-
-        formData.append("Permission", JSON.stringify(jsonObject));
+        formData.append("permission", JSON.stringify(jsonObject));
       }
       try {
         const response = await axiosClient.post(
-          "auth/user/change-permissions",
+          "user/update/permission",
           formData,
           {
             headers: {
@@ -115,6 +111,11 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
     }
   };
 
+  const per: UserPermission | undefined = user?.permissions.get(
+    SECTION_NAMES.users
+  );
+  const hasEdit = per ? per?.edit : false;
+
   return (
     <Card>
       <CardHeader className="space-y-0">
@@ -141,10 +142,7 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
                       onCheckedChange={(value: boolean) => {
                         selectAllRows(value);
                       }}
-                      readOnly={adminLockField}
-                      className={`mx-auto ${
-                        adminLockField && "cursor-not-allowed"
-                      }`}
+                      className={`mx-auto ${!hasEdit && "cursor-not-allowed"}`}
                     />
                   </th>
                   <th scope="col" className="text-start py-3">
@@ -172,10 +170,7 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
                         <tr className="bg-transparent border-b " key={index}>
                           <td className="w-4 p-4">
                             <CustomCheckbox
-                              readOnly={adminLockField}
-                              className={`mx-auto ${
-                                adminLockField && "cursor-not-allowed"
-                              }`}
+                              readOnly={!hasEdit}
                               checked={item.allSelected}
                               onCheckedChange={(value: boolean) => {
                                 const permission: SelectUserPermission = {
@@ -186,7 +181,7 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
                                   add: value,
                                   icon: "", // No need to be added
                                   priority: 0, // No need to be added
-                                  permission_name: item.permission_name,
+                                  permission: item.permission,
                                   allSelected: value,
                                 };
                                 handleChange(key, permission);
@@ -201,10 +196,7 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
                           </th>
                           <td className="py-4">
                             <CustomCheckbox
-                              readOnly={adminLockField}
-                              className={`ltr:ml-1 ${
-                                adminLockField && "cursor-not-allowed"
-                              }`}
+                              readOnly={!hasEdit}
                               checked={item.add}
                               onCheckedChange={(value: boolean) => {
                                 const permission: SelectUserPermission = {
@@ -215,7 +207,7 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
                                   priority: 0, // No need to be added
                                   delete: item.delete,
                                   add: value,
-                                  permission_name: item.permission_name,
+                                  permission: item.permission,
                                   allSelected:
                                     item.edit &&
                                     item.view &&
@@ -230,10 +222,7 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
                           </td>
                           <td className="py-4">
                             <CustomCheckbox
-                              readOnly={adminLockField}
-                              className={`ltr:ml-1 ${
-                                adminLockField && "cursor-not-allowed"
-                              }`}
+                              readOnly={!hasEdit}
                               checked={item.view}
                               onCheckedChange={(value: boolean) => {
                                 const permission: SelectUserPermission = {
@@ -244,7 +233,7 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
                                   priority: 0, // No need to be added
                                   delete: item.delete,
                                   add: item.add,
-                                  permission_name: item.permission_name,
+                                  permission: item.permission,
                                   allSelected:
                                     item.edit &&
                                     value &&
@@ -259,10 +248,7 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
                           </td>
                           <td className="py-4">
                             <CustomCheckbox
-                              readOnly={adminLockField}
-                              className={`ltr:ml-1 ${
-                                adminLockField && "cursor-not-allowed"
-                              }`}
+                              readOnly={!hasEdit}
                               checked={item.edit}
                               onCheckedChange={(value: boolean) => {
                                 const permission: SelectUserPermission = {
@@ -273,7 +259,7 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
                                   view: item.view,
                                   delete: item.delete,
                                   add: item.add,
-                                  permission_name: item.permission_name,
+                                  permission: item.permission,
                                   allSelected:
                                     value &&
                                     item.view &&
@@ -288,10 +274,7 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
                           </td>
                           <td className="py-4">
                             <CustomCheckbox
-                              readOnly={adminLockField}
-                              className={`ltr:ml-1 ${
-                                adminLockField && "cursor-not-allowed"
-                              }`}
+                              readOnly={!hasEdit}
                               checked={item.delete}
                               onCheckedChange={(value: boolean) => {
                                 const permission: SelectUserPermission = {
@@ -302,7 +285,7 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
                                   priority: 0, // No need to be added
                                   delete: value,
                                   add: item.add,
-                                  permission_name: item.permission_name,
+                                  permission: item.permission,
                                   allSelected:
                                     item.edit && item.view && value && item.add
                                       ? true
@@ -331,26 +314,26 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
       <CardFooter>
         {failed ? (
           <PrimaryButton
-            onClick={async () => {
-              await refreshPage();
-            }}
+            onClick={async () => await refreshPage()}
             className="bg-red-500 hover:bg-red-500/70"
           >
             {t("Failed Retry")}
             <RefreshCcw className="ltr:ml-2 rtl:mr-2" />
           </PrimaryButton>
         ) : (
-          <PrimaryButton
-            disabled={adminLockField}
-            onClick={async () => {
-              if (user.grantPermission) {
-                saveData();
-              }
-            }}
-            className={`shadow-lg`}
-          >
-            <ButtonSpinner loading={loading}>{t("Save")}</ButtonSpinner>
-          </PrimaryButton>
+          userData &&
+          hasEdit && (
+            <PrimaryButton
+              onClick={async () => {
+                if (user.grantPermission) {
+                  await saveData();
+                }
+              }}
+              className={`shadow-lg`}
+            >
+              <ButtonSpinner loading={loading}>{t("Save")}</ButtonSpinner>
+            </PrimaryButton>
+          )
         )}
       </CardFooter>
     </Card>
