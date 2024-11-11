@@ -1,6 +1,5 @@
 import { Check, Database, UserRound } from "lucide-react";
 import DocumentInformationTab from "./steps/document-information-tab";
-import SourceReferredTab from "./steps/source-referred-tab";
 import { Dispatch, SetStateAction } from "react";
 import { toast } from "@/components/ui/use-toast";
 import axiosClient from "@/lib/axois-client";
@@ -10,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { DocumentModel } from "@/database/tables";
 import CloseButton from "@/components/custom-ui/button/CloseButton";
 import { useModelOnRequestHide } from "@/components/custom-ui/model/hook/useModelOnRequestHide";
+import ReferTab from "./steps/refer-tab";
 
 export interface AddDocumentProps {
   onComplete: (user: DocumentModel) => void;
@@ -30,37 +30,25 @@ export default function AddDocument(props: AddDocumentProps) {
     userData: any,
     setError: Dispatch<SetStateAction<Map<string, string>>>
   ) => {
-    let formData = new FormData();
-    formData.append("fullName", userData.name);
-    formData.append("username", userData.username);
-    formData.append("email", userData.email);
-    formData.append("password", userData.password);
-    if (userData.phone) formData.append("contact", userData.phone);
-    formData.append("department", userData.department.id);
-    formData.append("job", userData.job.id);
-    formData.append("role", userData.role.id);
-    formData.append("status", userData.status);
-    if (!userData.grant) formData.append("grant", "false");
-    else formData.append("grant", userData.grant);
-    formData.append("Permission", JSON.stringify(userData?.Permission));
-    try {
-      const response = await axiosClient.post("user/store", formData);
-      if (response.status == 200) {
-        toast({
-          toastType: "SUCCESS",
-          description: response.data.message,
-        });
-      }
-    } catch (error: any) {
-      toast({
-        toastType: "ERROR",
-        title: t("Error"),
-        description: error.response.data.message,
-      });
-      setServerError(error.response.data.errors, setError);
-      console.log(error);
-      return false;
-    }
+    // let formData = new FormData();
+    // try {
+    //   const response = await axiosClient.post("user/store", formData);
+    //   if (response.status == 200) {
+    //     toast({
+    //       toastType: "SUCCESS",
+    //       description: response.data.message,
+    //     });
+    //   }
+    // } catch (error: any) {
+    //   toast({
+    //     toastType: "ERROR",
+    //     title: t("Error"),
+    //     description: error.response.data.message,
+    //   });
+    //   setServerError(error.response.data.errors, setError);
+    //   console.log(error);
+    //   return false;
+    // }
     return true;
   };
   return (
@@ -88,7 +76,7 @@ export default function AddDocument(props: AddDocumentProps) {
             icon: <Database className="size-[16px]" />,
           },
           {
-            description: t("source & referred"),
+            description: t("refer"),
             icon: <UserRound className="size-[16px]" />,
           },
           {
@@ -100,13 +88,20 @@ export default function AddDocument(props: AddDocumentProps) {
           {
             component: <DocumentInformationTab />,
             validationRules: [
-              // { name: "language", rules: ["required"] },
+              { name: "subject", rules: ["required"] },
+              { name: "documentDate", rules: ["required"] },
+              { name: "documentNumber", rules: ["required"] },
+              { name: "source", rules: ["required"] },
+              { name: "urgency", rules: ["required"] },
+              { name: "documentType", rules: ["required"] },
             ],
           },
           {
-            component: <SourceReferredTab />,
+            component: <ReferTab />,
             validationRules: [
-              // { name: "files", rules: ["required"] }
+              { name: "qaidWarida", rules: ["required"] },
+              { name: "initailScan", rules: ["required"] },
+              { name: "reference", rules: ["required"] },
             ],
           },
         ]}

@@ -80,15 +80,15 @@ export default function AddUserInformation() {
         placeholderText={t("Search item")}
         errorText={t("No item")}
         onSelect={(selection: any) =>
-          setUserData({ ...userData, ["department"]: selection })
+          setUserData({ ...userData, ["destination"]: selection })
         }
-        lable={t("department")}
+        lable={t("destination")}
         required={true}
         requiredHint={`* ${t("Required")}`}
-        selectedItem={userData["department"]?.name}
-        placeHolder={t("Select a department")}
-        errorMessage={error.get("department")}
-        apiUrl={"departments"}
+        selectedItem={userData["destination"]?.name}
+        placeHolder={t("Select a destination")}
+        errorMessage={error.get("destination")}
+        apiUrl={"destinations"}
         mode="single"
       />
       <APICombobox

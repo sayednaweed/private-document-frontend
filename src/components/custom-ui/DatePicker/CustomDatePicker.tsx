@@ -9,20 +9,37 @@ import {
   CALENDAR_LOCALE,
 } from "@/lib/constants";
 import { useGlobalState } from "@/context/GlobalStateContext";
-import { convertNumberToPersian } from "@/lib/utils";
+import { cn, convertNumberToPersian } from "@/lib/utils";
 import { CalendarDays } from "lucide-react";
 
 export interface CustomeDatePickerProps {
-  dateOnComplete: (date: Date) => void;
+  dateOnComplete: (date: DateObject) => void;
+  value: DateObject;
+  className?: string;
+  placeholder: string;
+  place?: string;
+  required?: boolean;
+  requiredHint?: string;
+  lable?: string;
+  errorMessage?: string;
 }
 
 export default function CustomDatePicker(props: CustomeDatePickerProps) {
-  const { dateOnComplete } = props;
+  const {
+    dateOnComplete,
+    value,
+    className,
+    placeholder,
+    required,
+    requiredHint,
+    lable,
+    errorMessage,
+  } = props;
   const [state] = useGlobalState();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const direction = i18n.dir();
   const [visible, setVisible] = useState(false);
-  const [selectedDates, setSelectedDates] = useState<DateObject>();
+  const [selectedDates, setSelectedDates] = useState<DateObject>(value);
   const calendarRef = useRef<any>(null);
 
   useEffect(() => {
@@ -41,48 +58,52 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
     }
   };
   const formatHijriDate = (date?: DateObject) => {
-    if (date) {
-      let month = "";
-      let day: any;
-      let year: any;
-      if (state.systemLanguage.info.calendarId === CALENDAR.SOLAR) {
-        if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.farsi) {
-          month = afgMonthNamesFa[date.monthIndex];
-          day = convertNumberToPersian(date.day);
-          year = convertNumberToPersian(date.year);
-        } else if (
-          state.systemLanguage.info.localeId === CALENDAR_LOCALE.english
-        ) {
-          month = afgMonthNamesEn[date.monthIndex];
-          day = date.day;
-          year = date.year;
+    try {
+      if (date) {
+        let month = "";
+        let day: any;
+        let year: any;
+        if (state.systemLanguage.info.calendarId === CALENDAR.SOLAR) {
+          if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.farsi) {
+            month = afgMonthNamesFa[date.monthIndex];
+            day = convertNumberToPersian(date.day);
+            year = convertNumberToPersian(date.year);
+          } else if (
+            state.systemLanguage.info.localeId === CALENDAR_LOCALE.english
+          ) {
+            month = afgMonthNamesEn[date.monthIndex];
+            day = date.day;
+            year = date.year;
+          } else {
+            month = date.month.name;
+            day = date.day;
+            year = date.year;
+          }
+        } else if (state.systemLanguage.info.calendarId === CALENDAR.LUNAR) {
+          if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.farsi) {
+            month = afgMonthNamesFa[date.monthIndex];
+            day = convertNumberToPersian(date.day);
+            year = convertNumberToPersian(date.year);
+          } else {
+            month = date.month?.name;
+            day = convertNumberToPersian(date.day);
+            year = convertNumberToPersian(date.year);
+          }
         } else {
+          if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.farsi) {
+            day = convertNumberToPersian(date.day);
+            year = convertNumberToPersian(date.year);
+          } else {
+            day = date.day;
+            year = date.year;
+          }
           month = date.month.name;
-          day = date.day;
-          year = date.year;
         }
-      } else if (state.systemLanguage.info.calendarId === CALENDAR.LUNAR) {
-        if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.farsi) {
-          month = afgMonthNamesFa[date.monthIndex];
-          day = convertNumberToPersian(date.day);
-          year = convertNumberToPersian(date.year);
-        } else {
-          month = date.month.name;
-          day = convertNumberToPersian(date.day);
-          year = convertNumberToPersian(date.year);
-        }
-      } else {
-        if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.farsi) {
-          day = convertNumberToPersian(date.day);
-          year = convertNumberToPersian(date.year);
-        } else {
-          day = date.day;
-          year = date.year;
-        }
-        month = date.month.name;
-      }
 
-      return `${month}, ${day}, ${year}`;
+        return `${month}, ${day}, ${year}`;
+      }
+    } catch (e: any) {
+      console.log(e, "CustomDatePicker");
     }
     return undefined;
   };
@@ -91,11 +112,11 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
     onVisibilityChange();
     // const format = "MM/DD/YYYY";
     // let object = { date, format };
-    const MiladiDate = date.toDate();
     // const gre = new DateObject(object)
     // .convert(gregorian, gregorian_en)
     // .format();
-    dateOnComplete(MiladiDate);
+    // const MiladiDate = date.toDate();
+    dateOnComplete(date);
 
     if (date instanceof DateObject) setSelectedDates(date);
   };
@@ -114,7 +135,7 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
       {visible && (
         <Calendar
           ref={calendarRef}
-          className="absolute top-10 rtl:right-[-50%] ltr:left-[-50%]"
+          className="absolute top-10"
           onChange={handleDateChange}
           months={months}
           calendar={state.systemLanguage.calendar}
@@ -122,7 +143,20 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
         />
       )}
 
-      <div className="border px-3 py-1 rounded-md" onClick={onVisibilityChange}>
+      <div
+        className={cn(
+          `border relative px-3 py-1 rounded-md ${
+            required || lable ? "mt-[20px]" : "mt-2"
+          } ${errorMessage && "border-red-400"}`,
+          className
+        )}
+        onClick={onVisibilityChange}
+      >
+        {required && (
+          <span className="text-red-600 rtl:text-[13px] ltr:text-[11px] ltr:right-[10px] rtl:left-[10px] -top-[17px] absolute font-semibold">
+            {requiredHint}
+          </span>
+        )}
         {selectedDates ? (
           <h1 className="flex items-center gap-x-2 text-ellipsis text-sm text-primary/80 text-nowrap">
             <CalendarDays className="size-[16px] inline-block text-tertiary rtl:ml-2 rtl:mr-2" />
@@ -131,10 +165,24 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
         ) : (
           <h1 className="flex items-center gap-x-2 text-ellipsis text-sm text-primary/80 text-nowrap">
             <CalendarDays className="size-[16px] inline-block text-tertiary" />
-            {t("Select a date")}
+            {placeholder}
           </h1>
         )}
+
+        {lable && (
+          <label
+            htmlFor={lable}
+            className="rtl:text-lg-rtl ltr:text-xl-ltr rtl:right-[4px] ltr:left-[4px] ltr:-top-[22px] rtl:-top-[24px] absolute font-semibold"
+          >
+            {lable}
+          </label>
+        )}
       </div>
+      {errorMessage && (
+        <h1 className="rtl:text-sm-rtl ltr:text-sm-ltr capitalize text-start text-red-400">
+          {errorMessage}
+        </h1>
+      )}
     </div>
   );
 }

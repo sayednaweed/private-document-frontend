@@ -9,19 +9,20 @@ import {
   CALENDAR_LOCALE,
 } from "@/lib/constants";
 import { useGlobalState } from "@/context/GlobalStateContext";
-import { convertNumberToPersian } from "@/lib/utils";
+import { cn, convertNumberToPersian } from "@/lib/utils";
 import { CalendarDays } from "lucide-react";
 import DatePanel from "react-multi-date-picker/plugins/date_panel";
 
 export interface CustomMultiDatePickerProps {
   dateOnComplete: (selectedDates: DateObject[]) => void;
   value: DateObject[];
+  className?: string;
 }
 
 export default function CustomMultiDatePicker(
   props: CustomMultiDatePickerProps
 ) {
-  const { dateOnComplete, value } = props;
+  const { dateOnComplete, value, className } = props;
   const [state] = useGlobalState();
   const { t, i18n } = useTranslation();
   const direction = i18n.dir();
@@ -115,7 +116,7 @@ export default function CustomMultiDatePicker(
         <Calendar
           value={selectedDates}
           ref={calendarRef}
-          className="absolute font-segoe top-10 rtl:right-[-50%] ltr:left-[-50%]"
+          className="absolute font-segoe top-10"
           onChange={handleDateChange}
           months={months}
           range
@@ -125,7 +126,10 @@ export default function CustomMultiDatePicker(
         />
       )}
 
-      <div className="border px-3 py-1 rounded-md" onClick={onVisibilityChange}>
+      <div
+        className={cn(`border px-3 py-1 rounded-md`, className)}
+        onClick={onVisibilityChange}
+      >
         {selectedDates && selectedDates.length > 0 ? (
           <div className="flex items-center gap-x-2 text-ellipsis rtl:text-lg-rtl ltr:text-lg-ltr text-primary/80 text-nowrap">
             <CalendarDays className="size-[16px] inline-block text-tertiary rtl:ml-2 rtl:mr-2" />

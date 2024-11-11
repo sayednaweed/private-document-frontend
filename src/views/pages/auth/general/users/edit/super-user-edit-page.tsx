@@ -16,7 +16,7 @@ import { UserInformation } from "@/lib/types";
 import { toast } from "@/components/ui/use-toast";
 import { userWithPermissions } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Database, KeyRound } from "lucide-react";
+import { Database, KeyRound, ShieldBan } from "lucide-react";
 import UserEditHeader from "./user-edit-header";
 import EditUserPermissions from "./steps/edit-user-permissions";
 
@@ -110,7 +110,7 @@ w-[95%] ltr:py-2 rtl:py-[5px] bg-card-foreground/5 data-[state=active]:bg-tertia
             className={`rtl:text-2xl-rtl ltr:text-2xl-ltr${selectedTabStyle}`}
             value="permissions"
           >
-            <KeyRound className="size-[18px]" />
+            <ShieldBan className="size-[18px]" />
             {t("Update account permissions")}
           </TabsTrigger>
         </TabsList>

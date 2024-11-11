@@ -73,6 +73,20 @@ export default function APICombobox(props: IAPIComboboxProps) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(selectedItem);
 
+  const updateSelect = () => {
+    if (selectedItem != undefined) {
+      setItems((prevItems) =>
+        prevItems.map((item) =>
+          selectedItem.localeCompare(item.name) === 0
+            ? { ...item, selected: true }
+            : item
+        )
+      );
+    }
+  };
+  useEffect(() => {
+    updateSelect();
+  }, [selectedItem]);
   const initialize = async () => {
     try {
       if (!readonly && apiUrl != undefined) {
@@ -80,15 +94,7 @@ export default function APICombobox(props: IAPIComboboxProps) {
           params: params,
         });
         if (response.status == 200) {
-          if (selectedItem != undefined) {
-            const items = Array<ComboboxItem>();
-            response.data.forEach((element: ComboboxItem) => {
-              if (element.name === selectedItem)
-                element = { ...element, selected: true };
-              items.push(element);
-            });
-            setItems(items);
-          } else setItems(response.data);
+          setItems(response.data);
         }
       }
     } catch (error: any) {
@@ -107,7 +113,7 @@ export default function APICombobox(props: IAPIComboboxProps) {
   const error = errorMessage != undefined;
 
   return (
-    <div className={`self-start`}>
+    <div className={`self-start relative`}>
       <Popover
         open={open}
         onOpenChange={(selection: any) => {
@@ -174,21 +180,22 @@ export default function APICombobox(props: IAPIComboboxProps) {
                         const filteredItems = items.map(
                           (comboboxItem: ComboboxItem) => {
                             const matched =
-                              comboboxItem.name.toLowerCase() ===
-                              currentValue.toLowerCase();
+                              comboboxItem.name.trim().toLowerCase() ==
+                              currentValue.trim().toLowerCase();
+
                             if (mode === "single") {
                               return matched
                                 ? { ...comboboxItem, selected: true }
                                 : { ...comboboxItem, selected: false };
                             }
-                            return comboboxItem.name.toLowerCase() ===
-                              currentValue.toLowerCase() &&
-                              (comboboxItem.selected === undefined ||
-                                comboboxItem.selected === false)
+                            return comboboxItem.name.trim().toLowerCase() ==
+                              currentValue.trim().toLowerCase() &&
+                              (comboboxItem.selected == undefined ||
+                                comboboxItem.selected == false)
                               ? { ...comboboxItem, selected: true }
-                              : comboboxItem.name.toLowerCase() ===
+                              : comboboxItem.name.toLowerCase() ==
                                   currentValue.toLowerCase() &&
-                                comboboxItem.selected === true
+                                comboboxItem.selected == true
                               ? { ...comboboxItem, selected: false }
                               : comboboxItem;
                           }

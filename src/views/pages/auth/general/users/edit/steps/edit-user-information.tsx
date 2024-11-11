@@ -78,7 +78,7 @@ export default function EditUserInformation(props: EditUserInformationProps) {
           rules: ["required", "max:45", "min:3"],
         },
         {
-          name: "department",
+          name: "destination",
           rules: ["required"],
         },
         {
@@ -112,7 +112,7 @@ export default function EditUserInformation(props: EditUserInformationProps) {
     formData.append("username", tempUserData.username);
     formData.append("contact", tempUserData.contact);
     formData.append("email", tempUserData.email);
-    formData.append("department", tempUserData.department.id);
+    formData.append("destination", tempUserData.destination.id);
     formData.append("job", tempUserData.job.id);
     formData.append("role", tempUserData.role.id);
     formData.append("status", tempUserData.status ? "true" : "false");
@@ -223,15 +223,15 @@ export default function EditUserInformation(props: EditUserInformationProps) {
               placeholderText={t("Search item")}
               errorText={t("No item")}
               onSelect={(selection: any) =>
-                setTempUserData({ ...tempUserData, ["department"]: selection })
+                setTempUserData({ ...tempUserData, ["destination"]: selection })
               }
-              lable={t("department")}
+              lable={t("destination")}
               required={true}
               requiredHint={`* ${t("Required")}`}
-              selectedItem={tempUserData["department"]?.name}
-              placeHolder={t("Select a department")}
-              errorMessage={error.get("department")}
-              apiUrl={"departments"}
+              selectedItem={tempUserData["destination"]?.name}
+              placeHolder={t("Select a destination")}
+              errorMessage={error.get("destination")}
+              apiUrl={"destinations"}
               mode="single"
             />
             <APICombobox

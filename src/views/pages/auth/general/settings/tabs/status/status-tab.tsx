@@ -18,22 +18,22 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import { Search } from "lucide-react";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
-import JobDialog from "./job-dialog";
-import { Job } from "@/database/tables";
-export default function JobTab() {
+import { Status } from "@/database/tables";
+import StatusDialog from "./status-dialog";
+export default function StatusTab() {
   const { t } = useTranslation();
   const [state] = useGlobalState();
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<{
     visible: boolean;
-    job: any;
+    status: any;
   }>({
     visible: false,
-    job: undefined,
+    status: undefined,
   });
-  const [jobs, setJobs] = useState<{
-    unFilterList: Job[];
-    filterList: Job[];
+  const [statuses, setStatuses] = useState<{
+    unFilterList: Status[];
+    filterList: Status[];
   }>({
     unFilterList: [],
     filterList: [],
@@ -44,9 +44,9 @@ export default function JobTab() {
       setLoading(true);
 
       // 2. Send data
-      const response = await axiosClient.get(`jobs`);
-      const fetch = response.data as Job[];
-      setJobs({
+      const response = await axiosClient.get(`statuses`);
+      const fetch = response.data as Status[];
+      setStatuses({
         unFilterList: fetch,
         filterList: fetch,
       });
@@ -67,24 +67,26 @@ export default function JobTab() {
   const searchOnChange = (e: any) => {
     const { value } = e.target;
     // 1. Filter
-    const filtered = jobs.unFilterList.filter((item: Job) =>
+    const filtered = statuses.unFilterList.filter((item: Status) =>
       item.name.toLowerCase().includes(value.toLowerCase())
     );
-    setJobs({
-      ...jobs,
+    setStatuses({
+      ...statuses,
       filterList: filtered,
     });
   };
-  const add = (job: Job) => {
-    setJobs((prev) => ({
-      unFilterList: [job, ...prev.unFilterList],
-      filterList: [job, ...prev.filterList],
+  const add = (status: Status) => {
+    setStatuses((prev) => ({
+      unFilterList: [status, ...prev.unFilterList],
+      filterList: [status, ...prev.filterList],
     }));
   };
-  const update = (job: Job) => {
-    setJobs((prevState) => {
+  const update = (status: Status) => {
+    setStatuses((prevState) => {
       const updatedUnFiltered = prevState.unFilterList.map((item) =>
-        item.id === job.id ? { ...item, name: job.name } : item
+        item.id === status.id
+          ? { ...item, name: status.name, color: status.color }
+          : item
       );
 
       return {
@@ -94,17 +96,19 @@ export default function JobTab() {
       };
     });
   };
-  const remove = async (job: Job) => {
+  const remove = async (status: Status) => {
     try {
       // 1. Remove from backend
-      const response = await axiosClient.delete(`job/${job.id}`);
+      const response = await axiosClient.delete(`status/${status.id}`);
       if (response.status === 200) {
         // 2. Remove from frontend
-        setJobs((prevJobs) => ({
-          unFilterList: prevJobs.unFilterList.filter(
-            (item) => item.id !== job.id
+        setStatuses((prevStatueses) => ({
+          unFilterList: prevStatueses.unFilterList.filter(
+            (item) => item.id !== status.id
           ),
-          filterList: prevJobs.filterList.filter((item) => item.id !== job.id),
+          filterList: prevStatueses.filterList.filter(
+            (item) => item.id !== status.id
+          ),
         }));
         toast({
           toastType: "SUCCESS",
@@ -126,12 +130,12 @@ export default function JobTab() {
         showDialog={async () => {
           setSelected({
             visible: false,
-            job: undefined,
+            status: undefined,
           });
           return true;
         }}
       >
-        <JobDialog job={selected.job} onComplete={update} />
+        <StatusDialog status={selected.status} onComplete={update} />
       </NastranModel>
     ),
     [selected.visible]
@@ -144,12 +148,12 @@ export default function JobTab() {
           isDismissable={false}
           button={
             <PrimaryButton className="text-primary-foreground">
-              {t("add job")}
+              {t("add status")}
             </PrimaryButton>
           }
           showDialog={async () => true}
         >
-          <JobDialog onComplete={add} />
+          <StatusDialog onComplete={add} />
         </NastranModel>
         <CustomInput
           size_="lg"
@@ -167,6 +171,7 @@ export default function JobTab() {
           <TableRow className="hover:bg-transparent">
             <TableHead className="text-start">{t("id")}</TableHead>
             <TableHead className="text-start">{t("name")}</TableHead>
+            <TableHead className="text-start">{t("color")}</TableHead>
             <TableHead className="text-start">{t("date")}</TableHead>
           </TableRow>
         </TableHeader>
@@ -183,8 +188,14 @@ export default function JobTab() {
                 <TableCell>
                   <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
                 </TableCell>
+                <TableCell>
+                  <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+                </TableCell>
               </TableRow>
               <TableRow>
+                <TableCell>
+                  <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+                </TableCell>
                 <TableCell>
                   <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
                 </TableCell>
@@ -197,26 +208,32 @@ export default function JobTab() {
               </TableRow>
             </>
           ) : (
-            jobs.filterList.map((department: Job) => (
+            statuses.filterList.map((status: Status) => (
               <TableRowIcon
                 read={false}
                 remove={true}
                 edit={true}
-                onEdit={async (department: Job) => {
+                onEdit={async (status: Status) => {
                   setSelected({
                     visible: true,
-                    job: department,
+                    status: status,
                   });
                 }}
-                key={department.name}
-                item={department}
+                key={status.name}
+                item={status}
                 onRemove={remove}
                 onRead={async () => {}}
               >
-                <TableCell className="font-medium">{department.id}</TableCell>
-                <TableCell>{department.name}</TableCell>
+                <TableCell className="font-medium">{status.id}</TableCell>
+                <TableCell>{status.name}</TableCell>
                 <TableCell>
-                  {toLocaleDate(new Date(department.createdAt), state)}
+                  <div
+                    className="h-5 w-7 rounded !bg-center !bg-cover transition-all"
+                    style={{ background: status.color }}
+                  />
+                </TableCell>
+                <TableCell>
+                  {toLocaleDate(new Date(status.createdAt), state)}
                 </TableCell>
               </TableRowIcon>
             ))

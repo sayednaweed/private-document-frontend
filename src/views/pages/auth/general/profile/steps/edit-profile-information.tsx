@@ -38,7 +38,7 @@ interface ProfileInformation {
   role: Role;
   contact: string;
   job: string;
-  department: string;
+  destination: string;
   createdAt: string;
   imagePreviewUrl: any;
 }
@@ -55,7 +55,7 @@ export default function EditProfileInformation() {
     name: user.fullName,
     email: user.email,
     contact: user.contact,
-    department: user.department,
+    destination: user.destination,
     job: user.job,
     role: user.role,
     createdAt: user.createdAt,
@@ -194,7 +194,7 @@ export default function EditProfileInformation() {
               <ChevronsUpDown className="size-[16px] absolute top-1/2 transform -translate-y-1/2 ltr:right-4 rtl:left-4" />
             }
             title={t("department")}
-            selected={user.department}
+            selected={user.destination}
           />
           <FakeCombobox
             icon={

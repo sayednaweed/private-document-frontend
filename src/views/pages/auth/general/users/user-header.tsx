@@ -49,7 +49,7 @@ export default function UserHeader() {
     <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 justify-items-center gap-y-2 mt-4">
       <HeaderCard
         loading={loading}
-        title={t("Total Users")}
+        title={t("total users")}
         total={recordCount.userCount}
         description1={t("total")}
         description2={t("user")}
@@ -59,7 +59,7 @@ export default function UserHeader() {
       />
       <HeaderCard
         loading={loading}
-        title={t("Total Registered Today")}
+        title={t("total registered today")}
         total={recordCount.todayCount}
         description1={t("total")}
         description2={t("user today")}
@@ -69,7 +69,7 @@ export default function UserHeader() {
       />
       <HeaderCard
         loading={loading}
-        title={t("Total Active")}
+        title={t("total active")}
         total={recordCount.activeUserCount}
         description1={t("total")}
         description2={t("user")}
@@ -79,7 +79,7 @@ export default function UserHeader() {
       />
       <HeaderCard
         loading={loading}
-        title={t("Total Inactive")}
+        title={t("total inactive")}
         total={recordCount.inActiveUserCount}
         description1={t("total")}
         description2={t("user")}

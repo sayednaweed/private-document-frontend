@@ -1,19 +1,11 @@
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
 import SecondaryButton from "@/components/custom-ui/button/SecondaryButton";
-import AnimHomeIcon from "@/components/custom-ui/icons/AnimHomeIcon";
 import CustomInput from "@/components/custom-ui/input/CustomInput";
 import NastranModel from "@/components/custom-ui/model/NastranModel";
 import CustomSelect from "@/components/custom-ui/select/CustomSelect";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import Pagination from "@/components/custom-ui/table/Pagination";
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import {
   Table,
   TableBody,
@@ -45,7 +37,7 @@ import { ListFilter, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DateObject } from "react-multi-date-picker";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import AddDocument from "./add/add-document";
 import DocumentFilterDialog from "./document-filter-dialog";
 
@@ -103,7 +95,7 @@ export default function DocumentTable() {
         };
       }
       // 2. Send data
-      const response = await axiosClient.get(`users/${page}`, {
+      const response = await axiosClient.get(`documents/${page}`, {
         params: {
           per_page: count,
           filters: {
@@ -246,6 +238,9 @@ export default function DocumentTable() {
       <TableCell>
         <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
       </TableCell>
+      <TableCell>
+        <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+      </TableCell>
     </TableRow>
   );
   const editOnClick = async (user: DocumentModel) => {
@@ -273,7 +268,7 @@ export default function DocumentTable() {
             isDismissable={false}
             button={
               <PrimaryButton className="rtl:text-lg-rtl font-semibold ltr:text-md-ltr">
-                {t("Add Document")}
+                {t("new document")}
               </PrimaryButton>
             }
             showDialog={async () => true}
@@ -410,10 +405,16 @@ export default function DocumentTable() {
             </TableHead>
             <TableHead className="text-start px-1">{t("type")}</TableHead>
             <TableHead className="text-start px-1">{t("urgency")}</TableHead>
-            <TableHead className="text-start px-1">{t("source")}</TableHead>
             <TableHead className="text-start px-1">
-              {t("remaining duration")}
+              {t("document no")}
             </TableHead>
+            <TableHead className="text-start px-1">
+              {t("document date")}
+            </TableHead>
+            <TableHead className="text-start px-1">
+              {t("remaining time")}
+            </TableHead>
+            <TableHead className="text-start px-1">{t("source")}</TableHead>
             <TableHead className="text-start px-1 w-[60px]">
               {t("status")}
             </TableHead>
@@ -438,13 +439,17 @@ export default function DocumentTable() {
                 onRemove={deleteOnClick}
                 onRead={watchOnClick}
               >
-                <TableCell className="rtl:text-md-rtl px-1 py-0">
-                  {item.muqamStatement}
-                </TableCell>
+                <TableCell className="px-1 py-0">{item.id}</TableCell>
+                <TableCell className="px-1 py-0">{item.type.name}</TableCell>
+                <TableCell className="px-1 py-0">{item.urgency.name}</TableCell>
                 <TableCell className="px-1 py-0">
-                  <h1 className="truncate">{item.qaidSadiraDate}</h1>
-                  <h1 className="truncate">{item.createdAt}</h1>
+                  {item.documentNumber}
                 </TableCell>
+                <TableCell className="px-1 py-0">{item.documentDate}</TableCell>
+                <TableCell className="px-1 py-0">
+                  {item.submittedDuration}
+                </TableCell>
+
                 <TableCell
                   dir="ltr"
                   className="rtl:text-md-rtl truncate rtl:text-end px-0 py-0"

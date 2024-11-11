@@ -223,6 +223,91 @@ export const getAdminRouter = (user: User) => {
     },
   ]);
 };
+export const getUserRouter = (user: User) => {
+  const permissions: Map<string, UserPermission> = user.permissions;
+
+  return createBrowserRouter([
+    unauthorized,
+    {
+      path: "/",
+      element: (
+        <I18nextProvider i18n={i18n}>
+          <SiteLayout />
+        </I18nextProvider>
+      ),
+      children: [siteRoutes],
+    },
+    {
+      path: "/",
+      element: (
+        <I18nextProvider i18n={i18n}>
+          <AdminLayout />
+        </I18nextProvider>
+      ),
+      children: [
+        {
+          path: "/dashboard",
+          element: (
+            <ProtectedRoute
+              element={<AdminDashboardPage />}
+              routeName="dashboard"
+              permissions={permissions}
+            />
+          ),
+        },
+        {
+          path: "/users",
+          element: (
+            <ProtectedRoute
+              element={<UserPage />}
+              routeName="users"
+              permissions={permissions}
+            />
+          ),
+        },
+        {
+          path: "/users/:id",
+          element: (
+            <ProtectedRoute
+              element={<SuperUserEditPage />}
+              routeName="users"
+              permissions={permissions}
+            />
+          ),
+        },
+        {
+          path: "/reports",
+          element: (
+            <ProtectedRoute
+              element={<SuperReportsPage />}
+              routeName="reports"
+              permissions={permissions}
+            />
+          ),
+        },
+        {
+          path: "/documents",
+          element: (
+            <ProtectedRoute
+              element={<DocumentsPage />}
+              routeName="documents"
+              permissions={permissions}
+            />
+          ),
+        },
+        {
+          path: "/profile",
+          element: <ProfilePage />,
+        },
+      ],
+    },
+    {
+      path: "*",
+      element: <ErrorPage />,
+    },
+  ]);
+};
+
 export const getGuestRouter = () => {
   return createBrowserRouter([
     {

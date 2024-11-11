@@ -51,7 +51,7 @@ export function UserTable() {
   const sort = searchParams.get("sort");
   const order = searchParams.get("order");
   const [filters, setFilters] = useState<UserFilter>({
-    sort: sort == null ? "created_at" : (sort as UserSort),
+    sort: sort == null ? "date" : (sort as UserSort),
     order: order == null ? "Ascending" : (order as Order),
     search: {
       column: search == null ? "username" : (search as UserSearch),
@@ -442,7 +442,7 @@ export function UserTable() {
                   {item.username}
                 </TableCell>
                 <TableCell className="px-1 py-0">
-                  <h1 className="truncate">{item?.department}</h1>
+                  <h1 className="truncate">{item?.destination}</h1>
                   <h1 className="truncate">{item?.job}</h1>
                 </TableCell>
                 <TableCell

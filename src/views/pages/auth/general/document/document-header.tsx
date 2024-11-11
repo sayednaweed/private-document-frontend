@@ -43,7 +43,7 @@ export default function DocumentHeader() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 justify-items-center gap-y-2 mt-4">
       <HeaderCard
-        title={t("Document In Progress")}
+        title={t("documents in progress")}
         total={recordCount.inProgress}
         description1={t("total")}
         description2={t("documents")}
@@ -53,7 +53,7 @@ export default function DocumentHeader() {
         loading={loading}
       />
       <HeaderCard
-        title={t("Document Completed")}
+        title={t("documents completed")}
         total={recordCount.completed}
         description1={t("total")}
         description2={t("documents")}
@@ -63,7 +63,7 @@ export default function DocumentHeader() {
         loading={loading}
       />
       <HeaderCard
-        title={t("Document Keep")}
+        title={t("documents keep")}
         total={recordCount.keep}
         description1={t("total")}
         description2={t("documents")}
@@ -73,7 +73,7 @@ export default function DocumentHeader() {
         loading={loading}
       />
       <HeaderCard
-        title={t("All Documents")}
+        title={t("all documents")}
         total={recordCount.total}
         description1={t("total")}
         description2={t("documents")}

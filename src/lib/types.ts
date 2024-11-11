@@ -25,7 +25,7 @@ export interface UserInformation {
     selected: boolean;
   };
   contact: string;
-  department: {
+  destination: {
     id: string;
     name: string;
     selected: boolean;
@@ -52,12 +52,7 @@ export interface UserData {
   data: any;
 }
 export type Order = "Ascending" | "Descending";
-export type UserSort =
-  | "created_at"
-  | "username"
-  | "department"
-  | "status"
-  | "job";
+export type UserSort = "date" | "username" | "destination" | "status" | "job";
 export type UserSearch = "username" | "contact" | "email";
 export interface UserFilter {
   sort: UserSort;
@@ -78,7 +73,7 @@ export interface DocumentPaginationData {
 export type DocumentSort =
   | "created_at"
   | "username"
-  | "department"
+  | "destination"
   | "status"
   | "job";
 export type DocumentSearch = "username" | "contact" | "email";

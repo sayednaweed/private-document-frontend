@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/table";
 import { toast } from "@/components/ui/use-toast";
 import { useGlobalState } from "@/context/GlobalStateContext";
-import { Department } from "@/database/tables";
 import axiosClient from "@/lib/axois-client";
 import { toLocaleDate } from "@/lib/utils";
 import { useEffect, useMemo, useState } from "react";
@@ -19,21 +18,22 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import { Search } from "lucide-react";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
-import DepartmentDialog from "./department-dialog";
-export default function DepartmentTab() {
+import { Urgency } from "@/database/tables";
+import UrgencyDialog from "./urgency-dialog";
+export default function UrgencyTab() {
   const { t } = useTranslation();
   const [state] = useGlobalState();
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<{
     visible: boolean;
-    department: any;
+    urgency: any;
   }>({
     visible: false,
-    department: undefined,
+    urgency: undefined,
   });
-  const [departments, setDepartments] = useState<{
-    unFilterList: Department[];
-    filterList: Department[];
+  const [urgencies, setUrgencies] = useState<{
+    unFilterList: Urgency[];
+    filterList: Urgency[];
   }>({
     unFilterList: [],
     filterList: [],
@@ -44,9 +44,9 @@ export default function DepartmentTab() {
       setLoading(true);
 
       // 2. Send data
-      const response = await axiosClient.get(`departments`);
-      const fetch = response.data as Department[];
-      setDepartments({
+      const response = await axiosClient.get(`urgencies`);
+      const fetch = response.data as Urgency[];
+      setUrgencies({
         unFilterList: fetch,
         filterList: fetch,
       });
@@ -67,24 +67,24 @@ export default function DepartmentTab() {
   const searchOnChange = (e: any) => {
     const { value } = e.target;
     // 1. Filter
-    const filtered = departments.unFilterList.filter((item: Department) =>
+    const filtered = urgencies.unFilterList.filter((item: Urgency) =>
       item.name.toLowerCase().includes(value.toLowerCase())
     );
-    setDepartments({
-      ...departments,
+    setUrgencies({
+      ...urgencies,
       filterList: filtered,
     });
   };
-  const add = (department: Department) => {
-    setDepartments((prev) => ({
-      unFilterList: [department, ...prev.unFilterList],
-      filterList: [department, ...prev.filterList],
+  const add = (urgency: Urgency) => {
+    setUrgencies((prev) => ({
+      unFilterList: [urgency, ...prev.unFilterList],
+      filterList: [urgency, ...prev.filterList],
     }));
   };
-  const update = (department: Department) => {
-    setDepartments((prevState) => {
-      const updatedUnFiltered = prevState.unFilterList.map((dep) =>
-        dep.id === department.id ? { ...dep, name: department.name } : dep
+  const update = (urgency: Urgency) => {
+    setUrgencies((prevState) => {
+      const updatedUnFiltered = prevState.unFilterList.map((item) =>
+        item.id === urgency.id ? { ...item, name: urgency.name } : item
       );
 
       return {
@@ -94,18 +94,18 @@ export default function DepartmentTab() {
       };
     });
   };
-  const remove = async (department: Department) => {
+  const remove = async (urgency: Urgency) => {
     try {
       // 1. Remove from backend
-      const response = await axiosClient.delete(`department/${department.id}`);
+      const response = await axiosClient.delete(`urgency/${urgency.id}`);
       if (response.status === 200) {
         // 2. Remove from frontend
-        setDepartments((prevDepartments) => ({
-          unFilterList: prevDepartments.unFilterList.filter(
-            (dept) => dept.id !== department.id
+        setUrgencies((prevUrgencys) => ({
+          unFilterList: prevUrgencys.unFilterList.filter(
+            (item) => item.id !== urgency.id
           ),
-          filterList: prevDepartments.filterList.filter(
-            (dept) => dept.id !== department.id
+          filterList: prevUrgencys.filterList.filter(
+            (item) => item.id !== urgency.id
           ),
         }));
         toast({
@@ -128,15 +128,12 @@ export default function DepartmentTab() {
         showDialog={async () => {
           setSelected({
             visible: false,
-            department: undefined,
+            urgency: undefined,
           });
           return true;
         }}
       >
-        <DepartmentDialog
-          department={selected.department}
-          onComplete={update}
-        />
+        <UrgencyDialog urgency={selected.urgency} onComplete={update} />
       </NastranModel>
     ),
     [selected.visible]
@@ -149,12 +146,12 @@ export default function DepartmentTab() {
           isDismissable={false}
           button={
             <PrimaryButton className="text-primary-foreground">
-              {t("add department")}
+              {t("add urgency")}
             </PrimaryButton>
           }
           showDialog={async () => true}
         >
-          <DepartmentDialog onComplete={add} />
+          <UrgencyDialog onComplete={add} />
         </NastranModel>
         <CustomInput
           size_="lg"
@@ -172,7 +169,7 @@ export default function DepartmentTab() {
           <TableRow className="hover:bg-transparent">
             <TableHead className="text-start">{t("id")}</TableHead>
             <TableHead className="text-start">{t("name")}</TableHead>
-            <TableHead className="text-start">{t("created date")}</TableHead>
+            <TableHead className="text-start">{t("date")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="rtl:text-xl-rtl ltr:text-lg-ltr">
@@ -202,26 +199,26 @@ export default function DepartmentTab() {
               </TableRow>
             </>
           ) : (
-            departments.filterList.map((department: Department) => (
+            urgencies.filterList.map((urgency: Urgency) => (
               <TableRowIcon
                 read={false}
                 remove={true}
                 edit={true}
-                onEdit={async (department: Department) => {
+                onEdit={async (urgency: Urgency) => {
                   setSelected({
                     visible: true,
-                    department: department,
+                    urgency: urgency,
                   });
                 }}
-                key={department.name}
-                item={department}
+                key={urgency.name}
+                item={urgency}
                 onRemove={remove}
                 onRead={async () => {}}
               >
-                <TableCell className="font-medium">{department.id}</TableCell>
-                <TableCell>{department.name}</TableCell>
+                <TableCell className="font-medium">{urgency.id}</TableCell>
+                <TableCell>{urgency.name}</TableCell>
                 <TableCell>
-                  {toLocaleDate(new Date(department.createdAt), state)}
+                  {toLocaleDate(new Date(urgency.createdAt), state)}
                 </TableCell>
               </TableRowIcon>
             ))

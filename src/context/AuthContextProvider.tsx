@@ -29,7 +29,7 @@ const initUser: User = {
   role: { role: 2, name: "admin" },
   job: "",
   contact: "",
-  department: "",
+  destination: "",
   permissions: new Map(),
   createdAt: "",
 };

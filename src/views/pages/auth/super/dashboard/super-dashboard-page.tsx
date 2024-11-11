@@ -41,7 +41,7 @@ export default function SuperDashboardPage() {
       <div className="px-1 sm:px-2 md:px-6 pt-6 gap-2 sm:gap-4 grid grid-cols-2 sm:grid-cols-5">
         <Suspense fallback={cardLoader}>
           <LazyCardLineChart
-            title="22"
+            title="0"
             subtitle="User Activity"
             curve="straight"
             color="#FF5733"
@@ -97,7 +97,7 @@ export default function SuperDashboardPage() {
           <Suspense fallback={cardLoader}>
             <LazyDashedLineChart
               subtitle={t("Category Names as DataLabels inside bars")}
-              title={t("Page statistic")}
+              title={t("Total Register Documents")}
               theme={theme}
             />
           </Suspense>

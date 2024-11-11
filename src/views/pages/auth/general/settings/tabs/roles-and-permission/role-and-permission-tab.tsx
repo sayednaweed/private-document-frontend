@@ -18,22 +18,22 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import { Search } from "lucide-react";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
-import JobDialog from "./job-dialog";
-import { Job } from "@/database/tables";
-export default function JobTab() {
+import { Destination } from "@/database/tables";
+import RoleAndPermissionDialog from "./role-and-permission-dialog";
+export default function RoleAndPermissionTab() {
   const { t } = useTranslation();
   const [state] = useGlobalState();
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<{
     visible: boolean;
-    job: any;
+    destination: any;
   }>({
     visible: false,
-    job: undefined,
+    destination: undefined,
   });
-  const [jobs, setJobs] = useState<{
-    unFilterList: Job[];
-    filterList: Job[];
+  const [destinations, setDestinations] = useState<{
+    unFilterList: Destination[];
+    filterList: Destination[];
   }>({
     unFilterList: [],
     filterList: [],
@@ -44,9 +44,9 @@ export default function JobTab() {
       setLoading(true);
 
       // 2. Send data
-      const response = await axiosClient.get(`jobs`);
-      const fetch = response.data as Job[];
-      setJobs({
+      const response = await axiosClient.get(`destinations`);
+      const fetch = response.data as Destination[];
+      setDestinations({
         unFilterList: fetch,
         filterList: fetch,
       });
@@ -67,24 +67,24 @@ export default function JobTab() {
   const searchOnChange = (e: any) => {
     const { value } = e.target;
     // 1. Filter
-    const filtered = jobs.unFilterList.filter((item: Job) =>
+    const filtered = destinations.unFilterList.filter((item: Destination) =>
       item.name.toLowerCase().includes(value.toLowerCase())
     );
-    setJobs({
-      ...jobs,
+    setDestinations({
+      ...destinations,
       filterList: filtered,
     });
   };
-  const add = (job: Job) => {
-    setJobs((prev) => ({
-      unFilterList: [job, ...prev.unFilterList],
-      filterList: [job, ...prev.filterList],
+  const add = (destination: Destination) => {
+    setDestinations((prev) => ({
+      unFilterList: [destination, ...prev.unFilterList],
+      filterList: [destination, ...prev.filterList],
     }));
   };
-  const update = (job: Job) => {
-    setJobs((prevState) => {
+  const update = (destination: Destination) => {
+    setDestinations((prevState) => {
       const updatedUnFiltered = prevState.unFilterList.map((item) =>
-        item.id === job.id ? { ...item, name: job.name } : item
+        item.id === destination.id ? destination : item
       );
 
       return {
@@ -94,17 +94,21 @@ export default function JobTab() {
       };
     });
   };
-  const remove = async (job: Job) => {
+  const remove = async (destination: Destination) => {
     try {
       // 1. Remove from backend
-      const response = await axiosClient.delete(`job/${job.id}`);
+      const response = await axiosClient.delete(
+        `destination/${destination.id}`
+      );
       if (response.status === 200) {
         // 2. Remove from frontend
-        setJobs((prevJobs) => ({
-          unFilterList: prevJobs.unFilterList.filter(
-            (item) => item.id !== job.id
+        setDestinations((prevDestinations) => ({
+          unFilterList: prevDestinations.unFilterList.filter(
+            (item) => item.id !== destination.id
           ),
-          filterList: prevJobs.filterList.filter((item) => item.id !== job.id),
+          filterList: prevDestinations.filterList.filter(
+            (item) => item.id !== destination.id
+          ),
         }));
         toast({
           toastType: "SUCCESS",
@@ -126,12 +130,15 @@ export default function JobTab() {
         showDialog={async () => {
           setSelected({
             visible: false,
-            job: undefined,
+            destination: undefined,
           });
           return true;
         }}
       >
-        <JobDialog job={selected.job} onComplete={update} />
+        <RoleAndPermissionDialog
+          destination={selected.destination}
+          onComplete={update}
+        />
       </NastranModel>
     ),
     [selected.visible]
@@ -144,12 +151,12 @@ export default function JobTab() {
           isDismissable={false}
           button={
             <PrimaryButton className="text-primary-foreground">
-              {t("add job")}
+              {t("add reference")}
             </PrimaryButton>
           }
           showDialog={async () => true}
         >
-          <JobDialog onComplete={add} />
+          <RoleAndPermissionDialog onComplete={add} />
         </NastranModel>
         <CustomInput
           size_="lg"
@@ -167,6 +174,8 @@ export default function JobTab() {
           <TableRow className="hover:bg-transparent">
             <TableHead className="text-start">{t("id")}</TableHead>
             <TableHead className="text-start">{t("name")}</TableHead>
+            <TableHead className="text-start">{t("color")}</TableHead>
+            <TableHead className="text-start">{t("type")}</TableHead>
             <TableHead className="text-start">{t("date")}</TableHead>
           </TableRow>
         </TableHeader>
@@ -183,8 +192,20 @@ export default function JobTab() {
                 <TableCell>
                   <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
                 </TableCell>
+                <TableCell>
+                  <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+                </TableCell>
+                <TableCell>
+                  <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+                </TableCell>
               </TableRow>
               <TableRow>
+                <TableCell>
+                  <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+                </TableCell>
+                <TableCell>
+                  <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
+                </TableCell>
                 <TableCell>
                   <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
                 </TableCell>
@@ -197,26 +218,33 @@ export default function JobTab() {
               </TableRow>
             </>
           ) : (
-            jobs.filterList.map((department: Job) => (
+            destinations.filterList.map((destination: Destination) => (
               <TableRowIcon
                 read={false}
                 remove={true}
                 edit={true}
-                onEdit={async (department: Job) => {
+                onEdit={async (destination: Destination) => {
                   setSelected({
                     visible: true,
-                    job: department,
+                    destination: destination,
                   });
                 }}
-                key={department.name}
-                item={department}
+                key={destination.name}
+                item={destination}
                 onRemove={remove}
                 onRead={async () => {}}
               >
-                <TableCell className="font-medium">{department.id}</TableCell>
-                <TableCell>{department.name}</TableCell>
+                <TableCell className="font-medium">{destination.id}</TableCell>
+                <TableCell>{destination.name}</TableCell>
                 <TableCell>
-                  {toLocaleDate(new Date(department.createdAt), state)}
+                  <div
+                    className="h-5 w-8 rounded !bg-center !bg-cover transition-all"
+                    style={{ background: destination.color }}
+                  />
+                </TableCell>
+                <TableCell>{destination?.type?.name}</TableCell>
+                <TableCell>
+                  {toLocaleDate(new Date(destination.createdAt), state)}
                 </TableCell>
               </TableRowIcon>
             ))

@@ -62,9 +62,12 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
             </span>
           )}
           {lable && (
-            <span className="rtl:text-lg-rtl ltr:text-xl-ltr rtl:right-[4px] ltr:left-[4px] ltr:-top-[22px] rtl:-top-[24px] absolute font-semibold">
+            <label
+              htmlFor={lable}
+              className="rtl:text-lg-rtl ltr:text-xl-ltr rtl:right-[4px] ltr:left-[4px] ltr:-top-[22px] rtl:-top-[24px] absolute font-semibold"
+            >
               {lable}
-            </span>
+            </label>
           )}
 
           <Input

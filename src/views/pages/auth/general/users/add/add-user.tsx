@@ -11,7 +11,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Dispatch, SetStateAction } from "react";
 import { setServerError } from "@/validation/validation";
 import { User } from "@/database/tables";
-import { User as UserIcon } from "lucide-react";
+import { Check, Database, ShieldBan, User as UserIcon } from "lucide-react";
 
 export interface AddUserProps {
   onComplete: (user: User) => void;
@@ -25,19 +25,33 @@ export default function AddUser(props: AddUserProps) {
     currentStep: number,
     setError: Dispatch<SetStateAction<Map<string, string>>>
   ) => {
+    console.log(currentStep == 1);
     if (currentStep == 1) {
       try {
         let formData = new FormData();
         formData.append("email", userData?.email);
-        const response = await axiosClient.post("user/email-exist", formData);
+        formData.append("contact", userData?.phone);
+        const response = await axiosClient.post(
+          "user/validate/email/contact",
+          formData
+        );
         if (response.status == 200) {
-          const emailExist = response.data.message === true;
-          if (emailExist) {
+          const emailExist = response.data.email_found === true;
+          const contactExist = response.data.contact_found === true;
+          if (emailExist || contactExist) {
             const errMap = new Map<string, string>();
-            errMap.set(
-              "email",
-              `${t("email")} ${t("is registered before in system")}`
-            );
+            if (emailExist) {
+              errMap.set(
+                "email",
+                `${t("email")} ${t("is registered before in system")}`
+              );
+            }
+            if (contactExist) {
+              errMap.set(
+                "phone",
+                `${t("contact")} ${t("is registered before in system")}`
+              );
+            }
             setError(errMap);
             return false;
           }
@@ -64,7 +78,7 @@ export default function AddUser(props: AddUserProps) {
     formData.append("email", userData.email);
     formData.append("password", userData.password);
     if (userData.phone) formData.append("contact", userData.phone);
-    formData.append("department", userData.department.id);
+    formData.append("destination", userData.destination.id);
     formData.append("job", userData.job.id);
     formData.append("role", userData.role.id);
     formData.append("status", userData.status);
@@ -97,13 +111,16 @@ export default function AddUser(props: AddUserProps) {
   };
 
   return (
-    <>
+    <div className="pt-4">
       {/* Header */}
       <div className="flex px-1 py-1 fixed w-full justify-end">
         <CloseButton dismissModel={closeModel} />
       </div>
       {/* Body */}
       <Stepper
+        isCardActive={true}
+        size="wrap-height"
+        className="bg-transparent dark:!bg-transparent"
         progressText={{
           complete: t("Complete"),
           inProgress: t("In Progress"),
@@ -114,8 +131,6 @@ export default function AddUser(props: AddUserProps) {
         backText={t("Back")}
         nextText={t("Next")}
         confirmText={t("Confirm")}
-        size="lg"
-        className=" dark:bg-card shadow-modelShadow"
         steps={[
           {
             description: t("Personal details"),
@@ -123,15 +138,15 @@ export default function AddUser(props: AddUserProps) {
           },
           {
             description: t("Account information"),
-            icon: <UserIcon className="size-[16px]" />,
+            icon: <Database className="size-[16px]" />,
           },
           {
             description: t("Permissions"),
-            icon: <UserIcon className="size-[16px]" />,
+            icon: <ShieldBan className="size-[16px]" />,
           },
           {
             description: t("Complete"),
-            icon: <UserIcon className="size-[16px]" />,
+            icon: <Check className="size-[16px]" />,
           },
         ]}
         components={[
@@ -141,7 +156,7 @@ export default function AddUser(props: AddUserProps) {
               { name: "name", rules: ["required", "max:45", "min:3"] },
               { name: "username", rules: ["required", "max:45", "min:3"] },
               { name: "email", rules: ["required"] },
-              { name: "department", rules: ["required"] },
+              { name: "destination", rules: ["required"] },
               { name: "job", rules: ["required"] },
             ],
           },
@@ -173,6 +188,6 @@ export default function AddUser(props: AddUserProps) {
         beforeStepSuccess={beforeStepSuccess}
         stepsCompleted={stepsCompleted}
       />
-    </>
+    </div>
   );
 }

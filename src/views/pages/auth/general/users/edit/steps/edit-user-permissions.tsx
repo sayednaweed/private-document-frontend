@@ -133,8 +133,8 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
           <NastranSpinner />
         ) : (
           <div className="relative overflow-x-auto max-h-[500px]">
-            <table className="w-full text-sm text-left rtl:text-right">
-              <thead className="text-xs text-primary/80 uppercase bg-secondary">
+            <table className="w-full text-left rtl:text-right">
+              <thead className="rtl:text-3xl-rtl ltr:text-xl-ltr text-primary/80 uppercase bg-secondary">
                 <tr>
                   <th scope="col" className="p-4">
                     <CustomCheckbox
@@ -162,7 +162,7 @@ export default function EditUserPermissions(props: EditUserPermissionsProps) {
                   </th>
                 </tr>
               </thead>
-              <tbody className=" relative">
+              <tbody className="relative rtl:text-3xl-rtl ltr:text-lg-ltr">
                 {userData?.permission ? (
                   Array.from(userData?.permission).map(
                     ([key, item], index: number) => {

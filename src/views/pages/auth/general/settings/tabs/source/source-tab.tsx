@@ -18,22 +18,22 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import { Search } from "lucide-react";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
-import JobDialog from "./job-dialog";
-import { Job } from "@/database/tables";
-export default function JobTab() {
+import { Source } from "@/database/tables";
+import SourceDialog from "./source-dialog";
+export default function SourceTab() {
   const { t } = useTranslation();
   const [state] = useGlobalState();
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<{
     visible: boolean;
-    job: any;
+    source: any;
   }>({
     visible: false,
-    job: undefined,
+    source: undefined,
   });
-  const [jobs, setJobs] = useState<{
-    unFilterList: Job[];
-    filterList: Job[];
+  const [sources, setSources] = useState<{
+    unFilterList: Source[];
+    filterList: Source[];
   }>({
     unFilterList: [],
     filterList: [],
@@ -44,9 +44,9 @@ export default function JobTab() {
       setLoading(true);
 
       // 2. Send data
-      const response = await axiosClient.get(`jobs`);
-      const fetch = response.data as Job[];
-      setJobs({
+      const response = await axiosClient.get(`sources`);
+      const fetch = response.data as Source[];
+      setSources({
         unFilterList: fetch,
         filterList: fetch,
       });
@@ -67,24 +67,24 @@ export default function JobTab() {
   const searchOnChange = (e: any) => {
     const { value } = e.target;
     // 1. Filter
-    const filtered = jobs.unFilterList.filter((item: Job) =>
+    const filtered = sources.unFilterList.filter((item: Source) =>
       item.name.toLowerCase().includes(value.toLowerCase())
     );
-    setJobs({
-      ...jobs,
+    setSources({
+      ...sources,
       filterList: filtered,
     });
   };
-  const add = (job: Job) => {
-    setJobs((prev) => ({
-      unFilterList: [job, ...prev.unFilterList],
-      filterList: [job, ...prev.filterList],
+  const add = (source: Source) => {
+    setSources((prev) => ({
+      unFilterList: [source, ...prev.unFilterList],
+      filterList: [source, ...prev.filterList],
     }));
   };
-  const update = (job: Job) => {
-    setJobs((prevState) => {
+  const update = (source: Source) => {
+    setSources((prevState) => {
       const updatedUnFiltered = prevState.unFilterList.map((item) =>
-        item.id === job.id ? { ...item, name: job.name } : item
+        item.id === source.id ? { ...item, name: source.name } : item
       );
 
       return {
@@ -94,17 +94,19 @@ export default function JobTab() {
       };
     });
   };
-  const remove = async (job: Job) => {
+  const remove = async (source: Source) => {
     try {
       // 1. Remove from backend
-      const response = await axiosClient.delete(`job/${job.id}`);
+      const response = await axiosClient.delete(`source/${source.id}`);
       if (response.status === 200) {
         // 2. Remove from frontend
-        setJobs((prevJobs) => ({
-          unFilterList: prevJobs.unFilterList.filter(
-            (item) => item.id !== job.id
+        setSources((prevSources) => ({
+          unFilterList: prevSources.unFilterList.filter(
+            (item) => item.id !== source.id
           ),
-          filterList: prevJobs.filterList.filter((item) => item.id !== job.id),
+          filterList: prevSources.filterList.filter(
+            (item) => item.id !== source.id
+          ),
         }));
         toast({
           toastType: "SUCCESS",
@@ -126,12 +128,12 @@ export default function JobTab() {
         showDialog={async () => {
           setSelected({
             visible: false,
-            job: undefined,
+            source: undefined,
           });
           return true;
         }}
       >
-        <JobDialog job={selected.job} onComplete={update} />
+        <SourceDialog source={selected.source} onComplete={update} />
       </NastranModel>
     ),
     [selected.visible]
@@ -144,12 +146,12 @@ export default function JobTab() {
           isDismissable={false}
           button={
             <PrimaryButton className="text-primary-foreground">
-              {t("add job")}
+              {t("add source")}
             </PrimaryButton>
           }
           showDialog={async () => true}
         >
-          <JobDialog onComplete={add} />
+          <SourceDialog onComplete={add} />
         </NastranModel>
         <CustomInput
           size_="lg"
@@ -197,26 +199,26 @@ export default function JobTab() {
               </TableRow>
             </>
           ) : (
-            jobs.filterList.map((department: Job) => (
+            sources.filterList.map((source: Source) => (
               <TableRowIcon
                 read={false}
                 remove={true}
                 edit={true}
-                onEdit={async (department: Job) => {
+                onEdit={async (source: Source) => {
                   setSelected({
                     visible: true,
-                    job: department,
+                    source: source,
                   });
                 }}
-                key={department.name}
-                item={department}
+                key={source.name}
+                item={source}
                 onRemove={remove}
                 onRead={async () => {}}
               >
-                <TableCell className="font-medium">{department.id}</TableCell>
-                <TableCell>{department.name}</TableCell>
+                <TableCell className="font-medium">{source.id}</TableCell>
+                <TableCell>{source.name}</TableCell>
                 <TableCell>
-                  {toLocaleDate(new Date(department.createdAt), state)}
+                  {toLocaleDate(new Date(source.createdAt), state)}
                 </TableCell>
               </TableRowIcon>
             ))

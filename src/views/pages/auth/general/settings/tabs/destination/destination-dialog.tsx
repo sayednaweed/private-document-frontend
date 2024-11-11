@@ -8,7 +8,6 @@ import {
 import { useModelOnRequestHide } from "@/components/custom-ui/model/hook/useModelOnRequestHide";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Department } from "@/database/tables";
 import ButtonSpinner from "@/components/custom-ui/spinner/ButtonSpinner";
 import { useEffect, useState } from "react";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
@@ -16,31 +15,44 @@ import CustomInput from "@/components/custom-ui/input/CustomInput";
 import axiosClient from "@/lib/axois-client";
 import { toast } from "@/components/ui/use-toast";
 import { setServerError, validate } from "@/validation/validation";
+import { Destination, DestinationType } from "@/database/tables";
+import ColorPicker from "@/components/custom-ui/picker/color-picker";
+import APICombobox from "@/components/custom-ui/combobox/APICombobox";
 
-export interface UserFilterDialogDialogProps {
-  onComplete: (department: Department) => void;
-  department?: Department;
+export interface DestinationDialogProps {
+  onComplete: (destination: Destination) => void;
+  destination?: Destination;
 }
-export default function DepartmentDialog(props: UserFilterDialogDialogProps) {
-  const { onComplete, department } = props;
+export default function DestinationDialog(props: DestinationDialogProps) {
+  const { onComplete, destination } = props;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(new Map<string, string>());
-  const [userData, setUserData] = useState({
+  const [userData, setUserData] = useState<{
+    Farsi: string;
+    English: string;
+    Pashto: string;
+    destinationType: DestinationType | undefined;
+    Color: string;
+  }>({
     Farsi: "",
     English: "",
     Pashto: "",
+    destinationType: undefined,
+    Color: destination ? "" : "#B4D455",
   });
   const { modelOnRequestHide } = useModelOnRequestHide();
   const { t } = useTranslation();
 
   const fetch = async () => {
     try {
-      const response = await axiosClient.get(`department/${department?.id}`);
+      const response = await axiosClient.get(`destination/${destination?.id}`);
       if (response.status === 200) {
         setUserData({
-          Farsi: response.data.department.fa,
-          English: response.data.department.en,
-          Pashto: response.data.department.ps,
+          Farsi: response.data.destination.fa,
+          English: response.data.destination.en,
+          Pashto: response.data.destination.ps,
+          Color: response.data.destination.color,
+          destinationType: response.data.destination.type,
         });
       }
     } catch (error: any) {
@@ -48,7 +60,7 @@ export default function DepartmentDialog(props: UserFilterDialogDialogProps) {
     }
   };
   useEffect(() => {
-    if (department) fetch();
+    if (destination) fetch();
   }, []);
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -73,6 +85,10 @@ export default function DepartmentDialog(props: UserFilterDialogDialogProps) {
             name: "Pashto",
             rules: ["required"],
           },
+          {
+            name: "destinationType",
+            rules: ["required"],
+          },
         ],
         userData,
         setError
@@ -83,13 +99,16 @@ export default function DepartmentDialog(props: UserFilterDialogDialogProps) {
       formData.append("english", userData.English);
       formData.append("farsi", userData.Farsi);
       formData.append("pashto", userData.Pashto);
-      const response = await axiosClient.post("department/store", formData);
+      formData.append("color", userData.Color);
+      if (userData.destinationType)
+        formData.append("destination_type_id", userData.destinationType.id);
+      const response = await axiosClient.post("destination/store", formData);
       if (response.status === 200) {
         toast({
           toastType: "SUCCESS",
           description: response.data.message,
         });
-        onComplete(response.data.department);
+        onComplete(response.data.destination);
         modelOnRequestHide();
       }
     } catch (error: any) {
@@ -118,6 +137,10 @@ export default function DepartmentDialog(props: UserFilterDialogDialogProps) {
             name: "Pashto",
             rules: ["required"],
           },
+          {
+            name: "destinationType",
+            rules: ["required"],
+          },
         ],
         userData,
         setError
@@ -125,17 +148,20 @@ export default function DepartmentDialog(props: UserFilterDialogDialogProps) {
       if (!passed) return;
       // 2. update
       let formData = new FormData();
-      if (department?.id) formData.append("id", department.id);
+      if (destination?.id) formData.append("id", destination.id);
       formData.append("english", userData.English);
       formData.append("farsi", userData.Farsi);
       formData.append("pashto", userData.Pashto);
-      const response = await axiosClient.post(`department/update`, formData);
+      formData.append("color", userData.Color);
+      if (userData.destinationType)
+        formData.append("destination_type_id", userData.destinationType.id);
+      const response = await axiosClient.post(`destination/update`, formData);
       if (response.status === 200) {
         toast({
           toastType: "SUCCESS",
           description: response.data.message,
         });
-        onComplete(response.data.department);
+        onComplete(response.data.destination);
         modelOnRequestHide();
       }
     } catch (error: any) {
@@ -153,12 +179,14 @@ export default function DepartmentDialog(props: UserFilterDialogDialogProps) {
     <Card className="w-fit min-w-[400px] self-center [backdrop-filter:blur(20px)] bg-white/70 dark:!bg-black/40">
       <CardHeader className="relative text-start">
         <CardTitle className="rtl:text-4xl-rtl ltr:text-3xl-ltr text-tertiary">
-          {department ? t("Edit") : t("Add")}
+          {destination ? t("Edit") : t("Add")}
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-col">
         <CustomInput
           size_="sm"
+          dir="ltr"
+          className="rtl:text-end"
           required={true}
           requiredHint={`* ${t("Required")}`}
           placeholder={t("translate_en")}
@@ -208,6 +236,35 @@ export default function DepartmentDialog(props: UserFilterDialogDialogProps) {
             </h1>
           }
         />
+        <APICombobox
+          placeholderText={t("Search item")}
+          errorText={t("No item")}
+          onSelect={(selection: any) =>
+            setUserData({ ...userData, ["destinationType"]: selection })
+          }
+          required={true}
+          requiredHint={`* ${t("Required")}`}
+          selectedItem={userData.destinationType?.name}
+          placeHolder={t("select a type")}
+          errorMessage={error.get("destinationType")}
+          apiUrl={"destination-types"}
+          mode="single"
+        />
+        <div className="flex flex-col mt-3">
+          <label className="w-fit capitalize font-semibold">{t("color")}</label>
+          <ColorPicker
+            gradientTitle={t("gradient")}
+            solidTitle={t("solid")}
+            background={userData.Color}
+            setBackground={(background: string) =>
+              setUserData({
+                ...userData,
+                Color: background,
+              })
+            }
+            className=" self-start w-fit"
+          />
+        </div>
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button
@@ -219,7 +276,7 @@ export default function DepartmentDialog(props: UserFilterDialogDialogProps) {
         </Button>
         <PrimaryButton
           disabled={loading}
-          onClick={department ? update : store}
+          onClick={destination ? update : store}
           className={`${loading && "opacity-90"}`}
           type="submit"
         >
