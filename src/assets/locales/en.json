@@ -4,8 +4,8 @@
   "Choose a language": "Choose a language",
   "Select a date": "Select a date",
   "date": "Date",
-  "Ascending": "Ascending",
-  "Descending": "Descending",
+  "asc": "Ascending",
+  "desc": "Descending",
   "username": "Username",
   "status": "Status",
   "job": "Job",
@@ -71,7 +71,6 @@
   "Enter your name": "Enter your name",
   "filter": "Filter",
   "user": "user",
-  "select": "Select",
   "No options found": "No options found",
   "count": "Count",
   "unauthorized": "You are Unauthorized!",
@@ -264,5 +263,13 @@
   "documentNumber": "Document Number",
   "subject": "Subject",
   "qaidWarida": "Qaid Warida",
-  "initailScan": "Initail Scan"
+  "initailScan": "Initail Scan",
+  "qaidWaridaDate": "Qaid Warida Date",
+  "feedback": "Feedback",
+  "feedback_description": "Accept if document has feedback?",
+  "deadline": "Deadline",
+  "enter deadline": "Enter Deadline",
+  "enter": "Enter",
+  "select": "Select",
+  "information": "Information"
 }

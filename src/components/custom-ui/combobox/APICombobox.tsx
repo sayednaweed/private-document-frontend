@@ -74,7 +74,7 @@ export default function APICombobox(props: IAPIComboboxProps) {
   const [selected, setSelected] = useState(selectedItem);
 
   const updateSelect = () => {
-    if (selectedItem != undefined) {
+    if (selectedItem) {
       setItems((prevItems) =>
         prevItems.map((item) =>
           selectedItem.localeCompare(item.name) === 0
@@ -89,7 +89,7 @@ export default function APICombobox(props: IAPIComboboxProps) {
   }, [selectedItem]);
   const initialize = async () => {
     try {
-      if (!readonly && apiUrl != undefined) {
+      if (!readonly && apiUrl) {
         const response = await axiosClient.get(apiUrl, {
           params: params,
         });
@@ -110,8 +110,41 @@ export default function APICombobox(props: IAPIComboboxProps) {
   useEffect(() => {
     initialize();
   }, []);
+
   const error = errorMessage != undefined;
 
+  const onSelectChange = (currentValue: any) => {
+    if (mode == "multiple") {
+      // setSelected({...selected,currentValue});
+    } else {
+      setSelected(currentValue);
+    }
+    const filteredItems = items.map((comboboxItem: ComboboxItem) => {
+      const matched =
+        comboboxItem.name.trim().toLowerCase() ==
+        currentValue.trim().toLowerCase();
+
+      if (mode === "single") {
+        return matched
+          ? { ...comboboxItem, selected: true }
+          : { ...comboboxItem, selected: false };
+      }
+      return comboboxItem.name.trim().toLowerCase() ==
+        currentValue.trim().toLowerCase() &&
+        (comboboxItem.selected == undefined || comboboxItem.selected == false)
+        ? { ...comboboxItem, selected: true }
+        : comboboxItem.name.toLowerCase() == currentValue.toLowerCase() &&
+          comboboxItem.selected == true
+        ? { ...comboboxItem, selected: false }
+        : comboboxItem;
+    });
+    setItems(filteredItems);
+    const selectedItems = filteredItems.filter(
+      (item: ComboboxItem) => item.selected === true
+    );
+    onSelect(mode === "single" ? selectedItems[0] : selectedItems);
+    setOpen(false);
+  };
   return (
     <div className={`self-start relative`}>
       <Popover
@@ -127,14 +160,14 @@ export default function APICombobox(props: IAPIComboboxProps) {
             role="combobox"
             aria-expanded={open}
             className={cn(
-              `w-[202px] md:w-[300px] h-[43px] rtl:text-lg-rtl ltr:text-lg-ltr relative justify-between ${
+              `w-fit min-w-[260px] min-h-[43px] rtl:text-lg-rtl ltr:text-lg-ltr relative justify-between ${
                 error && "border-red-400 border"
               } ${required || lable ? "mt-[20px]" : "mt-2"}`,
               className
             )}
           >
-            {selected == undefined ? placeHolder : selected}
-            <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+            {!selected ? placeHolder : selected}
+            <ChevronsUpDown className="h-4 w-4 ltr:ml-4 rtl:mr-4 shrink-0 opacity-50" />
             {required && (
               <span className="text-red-600 ltr:right-[10px] rtl:left-[10px] -top-[17px] absolute font-semibold rtl:text-[13px] ltr:text-[11px]">
                 {requiredHint}
@@ -147,7 +180,7 @@ export default function APICombobox(props: IAPIComboboxProps) {
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[202px] md:w-[300px] p-0 z-50 rtl:text-xl-rtl ltr:text-lg-ltr">
+        <PopoverContent className="p-0 z-50 rtl:text-xl-rtl ltr:text-lg-ltr">
           <Command>
             <CommandInput
               placeholder={placeholderText}
@@ -171,44 +204,7 @@ export default function APICombobox(props: IAPIComboboxProps) {
                     <CommandItem
                       key={item.name}
                       value={item.name}
-                      onSelect={(currentValue: any) => {
-                        if (mode == "multiple") {
-                          // setSelected({...selected,currentValue});
-                        } else {
-                          setSelected(currentValue);
-                        }
-                        const filteredItems = items.map(
-                          (comboboxItem: ComboboxItem) => {
-                            const matched =
-                              comboboxItem.name.trim().toLowerCase() ==
-                              currentValue.trim().toLowerCase();
-
-                            if (mode === "single") {
-                              return matched
-                                ? { ...comboboxItem, selected: true }
-                                : { ...comboboxItem, selected: false };
-                            }
-                            return comboboxItem.name.trim().toLowerCase() ==
-                              currentValue.trim().toLowerCase() &&
-                              (comboboxItem.selected == undefined ||
-                                comboboxItem.selected == false)
-                              ? { ...comboboxItem, selected: true }
-                              : comboboxItem.name.toLowerCase() ==
-                                  currentValue.toLowerCase() &&
-                                comboboxItem.selected == true
-                              ? { ...comboboxItem, selected: false }
-                              : comboboxItem;
-                          }
-                        );
-                        setItems(filteredItems);
-                        const selectedItems = filteredItems.filter(
-                          (item: ComboboxItem) => item.selected === true
-                        );
-                        onSelect(
-                          mode === "single" ? selectedItems[0] : selectedItems
-                        );
-                        setOpen(false);
-                      }}
+                      onSelect={onSelectChange}
                     >
                       {item.name}
                       {item.selected && (

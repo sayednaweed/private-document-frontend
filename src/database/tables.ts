@@ -18,18 +18,28 @@ export type UserPermission = {
 export type SelectUserPermission = UserPermission & {
   allSelected: boolean;
 };
+export type Contact = {
+  id: string;
+  value: string;
+  createdAt: string;
+};
+export type Email = {
+  id: string;
+  value: string;
+  createdAt: string;
+};
 export type User = {
   id: string;
   fullName: string;
   username: string;
-  email: string;
+  email: Email;
   status: boolean;
   grantPermission: boolean;
   profile: any;
   role: Role;
-  contact: string;
-  job: string;
-  destination: string;
+  contact: Contact;
+  job: Job;
+  destination: Destination;
   permissions: Map<string, UserPermission>;
   createdAt: string;
 };

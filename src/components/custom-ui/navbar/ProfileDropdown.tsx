@@ -8,7 +8,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useAuthState } from "@/context/AuthContextProvider";
 import { useTranslation } from "react-i18next";
 import CachedImage from "../image/CachedImage";

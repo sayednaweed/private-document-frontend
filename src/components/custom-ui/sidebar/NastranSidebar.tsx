@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
 import { useAuthState } from "@/context/AuthContextProvider";

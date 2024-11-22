@@ -1,10 +1,10 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useContext, useState } from "react";
 import { StepperContext } from "@/components/custom-ui/stepper/StepperContext";
-import CustomInput from "@/components/custom-ui/input/CustomInput";
 import CustomCheckbox from "@/components/custom-ui/checkbox/CustomCheckbox";
 import { useTranslation } from "react-i18next";
 import APICombobox from "@/components/custom-ui/combobox/APICombobox";
+import PasswordInput from "@/components/custom-ui/input/PasswordInput";
 
 export default function AddUserAccount() {
   const { userData, setUserData, error } = useContext(StepperContext);
@@ -17,7 +17,7 @@ export default function AddUserAccount() {
   };
   return (
     <div className="flex flex-col mt-10 w-full gap-y-3 sm:w-[86%] md:w-[60%] lg:w-[400px] mx-auto">
-      <CustomInput
+      <PasswordInput
         size_="sm"
         name="password"
         lable={t("password")}

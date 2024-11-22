@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import { I18nextProvider } from "react-i18next";
 import i18n from "@/lib/i18n";
 import AdminLayout from "@/views/layout/admin-layout";
@@ -27,117 +27,121 @@ import SuperReportsPage from "@/views/pages/auth/general/reports/super-reports-p
 
 export const getSuperRouter = (user: User) => {
   const permissions: Map<string, UserPermission> = user.permissions;
-  return createBrowserRouter([
-    unauthorized,
-    {
-      path: "/",
-      element: (
-        <I18nextProvider i18n={i18n}>
-          <SiteLayout />
-        </I18nextProvider>
-      ),
-      children: [siteRoutes],
-    },
-    {
-      path: "/",
-      element: (
-        <I18nextProvider i18n={i18n}>
-          <SuperLayout />
-        </I18nextProvider>
-      ),
-      children: [
+  return (
+    <RouterProvider
+      router={createBrowserRouter([
+        unauthorized,
         {
-          path: "/dashboard",
+          path: "/",
           element: (
-            <ProtectedRoute
-              element={<SuperDashboardPage />}
-              routeName="dashboard"
-              permissions={permissions}
-            />
+            <I18nextProvider i18n={i18n}>
+              <SiteLayout />
+            </I18nextProvider>
           ),
+          children: [siteRoutes],
         },
+        {
+          path: "/",
+          element: (
+            <I18nextProvider i18n={i18n}>
+              <SuperLayout />
+            </I18nextProvider>
+          ),
+          children: [
+            {
+              path: "/dashboard",
+              element: (
+                <ProtectedRoute
+                  element={<SuperDashboardPage />}
+                  routeName="dashboard"
+                  permissions={permissions}
+                />
+              ),
+            },
 
-        {
-          path: "/users",
-          element: (
-            <ProtectedRoute
-              element={<UserPage />}
-              routeName="users"
-              permissions={permissions}
-            />
-          ),
+            {
+              path: "/users",
+              element: (
+                <ProtectedRoute
+                  element={<UserPage />}
+                  routeName="users"
+                  permissions={permissions}
+                />
+              ),
+            },
+            {
+              path: "/users/:id",
+              element: (
+                <ProtectedRoute
+                  element={<SuperUserEditPage />}
+                  routeName="users"
+                  permissions={permissions}
+                />
+              ),
+            },
+            {
+              path: "/reports",
+              element: (
+                <ProtectedRoute
+                  element={<SuperReportsPage />}
+                  routeName="reports"
+                  permissions={permissions}
+                />
+              ),
+            },
+            {
+              path: "/profile",
+              element: <ProfilePage />,
+            },
+            {
+              path: "/settings",
+              element: (
+                <ProtectedRoute
+                  element={<SuperSettingsPage />}
+                  routeName="settings"
+                  permissions={permissions}
+                />
+              ),
+            },
+            {
+              path: "/audit",
+              element: (
+                <ProtectedRoute
+                  element={<SuperAuditPage />}
+                  routeName="audit"
+                  permissions={permissions}
+                />
+              ),
+            },
+            {
+              path: "/logs",
+              element: (
+                <ProtectedRoute
+                  element={<LogsPage />}
+                  routeName="logs"
+                  permissions={permissions}
+                />
+              ),
+            },
+            {
+              path: "/documents",
+              element: (
+                <ProtectedRoute
+                  element={<DocumentsPage />}
+                  routeName="documents"
+                  permissions={permissions}
+                />
+              ),
+            },
+          ],
         },
         {
-          path: "/users/:id",
-          element: (
-            <ProtectedRoute
-              element={<SuperUserEditPage />}
-              routeName="users"
-              permissions={permissions}
-            />
-          ),
+          path: "*",
+          element: <ErrorPage />,
         },
-        {
-          path: "/reports",
-          element: (
-            <ProtectedRoute
-              element={<SuperReportsPage />}
-              routeName="reports"
-              permissions={permissions}
-            />
-          ),
-        },
-        {
-          path: "/profile",
-          element: <ProfilePage />,
-        },
-        {
-          path: "/settings",
-          element: (
-            <ProtectedRoute
-              element={<SuperSettingsPage />}
-              routeName="settings"
-              permissions={permissions}
-            />
-          ),
-        },
-        {
-          path: "/audit",
-          element: (
-            <ProtectedRoute
-              element={<SuperAuditPage />}
-              routeName="audit"
-              permissions={permissions}
-            />
-          ),
-        },
-        {
-          path: "/logs",
-          element: (
-            <ProtectedRoute
-              element={<LogsPage />}
-              routeName="logs"
-              permissions={permissions}
-            />
-          ),
-        },
-        {
-          path: "/documents",
-          element: (
-            <ProtectedRoute
-              element={<DocumentsPage />}
-              routeName="documents"
-              permissions={permissions}
-            />
-          ),
-        },
-      ],
-    },
-    {
-      path: "*",
-      element: <ErrorPage />,
-    },
-  ]);
+      ])}
+    />
+  );
 };
 export const getAdminRouter = (user: User) => {
   const permissions: Map<string, UserPermission> = user.permissions;

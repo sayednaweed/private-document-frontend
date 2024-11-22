@@ -182,10 +182,10 @@ export default function ProfileHeader() {
         {user.username}
       </h1>
       <h1 className="leading-6 rtl:text-sm-rtl ltr:text-2xl-ltr">
-        {user.email}
+        {user.email.value}
       </h1>
       <h1 dir="ltr" className="text-primary rtl:text-md-rtl ltr:text-xl-ltr">
-        {user.contact}
+        {user.contact?.value}
       </h1>
     </div>
   );

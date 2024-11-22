@@ -100,13 +100,13 @@ export default function UserFilterDialog(props: UserFilterDialogProps) {
           headerName={t("Order")}
           items={[
             {
-              name: "Ascending",
-              translate: t("Ascending"),
+              name: "asc",
+              translate: t("asc"),
               onClick: handleOrder,
             },
             {
-              name: "Descending",
-              translate: t("Descending"),
+              name: "desc",
+              translate: t("desc"),
               onClick: handleOrder,
             },
           ]}

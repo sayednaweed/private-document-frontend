@@ -37,7 +37,7 @@ import { ListFilter, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DateObject } from "react-multi-date-picker";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router";
 import AddDocument from "./add/add-document";
 import DocumentFilterDialog from "./document-filter-dialog";
 
@@ -53,10 +53,10 @@ export default function DocumentTable() {
   const sort = searchParams.get("sort");
   const order = searchParams.get("order");
   const [filters, setFilters] = useState<DocumentFilter>({
-    sort: sort == null ? "created_at" : (sort as DocumentSort),
-    order: order == null ? "Ascending" : (order as Order),
+    sort: sort == null ? "document no" : (sort as DocumentSort),
+    order: order == null ? "asc" : (order as Order),
     search: {
-      column: search == null ? "username" : (search as DocumentSearch),
+      column: search == null ? "document no" : (search as DocumentSearch),
       value: "",
     },
     date: [],

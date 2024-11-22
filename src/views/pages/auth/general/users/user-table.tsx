@@ -15,7 +15,7 @@ import { PAGINATION_COUNT, SECTION_NAMES } from "@/lib/constants";
 import useUserDB from "@/lib/indexeddb/useUserDB";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router";
 import axiosClient from "@/lib/axois-client";
 
 import TableRowIcon from "@/components/custom-ui/table/TableRowIcon";
@@ -52,7 +52,7 @@ export function UserTable() {
   const order = searchParams.get("order");
   const [filters, setFilters] = useState<UserFilter>({
     sort: sort == null ? "date" : (sort as UserSort),
-    order: order == null ? "Ascending" : (order as Order),
+    order: order == null ? "asc" : (order as Order),
     search: {
       column: search == null ? "username" : (search as UserSearch),
       value: "",
@@ -424,7 +424,7 @@ export function UserTable() {
                 remove={remove}
                 edit={edit}
                 onEdit={editOnClick}
-                key={item.createdAt}
+                key={item.email.value}
                 item={item}
                 onRemove={deleteOnClick}
                 onRead={watchOnClick}
@@ -442,17 +442,17 @@ export function UserTable() {
                   {item.username}
                 </TableCell>
                 <TableCell className="px-1 py-0">
-                  <h1 className="truncate">{item?.destination}</h1>
-                  <h1 className="truncate">{item?.job}</h1>
+                  <h1 className="truncate">{item?.destination?.name}</h1>
+                  <h1 className="truncate">{item?.job?.name}</h1>
                 </TableCell>
                 <TableCell
                   dir="ltr"
                   className="rtl:text-md-rtl truncate rtl:text-end px-0 py-0"
                 >
-                  {item.email}
+                  {item.email.value}
                 </TableCell>
                 <TableCell dir="ltr" className="px-1 rtl:text-end">
-                  {item?.contact == "null" ? "" : item?.contact}
+                  {item?.contact?.value == "null" ? "" : item?.contact?.value}
                 </TableCell>
                 <TableCell className="px-1 py-0">
                   {toLocaleDate(new Date(item.createdAt), state)}

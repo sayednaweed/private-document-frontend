@@ -23,11 +23,11 @@ export default function DocumentInformationTab() {
         onSelect={(selection: any) =>
           setUserData({ ...userData, ["documentType"]: selection })
         }
+        placeHolder={`${t("select")} ${t("type")}`}
         lable={t("documentType")}
         required={true}
         requiredHint={`* ${t("Required")}`}
         selectedItem={userData["documentType"]?.name}
-        placeHolder={t("Select a document")}
         errorMessage={error.get("documentType")}
         apiUrl={"document-types"}
         mode="single"
@@ -38,11 +38,11 @@ export default function DocumentInformationTab() {
         onSelect={(selection: any) =>
           setUserData({ ...userData, ["urgency"]: selection })
         }
+        placeHolder={`${t("select")} ${t("urgency")}`}
         lable={t("urgency")}
         required={true}
         requiredHint={`* ${t("Required")}`}
         selectedItem={userData["urgency"]?.name}
-        placeHolder={t("Select urgency")}
         errorMessage={error.get("urgency")}
         apiUrl={"urgencies"}
         mode="single"
@@ -57,13 +57,13 @@ export default function DocumentInformationTab() {
         required={true}
         requiredHint={`* ${t("Required")}`}
         selectedItem={userData["source"]?.name}
-        placeHolder={t("Select source")}
+        placeHolder={`${t("select")} ${t("source")}`}
         errorMessage={error.get("source")}
         apiUrl={"sources"}
         mode="single"
       />
       <CustomDatePicker
-        placeholder={t("select a date")}
+        placeholder={t("Select a date")}
         lable={t("documentDate")}
         requiredHint={`* ${t("Required")}`}
         required={true}
@@ -81,7 +81,7 @@ export default function DocumentInformationTab() {
         size_="sm"
         name="documentNumber"
         defaultValue={userData["documentNumber"]}
-        placeholder={t("Enter your document number")}
+        placeholder={`${t("enter")} ${t("documentNumber")}`}
         type="text"
         errorMessage={error.get("documentNumber")}
         onBlur={handleChange}
@@ -90,8 +90,8 @@ export default function DocumentInformationTab() {
         onChange={handleChange}
         required={true}
         name="subject"
+        placeholder={`${t("enter")} ${t("subject")}`}
         requiredHint={`* ${t("Required")}`}
-        placeholder={t("type document subject")}
         defaultValue={userData["subject"]}
         lable={t("subject")}
         errorMessage={error.get("subject")}

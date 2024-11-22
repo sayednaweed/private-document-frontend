@@ -10,7 +10,7 @@ import AnimHomeIcon from "@/components/custom-ui/icons/AnimHomeIcon";
 import { useAuthState } from "@/context/AuthContextProvider";
 import EditProfileInformation from "./steps/edit-profile-information";
 import { EditProfilePassword } from "./steps/edit-profile-password";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Database, KeyRound } from "lucide-react";
 import ProfileHeader from "./profile-header";

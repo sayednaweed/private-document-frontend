@@ -36,7 +36,7 @@ interface ProfileInformation {
   status: boolean;
   grantPermission: boolean;
   role: Role;
-  contact: string;
+  contact: string | null;
   job: string;
   destination: string;
   createdAt: string;
@@ -53,10 +53,10 @@ export default function EditProfileInformation() {
     imagePreviewUrl: undefined,
     username: user.username,
     name: user.fullName,
-    email: user.email,
-    contact: user.contact,
-    destination: user.destination,
-    job: user.job,
+    email: user.email.value,
+    contact: user.contact?.value,
+    destination: user.destination.name,
+    job: user.job.name,
     role: user.role,
     createdAt: user.createdAt,
     status: user.status,
@@ -91,19 +91,29 @@ export default function EditProfileInformation() {
     formData.append("id", userData.id);
     formData.append("username", userData.username);
     formData.append("name", userData.name);
-    formData.append("contact", userData.contact);
+    formData.append("contact", userData.contact ? userData.contact : "");
     formData.append("email", userData.email);
     try {
       const response = await axiosClient.post("profile/update", formData);
       if (response.status == 200) {
         // Change logged in user data
+
         await setUser({
           ...user,
           username: userData.username,
           fullName: userData.name,
-          email: userData.email,
-          contact: userData.contact,
+          email: {
+            id: "0",
+            value: userData.email,
+            createdAt: Date.now().toLocaleString(),
+          },
+          contact: {
+            id: "0",
+            value: userData.contact ? userData?.contact : "",
+            createdAt: Date.now().toLocaleString(),
+          },
         });
+
         toast({
           toastType: "SUCCESS",
           title: t("Success"),
@@ -178,7 +188,7 @@ export default function EditProfileInformation() {
             size_="sm"
             className={`rtl:text-right`}
             placeholder={t("enter your contact")}
-            defaultValue={userData.contact}
+            defaultValue={userData.contact ? userData.contact : ""}
             lable={t("contact")}
             type="text"
             name="contact"
@@ -194,14 +204,14 @@ export default function EditProfileInformation() {
               <ChevronsUpDown className="size-[16px] absolute top-1/2 transform -translate-y-1/2 ltr:right-4 rtl:left-4" />
             }
             title={t("department")}
-            selected={user.destination}
+            selected={user.destination.name}
           />
           <FakeCombobox
             icon={
               <ChevronsUpDown className="size-[16px] absolute top-1/2 transform -translate-y-1/2 ltr:right-4 rtl:left-4" />
             }
             title={t("job")}
-            selected={user.job}
+            selected={user.job.name}
           />
           <FakeCombobox
             icon={

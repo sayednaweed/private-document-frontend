@@ -10,6 +10,7 @@ import { DocumentModel } from "@/database/tables";
 import CloseButton from "@/components/custom-ui/button/CloseButton";
 import { useModelOnRequestHide } from "@/components/custom-ui/model/hook/useModelOnRequestHide";
 import ReferTab from "./steps/refer-tab";
+import CompleteStep from "@/components/custom-ui/stepper/CompleteStep";
 
 export interface AddDocumentProps {
   onComplete: (user: DocumentModel) => void;
@@ -30,26 +31,50 @@ export default function AddDocument(props: AddDocumentProps) {
     userData: any,
     setError: Dispatch<SetStateAction<Map<string, string>>>
   ) => {
-    // let formData = new FormData();
-    // try {
-    //   const response = await axiosClient.post("user/store", formData);
-    //   if (response.status == 200) {
-    //     toast({
-    //       toastType: "SUCCESS",
-    //       description: response.data.message,
-    //     });
-    //   }
-    // } catch (error: any) {
-    //   toast({
-    //     toastType: "ERROR",
-    //     title: t("Error"),
-    //     description: error.response.data.message,
-    //   });
-    //   setServerError(error.response.data.errors, setError);
-    //   console.log(error);
-    //   return false;
-    // }
+    let formData = new FormData();
+    formData.append("documentType", userData.documentType.id);
+    formData.append("urgency", userData.urgency.id);
+    formData.append("source", userData.source.id);
+    formData.append(
+      "documentDate",
+      userData.documentDate?.toDate().toISOString()
+    );
+    formData.append("documentNumber", userData.documentNumber);
+    formData.append("subject", userData.subject);
+    formData.append("qaidWarida", userData.qaidWarida);
+    formData.append(
+      "qaidWaridaDate",
+      userData.qaidWaridaDate?.toDate().toISOString()
+    );
+    formData.append("document", userData.initailScan);
+    formData.append("reference", userData.reference.id);
+
+    try {
+      const response = await axiosClient.post("document/store", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (response.status == 200) {
+        toast({
+          toastType: "SUCCESS",
+          description: response.data.message,
+        });
+      }
+    } catch (error: any) {
+      toast({
+        toastType: "ERROR",
+        title: t("Error"),
+        description: error.response.data.message,
+      });
+      setServerError(error.response.data.errors, setError);
+      console.log(error);
+      return false;
+    }
     return true;
+  };
+  const closeModel = () => {
+    modelOnRequestHide();
   };
   return (
     <>
@@ -72,11 +97,11 @@ export default function AddDocument(props: AddDocumentProps) {
         className="bg-transparent dark:!bg-transparent"
         steps={[
           {
-            description: t("Information"),
+            description: t("information"),
             icon: <Database className="size-[16px]" />,
           },
           {
-            description: t("refer"),
+            description: t("reference"),
             icon: <UserRound className="size-[16px]" />,
           },
           {
@@ -90,7 +115,10 @@ export default function AddDocument(props: AddDocumentProps) {
             validationRules: [
               { name: "subject", rules: ["required"] },
               { name: "documentDate", rules: ["required"] },
-              { name: "documentNumber", rules: ["required"] },
+              {
+                name: "documentNumber",
+                rules: ["required", "max:64", "min:3"],
+              },
               { name: "source", rules: ["required"] },
               { name: "urgency", rules: ["required"] },
               { name: "documentType", rules: ["required"] },
@@ -99,10 +127,23 @@ export default function AddDocument(props: AddDocumentProps) {
           {
             component: <ReferTab />,
             validationRules: [
-              { name: "qaidWarida", rules: ["required"] },
+              { name: "qaidWarida", rules: ["required", "max:64", "min:3"] },
+              { name: "qaidWaridaDate", rules: ["required"] },
               { name: "initailScan", rules: ["required"] },
               { name: "reference", rules: ["required"] },
             ],
+          },
+          {
+            component: (
+              <CompleteStep
+                successText={t("Congratulation")}
+                closeText={t("Close")}
+                againText={t("Again")}
+                closeModel={closeModel}
+                description={t("User account has been created")}
+              />
+            ),
+            validationRules: [],
           },
         ]}
         beforeStepSuccess={beforeStepSuccess}

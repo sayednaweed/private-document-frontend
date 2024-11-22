@@ -1,4 +1,4 @@
-import { RouterProvider } from "react-router-dom";
+import { RouterProvider } from "react-router";
 import {
   getAdminRouter,
   getGuestRouter,
@@ -6,6 +6,7 @@ import {
   getUserRouter,
 } from "./routes/routes";
 import { useAuthState } from "./context/AuthContextProvider";
+import { ROLE_ADMIN, ROLE_SUPER, ROLE_USER } from "./lib/constants";
 
 export default function App() {
   const { user, loading, authenticated } = useAuthState();
@@ -14,14 +15,13 @@ export default function App() {
   if (!authenticated) routes = getGuestRouter();
   else {
     routes =
-      user.role.role == 1
+      user.role.role == ROLE_USER
         ? getUserRouter(user)
-        : user.role.role == 2
+        : user.role.role == ROLE_ADMIN
         ? getAdminRouter(user)
-        : user.role.role == 4
+        : user.role.role == ROLE_SUPER
         ? getSuperRouter(user)
         : getGuestRouter();
   }
-
-  return <RouterProvider router={routes} />;
+  return routes;
 }

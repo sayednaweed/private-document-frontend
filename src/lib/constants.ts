@@ -7,7 +7,9 @@ export const SECTION_NAMES = {
   audit: "audit",
   documents: "documents",
 };
-
+export const ROLE_USER = 1;
+export const ROLE_ADMIN = 2;
+export const ROLE_SUPER = 4;
 export const PERMISSIONS_OPERATION = ["Add", "Edit", "Delete", "View"];
 
 export const afgMonthNamesFa = [

@@ -60,18 +60,26 @@ export default function DocumentFilterDialog(props: DocumentFilterDialogProps) {
           headerName={t("Sort by")}
           items={[
             {
-              name: "created_at",
-              translate: t("created_at"),
-              onClick: handleSort,
-            },
-            { name: "username", translate: t("username"), onClick: handleSort },
-            {
-              name: "department",
-              translate: t("department"),
+              name: "source",
+              translate: t("source"),
               onClick: handleSort,
             },
             { name: "status", translate: t("status"), onClick: handleSort },
-            { name: "job", translate: t("job"), onClick: handleSort },
+            {
+              name: "document no",
+              translate: t("document no"),
+              onClick: handleSort,
+            },
+            {
+              name: "document date",
+              translate: t("document date"),
+              onClick: handleSort,
+            },
+            {
+              name: "remaining time",
+              translate: t("remaining time"),
+              onClick: handleSort,
+            },
           ]}
         />
         <section className="min-w-[120px] space-y-2">
@@ -92,12 +100,15 @@ export default function DocumentFilterDialog(props: DocumentFilterDialogProps) {
           headerName={t("search")}
           items={[
             {
-              name: "username",
-              translate: t("username"),
+              name: "id",
+              translate: t("id"),
               onClick: handleSearch,
             },
-            { name: "email", translate: t("email"), onClick: handleSearch },
-            { name: "contact", translate: t("contact"), onClick: handleSearch },
+            {
+              name: "document no",
+              translate: t("document no"),
+              onClick: handleSearch,
+            },
           ]}
         />
         <FilterItem
@@ -105,13 +116,13 @@ export default function DocumentFilterDialog(props: DocumentFilterDialogProps) {
           headerName={t("Order")}
           items={[
             {
-              name: "Ascending",
-              translate: t("Ascending"),
+              name: "asc",
+              translate: t("asc"),
               onClick: handleOrder,
             },
             {
-              name: "Descending",
-              translate: t("Descending"),
+              name: "desc",
+              translate: t("desc"),
               onClick: handleOrder,
             },
           ]}

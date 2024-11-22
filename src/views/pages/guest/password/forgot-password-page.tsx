@@ -5,7 +5,7 @@ import { useState } from "react";
 import { validate } from "@/validation/validation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ChevronLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import ButtonSpinner from "@/components/custom-ui/spinner/ButtonSpinner";
 import React from "react";
 import { AnimLockIcon } from "@/components/custom-ui/icons/AnimLockIcon";

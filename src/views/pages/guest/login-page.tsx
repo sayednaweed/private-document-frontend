@@ -7,7 +7,7 @@ import { validate } from "@/validation/validation";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/components/ui/use-toast";
 import AnimUserIcon from "@/components/custom-ui/icons/AnimUserIcon";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { useAuthState } from "@/context/AuthContextProvider";
 
 export default function LoginPage() {

@@ -1,6 +1,6 @@
 import SiteNavbar from "@/components/custom-ui/navbar/SiteNavbar";
 import { Toaster } from "@/components/ui/toaster";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 
 export default function SiteLayout() {
   return (

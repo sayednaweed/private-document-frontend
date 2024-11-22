@@ -116,6 +116,7 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
     // .convert(gregorian, gregorian_en)
     // .format();
     // const MiladiDate = date.toDate();
+
     dateOnComplete(date);
 
     if (date instanceof DateObject) setSelectedDates(date);

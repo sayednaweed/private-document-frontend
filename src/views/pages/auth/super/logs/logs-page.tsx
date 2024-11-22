@@ -1,93 +1,103 @@
-import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
-import AnimHomeIcon from "@/components/custom-ui/icons/AnimHomeIcon";
-import ButtonSpinner from "@/components/custom-ui/spinner/ButtonSpinner";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { toast } from "@/components/ui/use-toast";
-import axiosClient from "@/lib/axois-client";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
 
-export default function LogsPage() {
-  const { t } = useTranslation();
-  const [logContent, setLogContent] = useState<string | undefined>(undefined);
-  const [loading, setLoading] = useState(false);
+export interface Log {
+  created_at: string;
+  error_message: string;
+  username: string;
+  user_id: number | string;
+  ip_address: string;
+  method: string;
+  exception_type: string;
+  error_code: string;
+  uri: string;
+}
 
-  const initialize = async () => {
-    try {
-      const response = await axiosClient.get("logs");
-      if (response.status == 200) setLogContent(response.data);
-    } catch (error: any) {
-      console.log(error);
-      toast({
-        toastType: "ERROR",
-        title: t("Error"),
-        description: t(error.response.data.message),
-      });
-    }
-  };
+export interface LogsResponse {
+  status: string;
+  logs: Log[];
+}
+import axiosClient from "@/lib/axois-client";
+
+const LogsPage: React.FC = () => {
+  const [logs, setLogs] = useState<Log[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+
   useEffect(() => {
-    initialize();
+    // Fetch logs when the component mounts
+    fetchLogs();
   }, []);
-  const clearLog = async () => {
-    if (loading) return;
-    try {
-      setLoading(true);
 
-      const response = await axiosClient.post("logs/clear");
-      if (response.status == 200) {
-        setLogContent(undefined);
-        toast({
-          toastType: "SUCCESS",
-          title: t("Success"),
-        });
+  // Function to fetch logs from the API
+  const fetchLogs = async () => {
+    try {
+      const response = await axiosClient.get<LogsResponse>("database-logs");
+      if (response.data.status === "success") {
+        setLogs(response.data.logs);
+      } else {
+        setErrorMessage("No logs found.");
       }
-    } catch (error: any) {
-      console.log(error);
-      toast({
-        toastType: "ERROR",
-        title: t("Error"),
-        description: t(error.response.data.message),
-      });
+    } catch (error) {
+      setErrorMessage("Failed to fetch logs.");
     } finally {
       setLoading(false);
     }
   };
-  return (
-    <div className="px-[12px] space-y-4">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <Link to="/dashboard">
-              <AnimHomeIcon />
-            </Link>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator className="rtl:rotate-180" />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{t("logs")}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
 
-      <PrimaryButton
-        className="rounded-full bg-red-500 hover:bg-red-500"
-        onClick={clearLog}
-      >
-        <ButtonSpinner loading={loading}>{t("clear logs")}</ButtonSpinner>
-      </PrimaryButton>
-      <div className="whitespace-pre-wrap p-4 rounded-[5px] bg-primary text-primary-foreground">
-        {logContent == undefined || logContent == "" ? (
-          <h1 className="text-center">{t("No log exists!")}</h1>
-        ) : (
-          logContent
-        )}
-      </div>
+  return (
+    <div className="max-w-4xl mx-auto p-4">
+      <h1 className="text-3xl font-bold text-center mb-6">
+        User Error Log Viewer
+      </h1>
+
+      {loading ? (
+        <div className="flex justify-center items-center py-6">
+          <div className="loader"></div>
+        </div>
+      ) : (
+        <>
+          {errorMessage ? (
+            <div className="text-red-500 text-center">{errorMessage}</div>
+          ) : (
+            <div className="space-y-4">
+              {logs.map((log, index) => (
+                <div
+                  key={index}
+                  className="bg-white shadow-lg rounded-lg p-4 border border-gray-200"
+                >
+                  <div className="flex justify-between text-sm text-gray-600 mb-2">
+                    <span>{log.created_at}</span>
+                    <span>{log.method}</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-800">
+                    {log.error_message}
+                  </h3>
+                  <p className="mt-2 text-gray-600">
+                    <strong>User ID:</strong> {log.user_id}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>Username:</strong> {log.username}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>Error Code:</strong> {log.error_code}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>Exception Type:</strong> {log.exception_type}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>IP Address:</strong> {log.ip_address}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>URI:</strong> {log.uri}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
-}
+};
+
+export default LogsPage;

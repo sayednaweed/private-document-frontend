@@ -5,7 +5,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import AnimHomeIcon from "@/components/custom-ui/icons/AnimHomeIcon";
 import { useTranslation } from "react-i18next";
 import { UserTable } from "./user-table";

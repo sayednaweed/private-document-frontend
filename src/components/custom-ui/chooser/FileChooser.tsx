@@ -91,12 +91,10 @@ const FileChooser = React.forwardRef<HTMLInputElement, FileChooserProps>(
       }
     };
     return (
-      <div className="flex items-center gap-x-2">
+      <div className="grid grid-cols-[auto_1fr]  relative">
         <Label
           htmlFor="initail_scan"
-          className={`w-fit rounded-md px-4 hover:opacity-90 transition-opacity cursor-pointer py-2 flex items-center gap-x-3 text-primary-foreground ${
-            errorMessage ? "bg-red-500" : "bg-primary"
-          }`}
+          className={`w-fit rounded-s-md shadow-md bg-primary px-4 hover:opacity-90 transition-opacity cursor-pointer py-2 flex items-center gap-x-3 text-primary-foreground`}
         >
           <h1 className="rtl:text-lg-rtl ltr:text-lg-ltr pb-[1px] cursor-pointer">
             {lable}
@@ -111,16 +109,28 @@ const FileChooser = React.forwardRef<HTMLInputElement, FileChooserProps>(
           />
           <Paperclip className="size-[20px] cursor-pointer" />
         </Label>
-        {userData && (
-          <h1 className="font-semibold text-[12px]">
-            {userData?.name}
-            <Trash2
-              onClick={deleteFile}
-              className="inline-block cursor-pointer text-red-500 size-[18px] ltr:ml-2 rtl:mr-2"
-            />
-          </h1>
-        )}
+        <label
+          htmlFor="initail_scan"
+          className="font-semibold flex items-center justify-between px-3 border rounded-e-md flex-1 text-[12px]"
+        >
+          {userData ? (
+            <>
+              {userData?.name}
+              <Trash2
+                onClick={deleteFile}
+                className="inline-block cursor-pointer text-red-500 size-[18px] ltr:ml-2 rtl:mr-2"
+              />
+            </>
+          ) : (
+            "No File Chosen"
+          )}
+        </label>
 
+        {required && (
+          <span className="text-red-600 rtl:text-[13px] ltr:text-[11px] ltr:right-[10px] rtl:left-[10px] -top-[17px] absolute font-semibold">
+            {requiredHint}
+          </span>
+        )}
         {errorMessage && (
           <>
             <h1 className="rtl:text-sm-rtl ltr:text-sm-ltr capitalize text-start text-red-400">

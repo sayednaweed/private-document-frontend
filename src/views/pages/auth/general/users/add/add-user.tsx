@@ -25,7 +25,6 @@ export default function AddUser(props: AddUserProps) {
     currentStep: number,
     setError: Dispatch<SetStateAction<Map<string, string>>>
   ) => {
-    console.log(currentStep == 1);
     if (currentStep == 1) {
       try {
         let formData = new FormData();

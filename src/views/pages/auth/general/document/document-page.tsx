@@ -9,7 +9,7 @@ import {
 import { useTranslation } from "react-i18next";
 import DocumentTable from "./document-table";
 import DocumentHeader from "./document-header";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 export default function DocumentsPage() {
   const { t } = useTranslation();

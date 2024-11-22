@@ -51,7 +51,7 @@ export interface UserData {
   name: string;
   data: any;
 }
-export type Order = "Ascending" | "Descending";
+export type Order = "desc" | "asc";
 export type UserSort = "date" | "username" | "destination" | "status" | "job";
 export type UserSearch = "username" | "contact" | "email";
 export interface UserFilter {
@@ -71,12 +71,12 @@ export interface DocumentPaginationData {
   totalItems: number;
 }
 export type DocumentSort =
-  | "created_at"
-  | "username"
-  | "destination"
+  | "source"
   | "status"
-  | "job";
-export type DocumentSearch = "username" | "contact" | "email";
+  | "document no"
+  | "document date"
+  | "remaining time";
+export type DocumentSearch = "id" | "document no";
 export interface DocumentFilter {
   sort: DocumentSort;
   order: Order;

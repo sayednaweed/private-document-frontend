@@ -1,5 +1,5 @@
 import { UserPermission } from "@/database/tables";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router";
 
 interface ProtectedRouteProps {
   element: React.ReactNode;
@@ -13,7 +13,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   permissions,
 }) => {
   const isAllowed = permissions.get(routeName);
-
   return isAllowed ? element : <Navigate to="/unauthorized" replace />;
 };
 export default ProtectedRoute;

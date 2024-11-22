@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useAuthState } from "@/context/AuthContextProvider";
 import { handleKeyPress } from "@/lib/keyboard";
 import { useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router";
 
 export default function SuperLayout() {
   const { logout } = useAuthState();
