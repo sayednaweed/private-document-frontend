@@ -1,4 +1,3 @@
-import { RouterProvider } from "react-router";
 import {
   getAdminRouter,
   getGuestRouter,

@@ -119,3 +119,18 @@ export type Destination = {
   type: DestinationType;
   createdAt: string;
 };
+
+export type Audit = {
+  id: string;
+  username: string;
+  role: string;
+  table: string;
+  action: string;
+  device: string;
+  department: string;
+  job: string;
+  name: string;
+  status: string;
+  ipaddress: string;
+  date: string;
+};

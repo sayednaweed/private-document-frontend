@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Mail } from "lucide-react";
 import CustomInput from "@/components/custom-ui/input/CustomInput";
 import ButtonSpinner from "@/components/custom-ui/spinner/ButtonSpinner";
@@ -9,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import AnimUserIcon from "@/components/custom-ui/icons/AnimUserIcon";
 import { Link, useNavigate } from "react-router";
 import { useAuthState } from "@/context/AuthContextProvider";
+import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -53,15 +53,20 @@ export default function LoginPage() {
           toast({
             title: t("Success"),
             toastType: "SUCCESS",
-            description: t(response.data.message),
+            description: response.data.message,
           });
         } else
           toast({
             title: t("Error"),
             toastType: "ERROR",
-            description: t(response.response.data.message),
+            description: response.response.data.message,
           });
       } catch (error: any) {
+        toast({
+          title: t("Error"),
+          toastType: "ERROR",
+          description: error.response.data.message,
+        });
         console.log(error, "Error");
       }
       setLoading(false);
@@ -125,14 +130,17 @@ export default function LoginPage() {
         >
           {t("Forgot Password?")}
         </Link>
-        <Button
-          className={`shadow-lg hover:shadow hover:opacity-100 opacity-95 hover:bg-primary bg-primary mt-8 text-primary-foreground uppercase text-[17px] font-medium ${
-            loading && "opacity-90"
-          }`}
+        <PrimaryButton
+          className={`w-full mt-8 uppercase ${loading && "opacity-90"}`}
           type="submit"
         >
-          <ButtonSpinner loading={loading}>{t("Login")}</ButtonSpinner>
-        </Button>
+          <ButtonSpinner
+            loading={loading}
+            className="rtl:text-2xl-rtl ltr:text-2xl-ltr"
+          >
+            {t("Login")}
+          </ButtonSpinner>
+        </PrimaryButton>
       </form>
     </div>
   );

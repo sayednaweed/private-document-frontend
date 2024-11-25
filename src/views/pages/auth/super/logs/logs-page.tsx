@@ -67,9 +67,11 @@ const LogsPage: React.FC = () => {
                 >
                   <div className="flex justify-between text-sm text-gray-600 mb-2">
                     <span>{log.created_at}</span>
-                    <span>{log.method}</span>
+                    <span className="bg-primary text-primary-foreground rounded-md p-1">
+                      {log.method}
+                    </span>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-800">
+                  <h3 className="text-xl text-wrap font-semibold text-red-500">
                     {log.error_message}
                   </h3>
                   <p className="mt-2 text-gray-600">
@@ -87,7 +89,7 @@ const LogsPage: React.FC = () => {
                   <p className="text-gray-600">
                     <strong>IP Address:</strong> {log.ip_address}
                   </p>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 break-words">
                     <strong>URI:</strong> {log.uri}
                   </p>
                 </div>

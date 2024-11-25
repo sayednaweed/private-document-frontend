@@ -1,4 +1,9 @@
-import { DocumentModel, SelectUserPermission, User } from "@/database/tables";
+import {
+  Audit,
+  DocumentModel,
+  SelectUserPermission,
+  User,
+} from "@/database/tables";
 import { DateObject } from "react-multi-date-picker";
 
 export interface IMenuItem {
@@ -97,4 +102,36 @@ export interface DocumentRecordCount {
   completed: number | null;
   keep: number | null;
   total: number | null;
+}
+//
+export interface AuditData {
+  name: string;
+  data: any;
+}
+
+export type AuditSort =
+  | "name"
+  | "ipAddress"
+  | "status"
+  | "date"
+  | "username"
+  | "action"
+  | "table";
+export type AuditSearch = "name" | "ipaddress" | "date" | "username" | "table";
+
+export interface AuditFilter {
+  sort: AuditSort;
+  order: Order;
+  search: {
+    column: AuditSearch;
+    value: string;
+  };
+  date: DateObject[];
+}
+export interface PaginationAuditData {
+  data: Audit[];
+  lastPage: number;
+  perPage: number;
+  currentPage: number;
+  totalItems: number;
 }

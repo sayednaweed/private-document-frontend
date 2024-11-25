@@ -429,7 +429,7 @@ export function UserTable() {
                 onRemove={deleteOnClick}
                 onRead={watchOnClick}
               >
-                <TableCell className="px-1  py-0">
+                <TableCell className="px-1 py-0">
                   <CachedImage
                     src={item?.profile}
                     alt="Avatar"
@@ -441,7 +441,7 @@ export function UserTable() {
                 <TableCell className="rtl:text-md-rtl truncate px-1 py-0">
                   {item.username}
                 </TableCell>
-                <TableCell className="px-1 py-0">
+                <TableCell>
                   <h1 className="truncate">{item?.destination?.name}</h1>
                   <h1 className="truncate">{item?.job?.name}</h1>
                 </TableCell>
@@ -451,13 +451,13 @@ export function UserTable() {
                 >
                   {item.email.value}
                 </TableCell>
-                <TableCell dir="ltr" className="px-1 rtl:text-end">
+                <TableCell dir="ltr" className="rtl:text-end">
                   {item?.contact?.value == "null" ? "" : item?.contact?.value}
                 </TableCell>
-                <TableCell className="px-1 py-0">
+                <TableCell>
                   {toLocaleDate(new Date(item.createdAt), state)}
                 </TableCell>
-                <TableCell className="px-1 py-0">
+                <TableCell>
                   {item?.status ? (
                     <h1 className="truncate text-center rtl:text-md-rtl ltr:text-lg-ltr bg-green-500 px-1 py-[2px] shadow-md text-primary-foreground font-bold rounded-sm">
                       {t("Active")}

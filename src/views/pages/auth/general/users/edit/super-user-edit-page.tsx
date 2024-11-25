@@ -89,6 +89,7 @@ w-[95%] ltr:py-2 rtl:py-[5px] bg-card-foreground/5 data-[state=active]:bg-tertia
         <TabsList className="min-h-fit sm:min-h-[80vh] overflow-y-auto pb-8 sm:w-[300px] gap-y-4 items-start justify-start flex flex-col bg-card border">
           <UserEditHeader
             id={id}
+            failed={failed}
             userData={userData}
             setUserData={setUserData}
           />

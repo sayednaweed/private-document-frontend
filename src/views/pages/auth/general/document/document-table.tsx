@@ -259,7 +259,7 @@ export default function DocumentTable() {
   const edit = per ? per?.edit : false;
   const add = per ? per?.add : false;
   return (
-    <div className="px-2 pt-2 flex flex-col gap-y-[2px] relative select-none rtl:text-2xl-rtl ltr:text-xl-ltr">
+    <>
       <div className="flex flex-col sm:items-baseline sm:flex-row rounded-md bg-card gap-2 flex-1 px-2 py-2 mt-4">
         {add && (
           <NastranModel
@@ -397,7 +397,7 @@ export default function DocumentTable() {
           }}
         />
       </div>
-      <Table className="bg-card rounded-md my-[2px] py-8 table-fixed">
+      <Table className="bg-card rounded-md my-[2px] py-8">
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
             <TableHead className="px-1 text-center w-[60px]">
@@ -514,6 +514,6 @@ export default function DocumentTable() {
           }}
         />
       </div>
-    </div>
+    </>
   );
 }

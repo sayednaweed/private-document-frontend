@@ -25,7 +25,7 @@ export default function AddUserAccount() {
         requiredHint={`* ${t("Required")}`}
         defaultValue={userData["password"]}
         onChange={handleChange}
-        placeholder={t("Enter password")}
+        placeholder={t("enter password")}
         errorMessage={error.get("password")}
         startContent={
           <button

@@ -14,11 +14,12 @@ import { useAuthState } from "@/context/AuthContextProvider";
 export interface UserEditHeaderProps {
   id: string | undefined;
   userData: UserInformation | undefined;
+  failed: boolean;
   setUserData: Dispatch<SetStateAction<UserInformation | undefined>>;
 }
 
 export default function UserEditHeader(props: UserEditHeaderProps) {
-  const { id, userData, setUserData } = props;
+  const { id, userData, setUserData, failed } = props;
   const { user } = useAuthState();
   const { t } = useTranslation();
   const [loading, setLoading] = useState<boolean>(false);
@@ -166,36 +167,39 @@ export default function UserEditHeader(props: UserEditHeaderProps) {
           labelclassname="text-primary/80 rtl:text-sm-rtl ltr:text-sm-ltr"
         />
       )}
-      <div className="flex self-center justify-center !mt-2 !mb-6 gap-x-4">
-        {hasEdit && (
-          <IconButton className="hover:bg-primary/20 transition-all text-primary">
-            <label
-              className={`flex w-fit gap-x-1 items-center cursor-pointer justify-center`}
+      {userData && !failed && (
+        <div className="flex self-center justify-center !mt-2 !mb-6 gap-x-4">
+          {hasEdit && (
+            <IconButton className="hover:bg-primary/20 transition-all text-primary">
+              <label
+                className={`flex w-fit gap-x-1 items-center cursor-pointer justify-center`}
+              >
+                <Pencil className={`size-[13px] pointer-events-none`} />
+                <h1 className={`rtl:text-lg-rtl ltr:text-md-ltr`}>
+                  {t("Choose")}
+                </h1>
+                <input
+                  type="file"
+                  className={`block w-0 h-0`}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    onFileUploadChange(e);
+                  }}
+                />
+              </label>
+            </IconButton>
+          )}
+          {hasRemove && (
+            <IconButton
+              className="hover:bg-red-400/30 transition-all border-red-400/40 text-red-400"
+              onClick={deleteProfilePicture}
             >
-              <Pencil className={`size-[13px] pointer-events-none`} />
-              <h1 className={`rtl:text-lg-rtl ltr:text-md-ltr`}>
-                {t("Choose")}
-              </h1>
-              <input
-                type="file"
-                className={`block w-0 h-0`}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  onFileUploadChange(e);
-                }}
-              />
-            </label>
-          </IconButton>
-        )}
-        {hasRemove && (
-          <IconButton
-            className="hover:bg-red-400/30 transition-all border-red-400/40 text-red-400"
-            onClick={deleteProfilePicture}
-          >
-            <Trash2 className="size-[13px] pointer-events-none" />
-            <h1 className="rtl:text-lg-rtl ltr:text-md-ltr">{t("Delete")}</h1>
-          </IconButton>
-        )}
-      </div>
+              <Trash2 className="size-[13px] pointer-events-none" />
+              <h1 className="rtl:text-lg-rtl ltr:text-md-ltr">{t("Delete")}</h1>
+            </IconButton>
+          )}
+        </div>
+      )}
+
       <h1 className="text-primary font-semibold rtl:text-4xl-rtl ltr:text-4xl-ltr">
         {userData?.username}
       </h1>

@@ -40,10 +40,10 @@ const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
 
     const checkStrength = (pass: string) => {
       const requirements = [
-        { regex: /.{8,}/, text: "At least 8 characters" },
-        { regex: /[0-9]/, text: "At least 1 number" },
-        { regex: /[a-z]/, text: "At least 1 lowercase letter" },
-        { regex: /[A-Z]/, text: "At least 1 uppercase letter" },
+        { regex: /.{8,}/, text: t("at least 8 characters") },
+        { regex: /[0-9]/, text: t("at least 1 number") },
+        { regex: /[a-z]/, text: t("at least 1 lowercase letter") },
+        { regex: /[A-Z]/, text: t("at least 1 uppercase letter") },
       ];
 
       return requirements.map((req) => ({
@@ -67,12 +67,11 @@ const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
     };
 
     const getStrengthText = (score: number) => {
-      if (score === 0) return t("Enter a password");
-      if (score <= 2) return t("Weak password");
-      if (score === 3) return t("Medium password");
-      return t("Strong password");
+      if (score === 0) return t("enter password");
+      if (score <= 2) return t("weak password");
+      if (score === 3) return t("medium password");
+      return t("strong password");
     };
-    console.log(password);
     return (
       <div className={`${parentClassName}`}>
         <div
@@ -162,9 +161,9 @@ const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
         {/* Password strength description */}
         <p
           id="password-strength"
-          className="mb-2 text-sm font-medium text-foreground"
+          className="mb-2 text-start ltr:text-xl-ltr font-medium text-foreground"
         >
-          {getStrengthText(strengthScore)}. Must contain:
+          {`${getStrengthText(strengthScore)}. ${t("must contain:")}`}
         </p>
 
         {/* Password requirements list */}
@@ -186,7 +185,9 @@ const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
               )}
               <span
                 className={`text-xs ${
-                  req.met ? "text-emerald-600" : "text-muted-foreground"
+                  req.met
+                    ? "text-emerald-600 ltr:text-xl-ltr"
+                    : "text-muted-foreground"
                 }`}
               >
                 {req.text}

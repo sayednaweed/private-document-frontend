@@ -80,7 +80,8 @@ export default function AddUser(props: AddUserProps) {
     formData.append("destination", userData.destination.id);
     formData.append("job", userData.job.id);
     formData.append("role", userData.role.id);
-    formData.append("status", userData.status);
+    if (userData.status) formData.append("status", userData.status);
+    else formData.append("status", "false");
     if (!userData.grant) formData.append("grant", "false");
     else formData.append("grant", userData.grant);
     formData.append("Permission", JSON.stringify(userData?.Permission));
@@ -164,7 +165,6 @@ export default function AddUser(props: AddUserProps) {
             validationRules: [
               { name: "password", rules: ["required", "max:25", "min:8"] },
               { name: "role", rules: ["required"] },
-              { name: "status", rules: ["required"] },
             ],
           },
           {

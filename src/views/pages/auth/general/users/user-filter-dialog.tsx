@@ -61,7 +61,7 @@ export default function UserFilterDialog(props: UserFilterDialogProps) {
             },
             { name: "username", translate: t("username"), onClick: handleSort },
             {
-              name: "department",
+              name: "destination",
               translate: t("department"),
               onClick: handleSort,
             },
