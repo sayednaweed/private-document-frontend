@@ -78,10 +78,12 @@ export interface DocumentPaginationData {
 export type DocumentSort =
   | "source"
   | "status"
-  | "document no"
-  | "document date"
-  | "remaining time";
-export type DocumentSearch = "id" | "document no";
+  | "urgency"
+  | "type"
+  | "documentNumber"
+  | "documentDate"
+  | "deadline";
+export type DocumentSearch = "id" | "documentNumber";
 export interface DocumentFilter {
   sort: DocumentSort;
   order: Order;

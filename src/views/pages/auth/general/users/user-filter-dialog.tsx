@@ -1,13 +1,9 @@
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useModelOnRequestHide } from "@/components/custom-ui/model/hook/useModelOnRequestHide";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
 import { FilterItem } from "@/components/custom-ui/filter/FilterItem";
 import CustomMultiDatePicker from "@/components/custom-ui/DatePicker/CustomMultiDatePicker";
 import { DateObject } from "react-multi-date-picker";
@@ -42,6 +38,10 @@ export default function UserFilterDialog(props: UserFilterDialogProps) {
     orderOnComplete(itemName as Order);
     modelOnRequestHide();
   };
+  const handleDate = (selectedDates: DateObject[]) => {
+    dateOnComplete(selectedDates);
+    if (selectedDates.length == 2) modelOnRequestHide();
+  };
   return (
     <Card className="w-fit self-center [backdrop-filter:blur(20px)] bg-white/70 dark:!bg-black/40">
       <CardHeader className="relative text-start">
@@ -49,7 +49,7 @@ export default function UserFilterDialog(props: UserFilterDialogProps) {
           {t("Search filters")}
         </CardTitle>
       </CardHeader>
-      <CardContent className="grid grid-cols-2 sm:flex sm:flex-row gap-x-4">
+      <CardContent className="grid grid-cols-2 sm:flex sm:flex-row gap-x-4 pb-12">
         <FilterItem
           selected={filters.sort}
           headerName={t("Sort by")}
@@ -79,7 +79,7 @@ export default function UserFilterDialog(props: UserFilterDialogProps) {
           </h1>
           <CustomMultiDatePicker
             value={filters.date}
-            dateOnComplete={dateOnComplete}
+            dateOnComplete={handleDate}
           />
         </section>
         <FilterItem

@@ -23,6 +23,7 @@ import {
   DOCUMENT_PAGINATION_COUNT,
   PAGINATION_COUNT,
   SECTION_NAMES,
+  StatusEnum,
 } from "@/lib/constants";
 import useUserDB from "@/lib/indexeddb/useUserDB";
 import {
@@ -40,7 +41,6 @@ import { DateObject } from "react-multi-date-picker";
 import { useNavigate, useSearchParams } from "react-router";
 import AddDocument from "./add/add-document";
 import DocumentFilterDialog from "./document-filter-dialog";
-
 export default function DocumentTable() {
   const { user } = useAuthState();
   const navigate = useNavigate();
@@ -53,10 +53,10 @@ export default function DocumentTable() {
   const sort = searchParams.get("sort");
   const order = searchParams.get("order");
   const [filters, setFilters] = useState<DocumentFilter>({
-    sort: sort == null ? "document no" : (sort as DocumentSort),
+    sort: sort == null ? "documentNumber" : (sort as DocumentSort),
     order: order == null ? "asc" : (order as Order),
     search: {
-      column: search == null ? "document no" : (search as DocumentSearch),
+      column: search == null ? "documentNumber" : (search as DocumentSearch),
       value: "",
     },
     date: [],
@@ -109,12 +109,11 @@ export default function DocumentTable() {
           },
         },
       });
-      const fetch: any = [];
-      // const fetch = response.data.users.data as DocumentModel[];
-      const lastPage = response.data.users.last_page;
-      const totalItems = response.data.users.total;
-      const perPage = response.data.users.per_page;
-      const currentPage = response.data.users.current_page;
+      const fetch = response.data.documents.data as DocumentModel[];
+      const lastPage = response.data.documents.last_page;
+      const totalItems = response.data.documents.total;
+      const perPage = response.data.documents.per_page;
+      const currentPage = response.data.documents.current_page;
       setDocuments({
         filterList: {
           data: fetch,
@@ -172,26 +171,26 @@ export default function DocumentTable() {
 
   const [state] = useGlobalState();
 
-  const addItem = (user: DocumentModel) => {
+  const addItem = (document: DocumentModel) => {
     setDocuments((prevState) => ({
       filterList: {
         ...prevState.filterList,
-        data: [user, ...prevState.filterList.data],
+        data: [document, ...prevState.filterList.data],
       },
       unFilterList: {
         ...prevState.unFilterList,
-        data: [user, ...prevState.unFilterList.data],
+        data: [document, ...prevState.unFilterList.data],
       },
     }));
   };
 
-  const deleteOnClick = async (user: DocumentModel) => {
+  const deleteOnClick = async (document: DocumentModel) => {
     try {
-      const userId = user.id;
-      const response = await axiosClient.delete("user/" + userId);
+      const documentId = document.id;
+      const response = await axiosClient.delete("document/" + documentId);
       if (response.status == 200) {
         const filtered = documents.unFilterList.data.filter(
-          (item: DocumentModel) => userId != item?.id
+          (item: DocumentModel) => documentId != item?.id
         );
         const item = {
           data: filtered,
@@ -243,13 +242,13 @@ export default function DocumentTable() {
       </TableCell>
     </TableRow>
   );
-  const editOnClick = async (user: DocumentModel) => {
-    const userId = user.id;
-    navigate(`/documents/${userId}`);
+  const editOnClick = async (document: DocumentModel) => {
+    const documentId = document.id;
+    navigate(`/documents/${documentId}`);
   };
-  const watchOnClick = async (user: DocumentModel) => {
-    const userId = user.id;
-    navigate(`/documents/${userId}`);
+  const watchOnClick = async (document: DocumentModel) => {
+    const documentId = document.id;
+    navigate(`/documents/${documentId}`);
   };
   const per: UserPermission | undefined = user?.permissions.get(
     SECTION_NAMES.documents
@@ -258,6 +257,10 @@ export default function DocumentTable() {
   const remove = per ? per?.delete : false;
   const edit = per ? per?.edit : false;
   const add = per ? per?.add : false;
+
+  const inProgress = t("In Progress");
+  const keep = t("keep");
+  const complete = t("Complete");
   return (
     <>
       <div className="flex flex-col sm:items-baseline sm:flex-row rounded-md bg-card gap-2 flex-1 px-2 py-2 mt-4">
@@ -388,7 +391,7 @@ export default function DocumentTable() {
           ]}
           className="w-fit sm:self-baseline"
           updateCache={updateAppCache}
-          getCache={getAppCache}
+          getCache={async () => await getAppCache(DOCUMENT_PAGINATION_COUNT)}
           placeholder={`${t("select")}...`}
           emptyPlaceholder={t("No options found")}
           rangePlaceholder={t("count")}
@@ -400,24 +403,14 @@ export default function DocumentTable() {
       <Table className="bg-card rounded-md my-[2px] py-8">
         <TableHeader className="rtl:text-3xl-rtl ltr:text-xl-ltr">
           <TableRow className="hover:bg-transparent">
-            <TableHead className="px-1 text-center w-[60px]">
-              {t("id")}
-            </TableHead>
-            <TableHead className="text-start px-1">{t("type")}</TableHead>
-            <TableHead className="text-start px-1">{t("urgency")}</TableHead>
-            <TableHead className="text-start px-1">
-              {t("document no")}
-            </TableHead>
-            <TableHead className="text-start px-1">
-              {t("document date")}
-            </TableHead>
-            <TableHead className="text-start px-1">
-              {t("remaining time")}
-            </TableHead>
-            <TableHead className="text-start px-1">{t("source")}</TableHead>
-            <TableHead className="text-start px-1 w-[60px]">
-              {t("status")}
-            </TableHead>
+            <TableHead className="text-center w-[60px]">{t("id")}</TableHead>
+            <TableHead className="text-start">{t("type")}</TableHead>
+            <TableHead className="text-start">{t("urgency")}</TableHead>
+            <TableHead className="text-start">{t("documentNumber")}</TableHead>
+            <TableHead className="text-start">{t("documentDate")}</TableHead>
+            <TableHead className="text-start">{t("deadline")}</TableHead>
+            <TableHead className="text-start">{t("source")}</TableHead>
+            <TableHead className="text-start w-[60px]">{t("status")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="rtl:text-xl-rtl ltr:text-2xl-ltr">
@@ -439,34 +432,37 @@ export default function DocumentTable() {
                 onRemove={deleteOnClick}
                 onRead={watchOnClick}
               >
-                <TableCell className="px-1 py-0">{item.id}</TableCell>
-                <TableCell className="px-1 py-0">{item.type.name}</TableCell>
-                <TableCell className="px-1 py-0">{item.urgency.name}</TableCell>
-                <TableCell className="px-1 py-0">
-                  {item.documentNumber}
+                <TableCell className="text-center">{item.id}</TableCell>
+                <TableCell>{item.type}</TableCell>
+                <TableCell>{item.urgency}</TableCell>
+                <TableCell>{item.documentNumber}</TableCell>
+                <TableCell>
+                  {toLocaleDate(new Date(item.documentDate), state)}
                 </TableCell>
-                <TableCell className="px-1 py-0">{item.documentDate}</TableCell>
-                <TableCell className="px-1 py-0">
-                  {item.submittedDuration}
-                </TableCell>
+                <TableCell>{item.deadline ? item.deadline : "N/K"}</TableCell>
 
-                <TableCell
-                  dir="ltr"
-                  className="rtl:text-md-rtl truncate rtl:text-end px-0 py-0"
-                >
-                  {item.scan.muqamScan}
-                </TableCell>
-                <TableCell className="px-1 py-0">
-                  {toLocaleDate(new Date(item.createdAt), state)}
-                </TableCell>
-                <TableCell className="px-1 py-0">
-                  {item?.status ? (
-                    <h1 className="truncate text-center rtl:text-md-rtl ltr:text-lg-ltr bg-green-500 px-1 py-[2px] shadow-md text-primary-foreground font-bold rounded-sm">
-                      {t("Active")}
+                <TableCell className="truncate">{item.source}</TableCell>
+                <TableCell>
+                  {item.status == StatusEnum.complete ? (
+                    <h1
+                      style={{ background: item.statusColor }}
+                      className="truncate text-center rtl:text-md-rtl ltr:text-lg-ltr px-1 py-[2px] shadow-md text-primary-foreground font-bold rounded-sm"
+                    >
+                      {complete}
+                    </h1>
+                  ) : item.status == StatusEnum.keep ? (
+                    <h1
+                      style={{ background: item.statusColor }}
+                      className="truncate text-center rtl:text-md-rtl ltr:text-lg-ltr px-1 py-[2px] shadow-md text-primary-foreground font-bold rounded-sm"
+                    >
+                      {keep}
                     </h1>
                   ) : (
-                    <h1 className="truncate text-center rtl:text-md-rtl ltr:text-lg-ltr bg-red-400 px-1 py-[2px] shadow-md text-primary-foreground font-bold rounded-sm">
-                      {t("Lock")}
+                    <h1
+                      style={{ background: item.statusColor }}
+                      className="truncate text-center rtl:text-md-rtl ltr:text-md-ltr px-1 py-[2px] text-primary-foreground font-bold rounded-sm"
+                    >
+                      {inProgress}
                     </h1>
                   )}
                 </TableCell>
@@ -485,8 +481,8 @@ export default function DocumentTable() {
           lastPage={documents.unFilterList.lastPage}
           onPageChange={async (page) => {
             try {
-              const count = await getAppCache(PAGINATION_COUNT);
-              const response = await axiosClient.get(`users/${page}`, {
+              const count = await getAppCache(DOCUMENT_PAGINATION_COUNT);
+              const response = await axiosClient.get(`documents/${page}`, {
                 params: {
                   per_page: count ? count.value : 10,
                 },

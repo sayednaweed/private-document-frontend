@@ -1,7 +1,7 @@
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
-import { Paperclip, Trash2 } from "lucide-react";
+import { cn, isString } from "@/lib/utils";
+import { ArrowDownToLine, Paperclip, Trash2 } from "lucide-react";
 import React, { ChangeEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -10,7 +10,7 @@ export interface FileChooserProps
   requiredHint?: string;
   lable: string;
   errorMessage?: string;
-  defaultFile: File | undefined;
+  defaultFile: File | undefined | string;
   maxSize: number;
   validTypes: string[];
   onchange: (file: File | undefined) => void;
@@ -30,7 +30,9 @@ const FileChooser = React.forwardRef<HTMLInputElement, FileChooserProps>(
       ...rest
     } = props;
     const { t } = useTranslation();
-    const [userData, setUserData] = useState<File | undefined>(defaultFile);
+    const [userData, setUserData] = useState<File | undefined | string>(
+      defaultFile
+    );
     const onFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
       const fileInput = e.target;
       const maxFileSize = maxSize * 1024 * 1024; // 2MB
@@ -115,11 +117,23 @@ const FileChooser = React.forwardRef<HTMLInputElement, FileChooserProps>(
         >
           {userData ? (
             <>
-              {userData?.name}
-              <Trash2
-                onClick={deleteFile}
-                className="inline-block cursor-pointer text-red-500 size-[18px] ltr:ml-2 rtl:mr-2"
-              />
+              {isString(userData) ? (
+                <>
+                  {userData}
+                  <ArrowDownToLine
+                    onClick={deleteFile}
+                    className="inline-block cursor-pointer text-primary/90 size-[18px] ltr:ml-2 rtl:mr-2"
+                  />
+                </>
+              ) : (
+                <>
+                  {userData?.name}
+                  <Trash2
+                    onClick={deleteFile}
+                    className="inline-block cursor-pointer text-red-500 size-[18px] ltr:ml-2 rtl:mr-2"
+                  />
+                </>
+              )}
             </>
           ) : (
             "No File Chosen"

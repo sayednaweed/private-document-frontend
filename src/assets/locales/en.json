@@ -113,9 +113,16 @@
   "documents keep": "Documents Keep",
   "all documents": "All Documents",
   "new document": "New Document",
-  "document no": "Document No",
   "documentDate": "Document Date",
-  "remaining time": "Remaining Duration",
+  "department": "Department",
+  "keep": "Keep",
+  "document_info": "Document Information",
+  "document_desc": "Update document details",
+  "document_ref": "Document Progress",
+  "document_ref_desc": "Update document progress here",
+  "qaidSadiraDate": "Qaid Sadira Date",
+  "qaidSadiraNumber": "Qaid Sadira Number",
+  "progress": "Progress",
   "search": "Search",
   "Enter username": "Enter username",
   "Enter your email": "Enter your email",
@@ -279,5 +286,6 @@
   "enter deadline": "Enter Deadline",
   "enter": "Enter",
   "select": "Select",
-  "information": "Information"
+  "information": "Information",
+  "scan": "Scan"
 }

@@ -159,12 +159,12 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
           </span>
         )}
         {selectedDates ? (
-          <h1 className="flex items-center gap-x-2 text-ellipsis text-sm text-primary/80 text-nowrap">
+          <h1 className="flex items-center gap-x-2 text-ellipsis rtl:text-lg-rtl ltr:text-lg-ltr text-primary/80 text-nowrap">
             <CalendarDays className="size-[16px] inline-block text-tertiary rtl:ml-2 rtl:mr-2" />
             {formatHijriDate(selectedDates)}
           </h1>
         ) : (
-          <h1 className="flex items-center gap-x-2 text-ellipsis text-sm text-primary/80 text-nowrap">
+          <h1 className="flex items-center gap-x-2 text-ellipsis rtl:text-lg-rtl ltr:text-lg-ltr font-semibold text-primary text-nowrap">
             <CalendarDays className="size-[16px] inline-block text-tertiary" />
             {placeholder}
           </h1>

@@ -66,18 +66,28 @@ export default function DocumentFilterDialog(props: DocumentFilterDialogProps) {
             },
             { name: "status", translate: t("status"), onClick: handleSort },
             {
-              name: "document no",
-              translate: t("document no"),
+              name: "documentNumber",
+              translate: t("documentNumber"),
               onClick: handleSort,
             },
             {
-              name: "document date",
-              translate: t("document date"),
+              name: "urgency",
+              translate: t("urgency"),
               onClick: handleSort,
             },
             {
-              name: "remaining time",
-              translate: t("remaining time"),
+              name: "type",
+              translate: t("type"),
+              onClick: handleSort,
+            },
+            {
+              name: "documentDate",
+              translate: t("documentDate"),
+              onClick: handleSort,
+            },
+            {
+              name: "deadline",
+              translate: t("deadline"),
               onClick: handleSort,
             },
           ]}
@@ -105,8 +115,8 @@ export default function DocumentFilterDialog(props: DocumentFilterDialogProps) {
               onClick: handleSearch,
             },
             {
-              name: "document no",
-              translate: t("document no"),
+              name: "documentNumber",
+              translate: t("documentNumber"),
               onClick: handleSearch,
             },
           ]}

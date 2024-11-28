@@ -12,6 +12,11 @@ export const ROLE_ADMIN = 2;
 export const ROLE_SUPER = 4;
 export const PERMISSIONS_OPERATION = ["Add", "Edit", "Delete", "View"];
 
+export const StatusEnum = {
+  inProgres: "1",
+  keep: "2",
+  complete: "3",
+};
 export const afgMonthNamesFa = [
   "حمل",
   "ثور",

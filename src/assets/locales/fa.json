@@ -115,9 +115,17 @@
   "documents keep": "اسناد حفظ",
   "all documents": "مجموع اسناد",
   "new document": "سند جدید",
-  "document no": "شماره سند",
+  "documentNumber": "شماره سند",
   "documentDate": "تاریخ سند",
-  "remaining time": "مدت باقی مانده",
+  "department": "دیپارتمنت",
+  "keep": "حفظ",
+  "document_info": "اطلاعات سند",
+  "document_desc": "جزئیات سند را تغییر دهید.",
+  "document_ref": "جریان سند",
+  "document_ref_desc": "تغییر جریان سند در اینجا",
+  "qaidSadiraDate": "تاریخ قید صادره",
+  "qaidSadiraNumber": "نمبر قید صادره",
+  "progress": "جریان",
   "search": "جستجو",
   "Enter username": "نام کاربری را وارد کنید",
   "Enter your email": "ایمیل خود را وارد کنید",
@@ -283,5 +291,7 @@
   "deadline": "ضرب الاجل",
   "enter deadline": "ضرب الاجل را وارد کنید",
   "enter": "وارد کنید",
-  "select": "انتخاب"
+  "select": "انتخاب",
+  "information": "اطلاعات",
+  "scan": "اسکن"
 }

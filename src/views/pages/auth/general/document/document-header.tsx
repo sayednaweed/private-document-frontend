@@ -17,7 +17,7 @@ export default function DocumentHeader() {
   const [loading, setLoading] = useState(true);
   const fetchCount = async () => {
     try {
-      const response = await axiosClient.get(`users/record/count`);
+      const response = await axiosClient.get(`documents/count`);
       if (response.status == 200) {
         setRecordCount({
           inProgress: response.data.counts.inProgress,

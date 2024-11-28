@@ -16,7 +16,7 @@ interface SelectProps {
   options: Option[];
   onChange: (value: string) => void;
   updateCache: (data: any) => Promise<void>;
-  getCache: (key: IDBValidKey) => Promise<any>;
+  getCache: () => Promise<any>;
 }
 
 const KEYS = {
@@ -78,7 +78,7 @@ const CustomSelect: React.FC<SelectProps> = ({
   };
   const load = async () => {
     try {
-      const item = await getCache(PAGINATION_COUNT);
+      const item = await getCache();
       if (item === undefined) {
         setSelectData({
           ...selectData,

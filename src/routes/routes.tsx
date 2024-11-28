@@ -26,6 +26,7 @@ import DocumentsPage from "@/views/pages/auth/general/document/document-page";
 import SuperReportsPage from "@/views/pages/auth/general/reports/super-reports-page";
 import UserDashboardPage from "@/views/pages/auth/user/dashboard/user-dashboard-page";
 import GuestLayout from "@/views/layout/guest-layout";
+import DocumentEditPage from "@/views/pages/auth/general/document/edit/document-edit-page";
 
 export const getSuperRouter = (user: User) => {
   const permissions: Map<string, UserPermission> = user.permissions;
@@ -138,6 +139,16 @@ export const getSuperRouter = (user: User) => {
               />
             }
           />
+          <Route
+            path="documents/:id"
+            element={
+              <ProtectedRoute
+                element={<DocumentEditPage />}
+                routeName="documents"
+                permissions={permissions}
+              />
+            }
+          />
         </Route>
 
         {/* Catch-all Route for Errors */}
@@ -228,30 +239,20 @@ export const getAdminRouter = (user: User) => {
             }
           />
           <Route
-            path="audit"
-            element={
-              <ProtectedRoute
-                element={<SuperAuditPage />}
-                routeName="audit"
-                permissions={permissions}
-              />
-            }
-          />
-          <Route
-            path="logs"
-            element={
-              <ProtectedRoute
-                element={<LogsPage />}
-                routeName="logs"
-                permissions={permissions}
-              />
-            }
-          />
-          <Route
             path="documents"
             element={
               <ProtectedRoute
                 element={<DocumentsPage />}
+                routeName="documents"
+                permissions={permissions}
+              />
+            }
+          />
+          <Route
+            path="documents/:id"
+            element={
+              <ProtectedRoute
+                element={<DocumentEditPage />}
                 routeName="documents"
                 permissions={permissions}
               />
@@ -328,30 +329,20 @@ export const getUserRouter = (user: User) => {
             }
           />
           <Route
-            path="audit"
-            element={
-              <ProtectedRoute
-                element={<SuperAuditPage />}
-                routeName="audit"
-                permissions={permissions}
-              />
-            }
-          />
-          <Route
-            path="logs"
-            element={
-              <ProtectedRoute
-                element={<LogsPage />}
-                routeName="logs"
-                permissions={permissions}
-              />
-            }
-          />
-          <Route
             path="documents"
             element={
               <ProtectedRoute
                 element={<DocumentsPage />}
+                routeName="documents"
+                permissions={permissions}
+              />
+            }
+          />
+          <Route
+            path="documents/:id"
+            element={
+              <ProtectedRoute
+                element={<DocumentEditPage />}
                 routeName="documents"
                 permissions={permissions}
               />

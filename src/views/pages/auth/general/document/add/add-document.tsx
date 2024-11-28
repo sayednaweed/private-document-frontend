@@ -56,6 +56,7 @@ export default function AddDocument(props: AddDocumentProps) {
         },
       });
       if (response.status == 200) {
+        onComplete(response.data.document);
         toast({
           toastType: "SUCCESS",
           description: response.data.message,
@@ -140,7 +141,7 @@ export default function AddDocument(props: AddDocumentProps) {
                 closeText={t("Close")}
                 againText={t("Again")}
                 closeModel={closeModel}
-                description={t("User account has been created")}
+                description={t("Document is added")}
               />
             ),
             validationRules: [],

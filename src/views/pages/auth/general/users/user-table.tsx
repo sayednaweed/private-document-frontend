@@ -59,27 +59,26 @@ export function UserTable() {
     },
     date: [],
   });
-
   const loadList = async (count: number, dataFilters: UserFilter, page = 1) => {
     try {
       if (loading) return;
       setLoading(true);
       // 1. Organize date
       let dates: {
-        startDate: Date | null;
-        endDate: Date | null;
+        startDate: string | null;
+        endDate: string | null;
       };
       if (filters.date.length === 1) {
         // set start date
         dates = {
-          startDate: filters.date[0].toDate(),
+          startDate: filters.date[0].toDate().toISOString(),
           endDate: null,
         };
       } else if (filters.date.length === 2) {
         // set dates
         dates = {
-          startDate: filters.date[0].toDate(),
-          endDate: filters.date[1].toDate(),
+          startDate: filters.date[0].toDate().toISOString(),
+          endDate: filters.date[1].toDate().toISOString(),
         };
       } else {
         // Set null
@@ -385,7 +384,7 @@ export function UserTable() {
           ]}
           className="w-fit sm:self-baseline"
           updateCache={updateAppCache}
-          getCache={getAppCache}
+          getCache={async () => await getAppCache(PAGINATION_COUNT)}
           placeholder={`${t("select")}...`}
           emptyPlaceholder={t("No options found")}
           rangePlaceholder={t("count")}
@@ -424,7 +423,7 @@ export function UserTable() {
                 remove={remove}
                 edit={edit}
                 onEdit={editOnClick}
-                key={item.email.value}
+                key={item.email}
                 item={item}
                 onRemove={deleteOnClick}
                 onRead={watchOnClick}
@@ -442,17 +441,17 @@ export function UserTable() {
                   {item.username}
                 </TableCell>
                 <TableCell>
-                  <h1 className="truncate">{item?.destination?.name}</h1>
-                  <h1 className="truncate">{item?.job?.name}</h1>
+                  <h1 className="truncate">{item?.destination}</h1>
+                  <h1 className="truncate">{item?.job}</h1>
                 </TableCell>
                 <TableCell
                   dir="ltr"
                   className="rtl:text-md-rtl truncate rtl:text-end px-0 py-0"
                 >
-                  {item.email.value}
+                  {item.email}
                 </TableCell>
                 <TableCell dir="ltr" className="rtl:text-end">
-                  {item?.contact?.value == "null" ? "" : item?.contact?.value}
+                  {item?.contact == "null" ? "" : item?.contact}
                 </TableCell>
                 <TableCell>
                   {toLocaleDate(new Date(item.createdAt), state)}

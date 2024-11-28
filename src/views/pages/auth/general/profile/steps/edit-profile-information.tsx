@@ -36,7 +36,7 @@ interface ProfileInformation {
   status: boolean;
   grantPermission: boolean;
   role: Role;
-  contact: string | null;
+  contact: string;
   job: string;
   destination: string;
   createdAt: string;
@@ -53,10 +53,10 @@ export default function EditProfileInformation() {
     imagePreviewUrl: undefined,
     username: user.username,
     name: user.fullName,
-    email: user.email.value,
-    contact: user.contact?.value,
-    destination: user.destination.name,
-    job: user.job.name,
+    email: user.email,
+    contact: user.contact,
+    destination: user.destination,
+    job: user.job,
     role: user.role,
     createdAt: user.createdAt,
     status: user.status,
@@ -102,16 +102,8 @@ export default function EditProfileInformation() {
           ...user,
           username: userData.username,
           fullName: userData.name,
-          email: {
-            id: "0",
-            value: userData.email,
-            createdAt: Date.now().toLocaleString(),
-          },
-          contact: {
-            id: "0",
-            value: userData.contact ? userData?.contact : "",
-            createdAt: Date.now().toLocaleString(),
-          },
+          email: userData.email,
+          contact: userData.contact,
         });
 
         toast({
@@ -204,14 +196,14 @@ export default function EditProfileInformation() {
               <ChevronsUpDown className="size-[16px] absolute top-1/2 transform -translate-y-1/2 ltr:right-4 rtl:left-4" />
             }
             title={t("department")}
-            selected={user.destination.name}
+            selected={user.destination}
           />
           <FakeCombobox
             icon={
               <ChevronsUpDown className="size-[16px] absolute top-1/2 transform -translate-y-1/2 ltr:right-4 rtl:left-4" />
             }
             title={t("job")}
-            selected={user.job.name}
+            selected={user.job}
           />
           <FakeCombobox
             icon={
