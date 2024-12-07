@@ -41,6 +41,7 @@ import { DateObject } from "react-multi-date-picker";
 import { useNavigate, useSearchParams } from "react-router";
 import AddDocument from "./add/add-document";
 import DocumentFilterDialog from "./document-filter-dialog";
+import Countdown from "@/components/custom-ui/counter/Countdown";
 export default function DocumentTable() {
   const { user } = useAuthState();
   const navigate = useNavigate();
@@ -439,7 +440,11 @@ export default function DocumentTable() {
                 <TableCell>
                   {toLocaleDate(new Date(item.documentDate), state)}
                 </TableCell>
-                <TableCell>{item.deadline ? item.deadline : "N/K"}</TableCell>
+                <TableCell>
+                  saas
+                  {/* <Countdown deadline={"2024-8-12T15:39:39.464Z"} /> */}
+                </TableCell>
+                {/* <TableCell>{item.deadline ? item.deadline : "N/K"}</TableCell> */}
 
                 <TableCell className="truncate">{item.source}</TableCell>
                 <TableCell>

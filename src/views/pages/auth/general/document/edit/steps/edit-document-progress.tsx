@@ -1,5 +1,7 @@
+import { RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
+import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
 import {
   Card,
   CardContent,
@@ -11,31 +13,27 @@ import {
 import { useTranslation } from "react-i18next";
 import axiosClient from "@/lib/axois-client";
 import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
-import FileChooser from "@/components/custom-ui/chooser/FileChooser";
-import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
-import { RefreshCcw } from "lucide-react";
-interface Scan {
-  scanId: string;
-  name: string;
-  username: string;
-  path: string;
-  uploadedDate: string;
-}
+import { Progress } from "@/database/tables";
+import FileProgress from "@/components/custom-ui/progress/FileProgress";
+import { useGlobalState } from "@/context/GlobalStateContext";
 export interface EditDocumentReferProps {
   id: string | undefined;
 }
 
-export function EditDocumentScan(props: EditDocumentReferProps) {
+export function EditDocumentProgress(props: EditDocumentReferProps) {
   const { id } = props;
+  const [state] = useGlobalState();
   const { t } = useTranslation();
   const [failed, setFailed] = useState(false);
-  const [scanData, setScanData] = useState<Scan[] | undefined>();
-  const loadScans = async () => {
+  const [documentProgress, setDocumentProgress] = useState<
+    Progress[] | undefined
+  >();
+  const loadInformation = async () => {
     try {
       if (failed) setFailed(false);
-      const response = await axiosClient.get(`document/scans/${id}`);
+      const response = await axiosClient.get(`document/progress/${id}`);
       if (response.status == 200) {
-        setScanData(response.data.scans);
+        setDocumentProgress(response.data.progress);
       }
     } catch (error: any) {
       toast({
@@ -48,51 +46,33 @@ export function EditDocumentScan(props: EditDocumentReferProps) {
     }
   };
   useEffect(() => {
-    loadScans();
+    loadInformation();
   }, []);
-
   return (
     <Card>
       <CardHeader className="space-y-0">
         <CardTitle className="rtl:text-3xl-rtl ltr:text-2xl-ltr">
-          {t("Update account password")}
+          {t("document_ref")}
         </CardTitle>
         <CardDescription className="rtl:text-xl-rtl ltr:text-lg-ltr">
-          {t("Update_Password_Description")}
+          {t("document_ref_desc")}
         </CardDescription>
       </CardHeader>
       <CardContent>
         {failed ? (
           <h1>{t("You are not authorized!")}</h1>
-        ) : !scanData ? (
+        ) : !documentProgress ? (
           <NastranSpinner />
         ) : (
-          <div className="grid gap-4 w-full sm:w-[70%] md:w-1/2 pb-8">
-            {scanData.map((scan: Scan, index: number) => (
-              <FileChooser
-                disabled={true}
-                downloadParam={{ path: scan.path, fileName: scan.name }}
-                key={scan.scanId}
-                lable={`${t("scan")} - ${index + 1}`}
-                required={true}
-                requiredHint={`* ${t("Required")}`}
-                defaultFile={scan.name}
-                onchange={
-                  (_file: File | undefined) => {}
-                  // setScanData({ ...scanData, scan: file })
-                }
-                validTypes={["application/pdf"]}
-                maxSize={8}
-                accept=".pdf"
-              />
-            ))}
+          <div className="grid gap-4 w-full pb-8">
+            <FileProgress state={state} list={documentProgress} />
           </div>
         )}
       </CardContent>
       <CardFooter>
         {failed && (
           <PrimaryButton
-            onClick={async () => await loadScans()}
+            onClick={async () => await loadInformation()}
             className="bg-red-500 hover:bg-red-500/70"
           >
             {t("Failed Retry")}

@@ -98,7 +98,7 @@ export type DocumentModel = {
   userRecievedDate: string;
   qaidSadiraDate: string;
   qaidWaridaDate: string;
-  deadline: number | null;
+  deadline: string;
   status: string;
   statusColor: string;
   urgency: string;
@@ -134,4 +134,14 @@ export type Audit = {
   status: string;
   ipaddress: string;
   date: string;
+};
+export type Progress = {
+  id: string;
+  step: number;
+  sendDate: string;
+  feedback: string;
+  feedbackDate: string;
+  destination: string;
+  color: string;
+  username: string;
 };

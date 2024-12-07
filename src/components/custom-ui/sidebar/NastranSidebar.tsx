@@ -46,7 +46,7 @@ export default function NastranSidebar() {
             }`}
             key={key}
           >
-            <NetworkSvg src={value.icon} />
+            <NetworkSvg src={"media/" + value.icon} />
             <h1 className="truncate">{t(key)}</h1>
           </div>
         );
@@ -80,13 +80,13 @@ export default function NastranSidebar() {
           onClick={resizeSidebar}
         />
         {/* Header */}
-        <div className="flex items-center gap-x-4 pb-2 mb-8 ltr:pl-3 rtl:pr-3 lg:pt-4">
+        <div className="flex items-center gap-x-4 pb-2 mb-8 ltr:pl-3 rtl:pr-3 lg:pt-1 border-b border-secondary/5">
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKV_aIuUpYyABaESC5G_rDUhzjCzvqbXnv89V6kc9LJrzn9YekkeEs77Z-5rmBtkNV89Q&usqp=CAU"
-            className="size-[36px] text-primary/70 max-h-[66px] rounded-lg max-w-[66px]"
+            src="http://127.0.0.1:8000/images/app-logo.png"
+            className="size-[56px] text-primary/70 max-h-[76px] rounded-lg max-w-[76px]"
           />
 
-          <h1 className="line-clamp-1 ltr:text-lg-ltr rtl:text-2xl-rtl font-semibold text-center">
+          <h1 className="line-clamp-1 ltr:text-xl-ltr rtl:text-3xl-rtl font-semibold text-center">
             {t("App Name")}
           </h1>
         </div>

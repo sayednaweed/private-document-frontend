@@ -32,10 +32,10 @@ export const returnPermissions = (
       const item: any = permissions[i];
       const permission: UserPermission = {
         id: item.id,
-        edit: item.edit,
-        view: item.view,
-        delete: item.delete,
-        add: item.add,
+        edit: item.edit == "1" ? true : false,
+        view: item.view == "1" ? true : false,
+        delete: item.delete == "1" ? true : false,
+        add: item.add == "1" ? true : false,
         icon: item.icon,
         priority: item.priority,
         permission: item.permission,

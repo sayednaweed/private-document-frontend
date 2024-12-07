@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 import { ValidateItem, ValidationRule } from "./types";
 import { t } from "i18next";
 import { isFile } from "./utils";
+import { isString } from "@/lib/utils";
 
 export const validate = async (
   inputs: ValidateItem[],
@@ -16,7 +17,13 @@ export const validate = async (
       const rule: ValidationRule = item.rules[index];
       if (rule == "required") {
         // 1. If value is object return hence has a value
-        if (typeof value === "object") {
+        if (Array.isArray(value)) {
+          console.log(item.name, "Naweed");
+          if (value.length == 0) {
+            errMap.set(item.name, `${t(item.name)} ${t("is required")}`);
+            break;
+          }
+        } else if (typeof value === "object") {
           return;
         }
         // 1. If value is File return hence has a value
@@ -25,10 +32,11 @@ export const validate = async (
           // 1. If value is boolean return hence has a value
         } else if (typeof value === "boolean") {
           return;
-        } else if (Array.isArray(value)) {
-          if (value.length == 0)
-            errMap.set(item.name, `${t(item.name)} ${t("is required")}`);
-        } else if (value == undefined || value.trim() == "") {
+        } else if (value == undefined) {
+          errMap.set(item.name, `${t(item.name)} ${t("is required")}`);
+          // Allow one validation per loop to eliminate to much Rerender
+          break;
+        } else if (isString(value) && value.trim() == "") {
           errMap.set(item.name, `${t(item.name)} ${t("is required")}`);
           // Allow one validation per loop to eliminate to much Rerender
           break;

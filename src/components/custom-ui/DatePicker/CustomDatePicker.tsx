@@ -9,7 +9,7 @@ import {
   CALENDAR_LOCALE,
 } from "@/lib/constants";
 import { useGlobalState } from "@/context/GlobalStateContext";
-import { cn, convertNumberToPersian } from "@/lib/utils";
+import { cn, isString } from "@/lib/utils";
 import { CalendarDays } from "lucide-react";
 
 export interface CustomeDatePickerProps {
@@ -22,6 +22,7 @@ export interface CustomeDatePickerProps {
   requiredHint?: string;
   lable?: string;
   errorMessage?: string;
+  readonly?: boolean;
 }
 
 export default function CustomDatePicker(props: CustomeDatePickerProps) {
@@ -34,12 +35,15 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
     requiredHint,
     lable,
     errorMessage,
+    readonly,
   } = props;
   const [state] = useGlobalState();
   const { i18n } = useTranslation();
   const direction = i18n.dir();
   const [visible, setVisible] = useState(false);
-  const [selectedDates, setSelectedDates] = useState<DateObject>(value);
+  const [selectedDates, setSelectedDates] = useState<DateObject>(
+    isString(value) ? new DateObject(new Date(value)) : value
+  );
   const calendarRef = useRef<any>(null);
 
   useEffect(() => {
@@ -60,47 +64,52 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
   const formatHijriDate = (date?: DateObject) => {
     try {
       if (date) {
-        let month = "";
-        let day: any;
-        let year: any;
-        if (state.systemLanguage.info.calendarId === CALENDAR.SOLAR) {
-          if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.farsi) {
-            month = afgMonthNamesFa[date.monthIndex];
-            day = convertNumberToPersian(date.day);
-            year = convertNumberToPersian(date.year);
-          } else if (
-            state.systemLanguage.info.localeId === CALENDAR_LOCALE.english
-          ) {
-            month = afgMonthNamesEn[date.monthIndex];
-            day = date.day;
-            year = date.year;
-          } else {
-            month = date.month.name;
-            day = date.day;
-            year = date.year;
-          }
-        } else if (state.systemLanguage.info.calendarId === CALENDAR.LUNAR) {
-          if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.farsi) {
-            month = afgMonthNamesFa[date.monthIndex];
-            day = convertNumberToPersian(date.day);
-            year = convertNumberToPersian(date.year);
-          } else {
-            month = date.month?.name;
-            day = convertNumberToPersian(date.day);
-            year = convertNumberToPersian(date.year);
-          }
-        } else {
-          if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.farsi) {
-            day = convertNumberToPersian(date.day);
-            year = convertNumberToPersian(date.year);
-          } else {
-            day = date.day;
-            year = date.year;
-          }
-          month = date.month.name;
-        }
+        const format = state.systemLanguage.format;
+        return date
+          .convert(state.systemLanguage.calendar, state.systemLanguage.local)
+          .format(format);
 
-        return `${month}, ${day}, ${year}`;
+        // let month = "";
+        // let day: any;
+        // let year: any;
+        // if (state.systemLanguage.info.calendarId === CALENDAR.SOLAR) {
+        //   if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.farsi) {
+        //     month = afgMonthNamesFa[date.monthIndex];
+        //     day = convertNumberToPersian(date.day);
+        //     year = convertNumberToPersian(date.year);
+        //   } else if (
+        //     state.systemLanguage.info.localeId === CALENDAR_LOCALE.english
+        //   ) {
+        //     month = afgMonthNamesEn[date.monthIndex];
+        //     day = date.day;
+        //     year = date.year;
+        //   } else {
+        //     month = date.month.name;
+        //     day = date.day;
+        //     year = date.year;
+        //   }
+        // } else if (state.systemLanguage.info.calendarId === CALENDAR.LUNAR) {
+        //   if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.farsi) {
+        //     month = afgMonthNamesFa[date.monthIndex];
+        //     day = convertNumberToPersian(date.day);
+        //     year = convertNumberToPersian(date.year);
+        //   } else {
+        //     month = date.month?.name;
+        //     day = convertNumberToPersian(date.day);
+        //     year = convertNumberToPersian(date.year);
+        //   }
+        // } else {
+        //   if (state.systemLanguage.info.localeId === CALENDAR_LOCALE.farsi) {
+        //     day = convertNumberToPersian(date.day);
+        //     year = convertNumberToPersian(date.year);
+        //   } else {
+        //     day = date.day;
+        //     year = date.year;
+        //   }
+        //   month = date.month?.name;
+        // }
+
+        // return `${month}, ${day}, ${year}`;
       }
     } catch (e: any) {
       console.log(e, "CustomDatePicker");
@@ -121,7 +130,9 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
 
     if (date instanceof DateObject) setSelectedDates(date);
   };
-  const onVisibilityChange = () => setVisible(!visible);
+  const onVisibilityChange = () => {
+    if (!readonly) setVisible(!visible);
+  };
 
   let months: any = [];
   if (state.systemLanguage.info.calendarId === CALENDAR.SOLAR) {
@@ -135,6 +146,7 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
     <div dir={direction} className="relative">
       {visible && (
         <Calendar
+          value={selectedDates}
           ref={calendarRef}
           className="absolute top-10"
           onChange={handleDateChange}
@@ -147,8 +159,10 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
       <div
         className={cn(
           `border relative px-3 py-1 rounded-md ${
-            required || lable ? "mt-[20px]" : "mt-2"
-          } ${errorMessage && "border-red-400"}`,
+            readonly && "cursor-not-allowed"
+          } ${required || lable ? "mt-[20px]" : "mt-2"} ${
+            errorMessage && "border-red-400"
+          }`,
           className
         )}
         onClick={onVisibilityChange}

@@ -11,7 +11,7 @@ import arabic from "react-date-object/calendars/arabic";
 import arabic_ar from "react-date-object/locales/arabic_ar";
 import { CALENDAR, CALENDAR_LOCALE, SYSTEM_CALENDAR } from "@/lib/constants";
 import { getCalender } from "@/lib/utils";
-interface SystemLanguage {
+export interface SystemLanguage {
   calendar: Calendar | undefined;
   local: Locale | undefined;
   info: {

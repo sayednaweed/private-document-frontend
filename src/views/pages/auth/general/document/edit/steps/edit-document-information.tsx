@@ -1,6 +1,6 @@
 import APICombobox from "@/components/custom-ui/combobox/APICombobox";
 import CustomInput from "@/components/custom-ui/input/CustomInput";
-import { RefreshCcw } from "lucide-react";
+import { LockKeyhole, RefreshCcw, UnlockKeyhole } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
@@ -18,35 +18,38 @@ import axiosClient from "@/lib/axois-client";
 import { useAuthState } from "@/context/AuthContextProvider";
 import { SECTION_NAMES } from "@/lib/constants";
 import { setServerError, validate } from "@/validation/validation";
-import { toLocaleDate } from "@/lib/utils";
 import ButtonSpinner from "@/components/custom-ui/spinner/ButtonSpinner";
 import { UserPermission } from "@/database/tables";
 import CustomDatePicker from "@/components/custom-ui/DatePicker/CustomDatePicker";
 import { DateObject } from "react-multi-date-picker";
 import CustomTextarea from "@/components/custom-ui/input/CustomTextarea";
+import Countdown from "@/components/custom-ui/counter/Countdown";
+import DocumentUnlockDialog from "./document-unlock-dialog";
+import NastranModel from "@/components/custom-ui/model/NastranModel";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 interface Information {
   id: string;
-  documentNumber: string;
-  subject: string;
-  muqamStatement: string;
-  qaidWaridaNumber: string;
-  qaidSadiraNumber: string;
-  savedFile: string;
-  documentDate: DateObject;
-  userRecievedDate: string;
-  qaidSadiraDate: DateObject;
-  qaidWaridaDate: DateObject;
-  deadline: number | null;
   status: string;
-  statusColor: string;
+  documentType: string;
   urgency: string;
   source: string;
-  reciverUserId: {
-    id: string;
-    username: string;
-  };
-  createdAt: string;
-  documentType: string;
+  documentDate: DateObject;
+  documentNumber: string;
+  qaidWaridaNumber: string;
+  qaidWaridaDate: DateObject;
+  qaidSadiraDate?: DateObject;
+  qaidSadiraNumber?: string;
+  subject: string;
+  muqamStatement: string;
+  savedFile: string;
+  locked: boolean;
+  oldDoc: boolean;
+  deadline: DateObject;
 }
 export interface EditDocumentInformationProps {
   id: string | undefined;
@@ -64,7 +67,26 @@ export default function EditDocumentInformation(
       if (failed) setFailed(false);
       const response = await axiosClient.get(`document/information/${id}`);
       if (response.status == 200) {
-        setDocumentData(response.data.document);
+        const info = response.data.information;
+        setDocumentData({
+          id: info.id,
+          status: info.status,
+          documentType: info.documentType,
+          urgency: info.urgency,
+          source: info.source,
+          documentDate: info.documentDate,
+          documentNumber: info.documentNumber,
+          qaidWaridaNumber: info.qaidWaridaNumber,
+          qaidWaridaDate: info.qaidWaridaDate,
+          qaidSadiraDate: info.qaidSadiraDate,
+          qaidSadiraNumber: info.qaidSadiraNumber,
+          subject: info.subject,
+          muqamStatement: info.muqamStatement,
+          savedFile: info.savedFile,
+          locked: info.lock == "1" ? true : false,
+          oldDoc: info.oldDoc == "1" ? true : false,
+          deadline: info.deadline,
+        });
       }
     } catch (error: any) {
       toast({
@@ -102,30 +124,6 @@ export default function EditDocumentInformation(
           name: "username",
           rules: ["required", "max:45", "min:3"],
         },
-        {
-          name: "email",
-          rules: ["required", "max:45", "min:3"],
-        },
-        {
-          name: "destination",
-          rules: ["required"],
-        },
-        {
-          name: "job",
-          rules: ["required"],
-        },
-        {
-          name: "role",
-          rules: ["required"],
-        },
-        {
-          name: "status",
-          rules: ["required"],
-        },
-        {
-          name: "grantPermission",
-          rules: ["required"],
-        },
       ],
       documentData,
       setError
@@ -162,15 +160,80 @@ export default function EditDocumentInformation(
     }
   };
 
+  const lock = documentData?.locked == true ? true : hasEdit ? false : true;
+
   return (
     <Card>
-      <CardHeader className="space-y-0">
-        <CardTitle className="rtl:text-3xl-rtl ltr:text-2xl-ltr">
-          {t("document_info")}
-        </CardTitle>
-        <CardDescription className="rtl:text-xl-rtl ltr:text-lg-ltr">
-          {t("document_desc")}
-        </CardDescription>
+      <CardHeader className="space-y-0 justify-between relative">
+        <div>
+          <CardTitle className="rtl:text-3xl-rtl ltr:text-2xl-ltr">
+            {t("document_info")}
+          </CardTitle>
+          <CardDescription className="rtl:text-xl-rtl ltr:text-lg-ltr">
+            {t("document_desc")}
+          </CardDescription>
+        </div>
+        {documentData && documentData?.locked == true ? (
+          <TooltipProvider>
+            <Tooltip>
+              <NastranModel
+                size="lg"
+                isDismissable={false}
+                button={
+                  <TooltipTrigger asChild>
+                    <LockKeyhole className="size-[22px] cursor-pointer absolute top-4 rtl:left-4 ltr:right-4 text-red-500 text:bg-red-400" />
+                  </TooltipTrigger>
+                }
+                showDialog={async () => true}
+              >
+                <DocumentUnlockDialog documentId={documentData.id} />
+              </NastranModel>
+              <TooltipContent>
+                <p>{t("lock_desc")}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <UnlockKeyhole className="size-[22px] absolute top-4 rtl:left-4 ltr:right-4 text-green-500 hover:text-green-400" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{t("unlock_desc")}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+
+        {documentData?.deadline && (
+          <Countdown
+            className="border p-4 rounded-lg shadow"
+            targetDate={new Date("2024-12-08T22:39:39.464Z")}
+            feedbackDate={false ? new Date("2024-12-01T15:39:39.464Z") : null}
+            info={{
+              remaining: {
+                title: t("remaining_time"),
+                color: "bg-tertiary",
+                startDay: 4,
+              },
+              warning: {
+                title: t("remaining_time"),
+                color: "bg-red-400",
+                startDay: 1,
+              },
+              completed: {
+                title: t("Complete"),
+                color: "bg-green-400",
+              },
+              expire: {
+                title: t("expired_time"),
+                color: "bg-gray-500",
+                startDay: 0,
+              },
+            }}
+          />
+        )}
       </CardHeader>
       <CardContent>
         {failed ? (
@@ -184,7 +247,7 @@ export default function EditDocumentInformation(
                 placeholderText={t("Search item")}
                 errorText={t("No item")}
                 onSelect={(selection: any) =>
-                  setDocumentData({ ...documentData, documentType: selection })
+                  setDocumentData({ ...documentData, status: selection })
                 }
                 placeHolder={`${t("select")} ${t("status")}`}
                 lable={t("status")}
@@ -194,6 +257,7 @@ export default function EditDocumentInformation(
                 errorMessage={error.get("status")}
                 apiUrl={"statuses"}
                 mode="single"
+                readonly={lock}
               />
               <APICombobox
                 placeholderText={t("Search item")}
@@ -209,6 +273,7 @@ export default function EditDocumentInformation(
                 errorMessage={error.get("documentType")}
                 apiUrl={"document-types"}
                 mode="single"
+                readonly={lock}
               />
               <APICombobox
                 placeholderText={t("Search item")}
@@ -224,6 +289,7 @@ export default function EditDocumentInformation(
                 errorMessage={error.get("urgency")}
                 apiUrl={"urgencies"}
                 mode="single"
+                readonly={lock}
               />
               <APICombobox
                 placeholderText={t("Search item")}
@@ -239,6 +305,7 @@ export default function EditDocumentInformation(
                 errorMessage={error.get("source")}
                 apiUrl={"sources"}
                 mode="single"
+                readonly={lock}
               />
               <CustomDatePicker
                 placeholder={t("Select a date")}
@@ -251,6 +318,7 @@ export default function EditDocumentInformation(
                 }}
                 className="py-[12px]"
                 errorMessage={error.get("documentDate")}
+                readonly={lock}
               />
               <CustomInput
                 required={true}
@@ -263,8 +331,12 @@ export default function EditDocumentInformation(
                 type="text"
                 errorMessage={error.get("documentNumber")}
                 onBlur={(e: any) =>
-                  setDocumentData({ ...documentData, subject: e.target.value })
+                  setDocumentData({
+                    ...documentData,
+                    documentNumber: e.target.value,
+                  })
                 }
+                readOnly={lock}
               />
               <CustomInput
                 required={true}
@@ -282,6 +354,7 @@ export default function EditDocumentInformation(
                     qaidWaridaNumber: e.target.value,
                   })
                 }
+                readOnly={lock}
               />
               <CustomDatePicker
                 placeholder={t("Select a date")}
@@ -294,10 +367,12 @@ export default function EditDocumentInformation(
                 }}
                 className="py-[12px]"
                 errorMessage={error.get("qaidWaridaDate")}
+                readonly={lock}
               />
               {documentData.qaidSadiraDate && (
                 <>
                   <CustomDatePicker
+                    readonly={lock}
                     placeholder={t("Select a date")}
                     lable={t("qaidSadiraDate")}
                     requiredHint={`* ${t("Required")}`}
@@ -328,6 +403,7 @@ export default function EditDocumentInformation(
                         qaidSadiraNumber: e.target.value,
                       })
                     }
+                    readOnly={lock}
                   />
                 </>
               )}
@@ -339,11 +415,43 @@ export default function EditDocumentInformation(
               required={true}
               name="subject"
               parantClassName="mt-9"
-              placeholder={`${t("enter")} ${t("subject")}`}
+              placeholder={`${t("enter")}`}
               requiredHint={`* ${t("Required")}`}
               defaultValue={documentData["subject"]}
               lable={t("subject")}
               errorMessage={error.get("subject")}
+              readOnly={lock}
+            />
+            <CustomTextarea
+              onChange={(e: any) =>
+                setDocumentData({
+                  ...documentData,
+                  muqamStatement: e.target.value,
+                })
+              }
+              required={true}
+              name="muqamStatement"
+              parantClassName="mt-9"
+              placeholder={`${t("enter")}`}
+              requiredHint={`* ${t("Required")}`}
+              defaultValue={documentData["muqamStatement"]}
+              lable={t("muqamStatement")}
+              errorMessage={error.get("muqamStatement")}
+              readOnly={lock}
+            />
+            <CustomTextarea
+              onChange={(e: any) =>
+                setDocumentData({ ...documentData, savedFile: e.target.value })
+              }
+              required={true}
+              name="savedFile"
+              parantClassName="mt-9"
+              placeholder={`${t("enter")}`}
+              requiredHint={`* ${t("Required")}`}
+              defaultValue={documentData["savedFile"]}
+              lable={t("savedFile")}
+              errorMessage={error.get("savedFile")}
+              readOnly={lock}
             />
           </>
         )}

@@ -1,15 +1,17 @@
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 export interface FakeComboboxProps {
   title: string;
   selected: string;
   icon: any;
+  className?: string;
 }
 
 export default function FakeCombobox(props: FakeComboboxProps) {
-  const { title, selected, icon } = props;
+  const { title, selected, icon, className } = props;
   return (
-    <div className="select-none cursor-not-allowed">
+    <div className={cn("select-none cursor-not-allowed", className)}>
       <Label className="font-semibold rtl:text-xl-rtl ltr:text-xl-ltr">
         {title}
       </Label>

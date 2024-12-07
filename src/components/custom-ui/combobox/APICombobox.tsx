@@ -76,17 +76,16 @@ export default function APICombobox(props: IAPIComboboxProps) {
   const updateSelect = () => {
     if (selectedItem) {
       setItems((prevItems) =>
-        prevItems.map((item) =>
-          selectedItem.localeCompare(item.name) === 0
+        prevItems.map((item) => {
+          // Ensure comparison works correctly (trim whitespace, case-insensitive)
+          return selectedItem.trim().toLowerCase() ===
+            item.name.trim().toLowerCase()
             ? { ...item, selected: true }
-            : item
-        )
+            : { ...item, selected: false }; // Clear other selections
+        })
       );
     }
   };
-  useEffect(() => {
-    updateSelect();
-  }, [selectedItem]);
   const initialize = async () => {
     try {
       if (!readonly && apiUrl) {
@@ -95,6 +94,7 @@ export default function APICombobox(props: IAPIComboboxProps) {
         });
         if (response.status == 200) {
           setItems(response.data);
+          updateSelect(); // Update selection once items are fetched
         }
       }
     } catch (error: any) {
@@ -110,6 +110,12 @@ export default function APICombobox(props: IAPIComboboxProps) {
   useEffect(() => {
     initialize();
   }, []);
+  useEffect(() => {
+    if (selectedItem) {
+      setSelected(selectedItem);
+      updateSelect(); // Call updateSelect to update the item list based on the selectedItem
+    }
+  }, [selectedItem]);
 
   const error = errorMessage != undefined;
 
@@ -156,13 +162,14 @@ export default function APICombobox(props: IAPIComboboxProps) {
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            disabled={readonly}
             role="combobox"
             aria-expanded={open}
             className={cn(
               `w-fit min-w-[260px] min-h-[43px] rtl:text-lg-rtl ltr:text-lg-ltr relative justify-between ${
                 error && "border-red-400 border"
-              } ${required || lable ? "mt-[20px]" : "mt-2"}`,
+              } ${required || lable ? "mt-[20px]" : "mt-2"} ${
+                readonly && "cursor-not-allowed"
+              }`,
               className
             )}
           >

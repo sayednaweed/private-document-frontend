@@ -11,17 +11,8 @@ import {
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import axiosClient from "@/lib/axois-client";
+import { Option } from "@/lib/types";
 import { toast } from "@/components/ui/use-toast";
-
-export interface Option {
-  name: string;
-  label: string;
-  disable?: boolean;
-  /** fixed option that can't be removed. */
-  fixed?: boolean;
-  /** Group the options by providing key. */
-  [key: string]: string | boolean | undefined;
-}
 interface GroupOption {
   [key: string]: Option[];
 }
@@ -29,6 +20,7 @@ interface GroupOption {
 interface MultipleSelectorProps {
   apiUrl?: string;
   params?: any;
+  popoverClassName?: string;
   value?: Option[];
   defaultOptions?: Option[];
   selectedOptions?: Option[];
@@ -217,6 +209,7 @@ const MultipleSelector = React.forwardRef<
       requiredHint,
       required,
       label,
+      popoverClassName,
     }: MultipleSelectorProps,
     ref: React.Ref<MultipleSelectorRef>
   ) => {
@@ -534,7 +527,7 @@ const MultipleSelector = React.forwardRef<
                 <div
                   key={option.name}
                   className={cn(
-                    "animate-fadeIn relative inline-flex h-7 cursor-default items-center rounded-md border border-solid bg-background pe-7 pl-2 ps-2 text-xs font-medium text-secondary-foreground transition-all hover:bg-background disabled:cursor-not-allowed disabled:opacity-50 data-[fixed]:pe-2",
+                    "animate-fadeIn relative ltr:text-xl-ltr bg-primary inline-flex h-fit cursor-default items- text-start rounded-md border border-solid rtl:ps-6 rtl:pe-2 ltr:pe-7 ltr:pl-2 rtl:pr-2 font-medium text-primary-foreground transition-all hover:bg-primary/70 disabled:cursor-not-allowed disabled:opacity-50 data-[fixed]:pe-2",
                     badgeClassName
                   )}
                   data-fixed={option.fixed}
@@ -542,7 +535,7 @@ const MultipleSelector = React.forwardRef<
                 >
                   {option.name}
                   <button
-                    className="absolute -inset-y-px -end-px flex size-7 items-center justify-center rounded-e-lg border border-transparent p-0 text-muted-foreground/80 ring-offset-background transition-colors hover:text-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2"
+                    className="absolute -inset-y-px rtl:-start-px ltr:-end-px flex size-7 items-center justify-center rounded-e-lg border border-transparent p-0 text-primary-foreground ring-offset-background transition-colors hover:text-primary-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         handleUnselect(option);
@@ -587,7 +580,7 @@ const MultipleSelector = React.forwardRef<
                   : placeholder
               }
               className={cn(
-                "flex-1 bg-transparent outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed",
+                "flex-1 bg-transparent outline-none ltr:text-xl-ltr rtl:text-3xl-ltr placeholder:text-muted-foreground disabled:cursor-not-allowed",
                 {
                   "w-full": hidePlaceholderWhenSelected,
                   "px-3 py-2": selected.length === 0,
@@ -619,7 +612,7 @@ const MultipleSelector = React.forwardRef<
         <div className="relative">
           <div
             className={cn(
-              "absolute top-2 z-10 w-full overflow-hidden rounded-lg border border-input",
+              "absolute top-2 z-10 w-full overflow-hidden rounded-md border border-input",
               "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
               !open && "hidden"
             )}
@@ -627,7 +620,10 @@ const MultipleSelector = React.forwardRef<
           >
             {open && (
               <CommandList
-                className="bg-popover text-popover-foreground shadow-lg shadow-black/5 outline-none"
+                className={cn(
+                  "bg-popover text-popover-foreground shadow-lg shadow-black/5 outline-none",
+                  popoverClassName
+                )}
                 onMouseLeave={() => {
                   setOnScrollbar(false);
                 }}
