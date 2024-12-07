@@ -306,5 +306,7 @@
   "enter": "وارد کنید",
   "select": "انتخاب",
   "information": "اطلاعات",
-  "scan": "اسکن"
+  "scan": "اسکن",
+  "lastSixMonth" : "شش ماه آخر"
+
 }

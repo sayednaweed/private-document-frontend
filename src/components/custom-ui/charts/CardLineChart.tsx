@@ -22,6 +22,7 @@ export interface CardLineChartProps {
   subtitle: string;
   color: string;
   theme: string;
+
   symbol?: string;
 }
 export default function CardLineChart(props: CardLineChartProps) {
@@ -97,7 +98,7 @@ export default function CardLineChart(props: CardLineChartProps) {
             className="font-bold px-2"
             min={0}
             symbol={symbol}
-            max={parseInt(title.replace(/\$/g, "").replace(/,/g, ""), 10)}
+            max={parseInt(title, 10)}
           />
           <h1 className="px-2">{subtitle}</h1>
           <div className="rtl:scale-x-[-1]">
