@@ -300,5 +300,7 @@
   "enter": "Enter",
   "select": "Select",
   "information": "Information",
-  "scan": "Scan"
+  "scan": "Scan",
+  "lastSixMonth" : "Last Six Month"
+
 }

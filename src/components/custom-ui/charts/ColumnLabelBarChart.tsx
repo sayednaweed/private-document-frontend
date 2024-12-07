@@ -8,9 +8,10 @@ export interface ColumnLabelBarChartProps {
   title: string;
   subtitle: string;
   theme: string;
+  setseries: [],
 }
 export default function ColumnLabelBarChart(props: ColumnLabelBarChartProps) {
-  const { theme, title, subtitle } = props;
+  const { theme, title, subtitle, setseries  } = props;
   const { t } = useTranslation();
   const [series, setSeries] = useState<any>([]);
   const sleep = async (seconds: number) =>
@@ -21,7 +22,7 @@ export default function ColumnLabelBarChart(props: ColumnLabelBarChartProps) {
     setSeries([
       {
         name: "Inflation",
-        data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 0.8, 0.5, 0.2],
+        data:setseries || [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 0.8, 0.5, 0.2],
       },
     ]);
   };
