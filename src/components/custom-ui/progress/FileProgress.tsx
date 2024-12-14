@@ -19,6 +19,7 @@ const FileProgress = (props: FileProgressProps) => {
             key={item.destination}
             lastStep={lastStep}
             item={item}
+            index={index}
           />
         );
       })}
@@ -32,20 +33,22 @@ interface ItemProps {
   item: Progress;
   lastStep: boolean;
   state: SystemLanguage;
+  index: number;
 }
 const Item = (props: ItemProps) => {
-  const { item, state, lastStep } = props;
+  const { item, state, lastStep, index } = props;
   const { t } = useTranslation();
-
-  return item.feedbackDate != null ? (
+  return item.feedbackDate != null || item.step == null ? (
     <li className="mb-12 mx-8 relative">
       {/* Line */}
-      <div className=" absolute h-[140%] w-[1px] bg-primary/30 ltr:-left-[29px]" />
+      {!lastStep && (
+        <div className="absolute h-[130%] top-[31px] w-[1px] bg-primary rtl:-right-[29px] ltr:-left-[29px]" />
+      )}
       {/* Circle */}
       <span
-        className={`absolute bg-primary/90 text-primary-foreground font-medium shadow-lg flex items-center justify-center w-8 h-8 rounded-full ltr:-start-11 rtl:-right-11`}
+        className={`absolute z-10 bg-primary text-primary-foreground font-medium shadow-lg flex items-center justify-center w-8 h-8 rounded-full ltr:-start-11 rtl:-right-11`}
       >
-        {item.step}
+        {item.step == null ? index + 1 : item.step}
       </span>
       <h3
         style={{ backgroundColor: item.color }}
@@ -77,22 +80,24 @@ const Item = (props: ItemProps) => {
         </span>
         {toLocaleDate(new Date(item.feedbackDate), state)}
       </p>
-      <p
-        className={`ltr:text-xl-ltr text-primary/90 flex flex-col gap-y[2px] rtl:text-xl-rtl`}
-      >
-        <span
-          className={`font-medium ltr:mr-2 rtl:ml-2  rtl:text-2xl-rtl ltr:text-xl-ltr`}
+      {item.feedback && (
+        <p
+          className={`ltr:text-xl-ltr text-primary/90 flex flex-col gap-y[2px] rtl:text-xl-rtl`}
         >
-          {t("feedback")}
-        </span>
-        <span className=" border p-2 rounded-md">{item.feedback}</span>
-      </p>
+          <span
+            className={`font-medium ltr:mr-2 rtl:ml-2  rtl:text-2xl-rtl ltr:text-xl-ltr`}
+          >
+            {t("feedback")}
+          </span>
+          <span className=" border p-2 rounded-md">{item.feedback}</span>
+        </p>
+      )}
     </li>
   ) : (
     <li className="mb-12 mx-8 relative">
       {/* Line */}
       {!lastStep && (
-        <div className=" absolute w-[1px] bg-primary/30 ltr:-left-[29px]" />
+        <div className="absolute h-[130%] top-[31px] w-[1px] bg-primary/20 rtl:-right-[29px] ltr:-left-[29px]" />
       )}
       {/* Circle */}
       <span

@@ -49,7 +49,7 @@ export default function LoginPage() {
             description: t("Make sure you have internet access"),
           });
         else if (response.status == 200) {
-          navigate("/", { replace: true });
+          navigate("/dashboard", { replace: true });
           toast({
             title: t("Success"),
             toastType: "SUCCESS",

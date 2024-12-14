@@ -14,12 +14,13 @@ import { CalendarDays } from "lucide-react";
 
 export interface CustomeDatePickerProps {
   dateOnComplete: (date: DateObject) => void;
-  value: DateObject;
+  value: DateObject | undefined;
   className?: string;
   placeholder: string;
   place?: string;
   required?: boolean;
   requiredHint?: string;
+  hintColor?: string;
   lable?: string;
   errorMessage?: string;
   readonly?: boolean;
@@ -33,6 +34,7 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
     placeholder,
     required,
     requiredHint,
+    hintColor,
     lable,
     errorMessage,
     readonly,
@@ -41,7 +43,7 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
   const { i18n } = useTranslation();
   const direction = i18n.dir();
   const [visible, setVisible] = useState(false);
-  const [selectedDates, setSelectedDates] = useState<DateObject>(
+  const [selectedDates, setSelectedDates] = useState<DateObject | undefined>(
     isString(value) ? new DateObject(new Date(value)) : value
   );
   const calendarRef = useRef<any>(null);
@@ -168,7 +170,12 @@ export default function CustomDatePicker(props: CustomeDatePickerProps) {
         onClick={onVisibilityChange}
       >
         {required && (
-          <span className="text-red-600 rtl:text-[13px] ltr:text-[11px] ltr:right-[10px] rtl:left-[10px] -top-[17px] absolute font-semibold">
+          <span
+            className={cn(
+              "text-red-600 rtl:text-[13px] ltr:text-[11px] ltr:right-[10px] rtl:left-[10px] -top-[17px] absolute font-semibold",
+              hintColor
+            )}
+          >
             {requiredHint}
           </span>
         )}

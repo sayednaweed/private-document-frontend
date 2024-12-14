@@ -97,7 +97,7 @@ function StepperSteps(props: IStepperProps) {
             }`}
           >
             {markFinalStep || step.completed ? (
-              <span className=" text-white font-bold text-[16px]">
+              <span className=" text-white font-bold text-[16px] rtl:pt-1">
                 &#10003;
               </span>
             ) : (

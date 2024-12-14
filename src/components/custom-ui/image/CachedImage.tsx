@@ -73,7 +73,7 @@ const CachedImage = React.forwardRef<HTMLImageElement, ImageProps>(
           setImage(cachedImage);
         } else {
           // Image not cached, fetch and cache
-          const response = await axiosClient.get(src, {
+          const response = await axiosClient.get("media/" + src, {
             responseType: "blob", // Important
           });
           if (response.status == 200) {

@@ -1,42 +1,24 @@
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
 import Shimmer from "../shimmer/Shimmer";
 import ShimmerItem from "../shimmer/ShimmerItem";
+import { useTranslation } from "react-i18next";
 export interface DashedLineChartProps {
   title: string;
   subtitle: string;
   theme: string;
+  series: {
+    name: string;
+    data: number[];
+  }[];
+  loading: boolean;
 }
 export default function DashedLineChart(props: DashedLineChartProps) {
-  const { title, subtitle, theme } = props;
-  const { t } = useTranslation();
+  const { title, subtitle, theme, series, loading } = props;
+  const { i18n } = useTranslation();
 
-  const [series, setSeries] = useState<any>([]);
-  const sleep = async (seconds: number) =>
-    new Promise((resolve) => setTimeout(resolve, seconds * 1000));
-  const loadData = async () => {
-    // Do data loading operation
-    await sleep(2);
-    setSeries([
-      {
-        name: t("Session Duration"),
-        data: [45, 52, 38, 24, 33, 26, 21, 20, 6, 8, 15, 10],
-      },
-      {
-        name: t("Page Views"),
-        data: [35, 41, 62, 42, 13, 18, 29, 37, 36, 51, 32, 35],
-      },
-      {
-        name: t("Total Visits"),
-        data: [87, 57, 74, 99, 75, 38, 62, 47, 82, 56, 45, 47],
-      },
-    ]);
-  };
-  useEffect(() => {
-    loadData();
-  }, []);
+  const direction = i18n.dir();
+
   const options: ApexOptions = {
     theme: {
       mode: theme == "dark" ? "dark" : "light",
@@ -60,12 +42,15 @@ export default function DashedLineChart(props: DashedLineChartProps) {
       text: title,
       align: "center",
       style: {
-        fontSize: "14px",
+        fontSize: direction == "ltr" ? "14px" : "18px",
       },
     },
     subtitle: {
       text: subtitle,
       align: "center",
+      style: {
+        fontSize: direction == "ltr" ? "14px" : "17px",
+      },
     },
     dataLabels: {
       enabled: false,
@@ -93,7 +78,7 @@ export default function DashedLineChart(props: DashedLineChartProps) {
     },
     tooltip: {
       style: {
-        fontSize: "12px",
+        fontSize: "16px",
       },
       y: [
         {
@@ -124,7 +109,7 @@ export default function DashedLineChart(props: DashedLineChartProps) {
     },
   };
 
-  return series.length == 0 ? (
+  return loading ? (
     <Shimmer className="hover:shadow-lg shadow-md min-h-full w-full overflow-hidden">
       <ShimmerItem className="font-bold ml-1 mt-1 pl-1 w-1/2 rounded-[5px] mx-auto" />
       <ShimmerItem className="ml-1 mt-1 pl-1 w-1/3 rounded-[5px] mx-auto" />

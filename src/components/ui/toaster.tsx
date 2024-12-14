@@ -32,7 +32,7 @@ export function Toaster() {
             {title && <ToastTitle>{title}</ToastTitle>}
             {description && <ToastDescription>{description}</ToastDescription>}
             {action}
-            <ToastClose />
+            <ToastClose className="rtl:left-0 rtl:flex rtl:items-start rtl:justify-end" />
           </Toast>
         );
       })}

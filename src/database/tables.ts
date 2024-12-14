@@ -1,5 +1,5 @@
 export type Role =
-  | { role: 1; name: "user" }
+  | { role: 3; name: "user" }
   | { role: 2; name: "admin" }
   | { role: 4; name: "super" };
 export type Permission = {
@@ -123,21 +123,23 @@ export type Destination = {
 
 export type Audit = {
   id: string;
-  username: string;
-  role: string;
-  table: string;
+  user_id: string;
+  user: string;
   action: string;
-  device: string;
-  department: string;
-  job: string;
-  name: string;
-  status: string;
-  ipaddress: string;
-  date: string;
+  table: string;
+  table_id: string;
+  old_values: any;
+  new_values: any;
+  url: string;
+  ip_address: string;
+  user_agent: string;
+  created_at: string;
 };
 export type Progress = {
   id: string;
   step: number;
+  statusId: number;
+  oldDoc: boolean;
   sendDate: string;
   feedback: string;
   feedbackDate: string;

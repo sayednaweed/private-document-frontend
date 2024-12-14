@@ -19,12 +19,7 @@ import { useAuthState } from "@/context/AuthContextProvider";
 import { useGlobalState } from "@/context/GlobalStateContext";
 import { DocumentModel, UserPermission } from "@/database/tables";
 import axiosClient from "@/lib/axois-client";
-import {
-  DOCUMENT_PAGINATION_COUNT,
-  PAGINATION_COUNT,
-  SECTION_NAMES,
-  StatusEnum,
-} from "@/lib/constants";
+import { DOCUMENT_PAGINATION_COUNT, SECTION_NAMES } from "@/lib/constants";
 import useUserDB from "@/lib/indexeddb/useUserDB";
 import {
   DocumentFilter,
@@ -41,7 +36,6 @@ import { DateObject } from "react-multi-date-picker";
 import { useNavigate, useSearchParams } from "react-router";
 import AddDocument from "./add/add-document";
 import DocumentFilterDialog from "./document-filter-dialog";
-import Countdown from "@/components/custom-ui/counter/Countdown";
 export default function DocumentTable() {
   const { user } = useAuthState();
   const navigate = useNavigate();
@@ -134,7 +128,7 @@ export default function DocumentTable() {
     } catch (error: any) {
       toast({
         toastType: "ERROR",
-        title: "Error!",
+        title: t("Error"),
         description: error.response.data.message,
       });
     } finally {
@@ -210,16 +204,13 @@ export default function DocumentTable() {
     } catch (error: any) {
       toast({
         toastType: "ERROR",
-        title: "Error!",
+        title: t("Error"),
         description: error.response.data.message,
       });
     }
   };
   const skeleton = (
     <TableRow>
-      <TableCell>
-        <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
-      </TableCell>
       <TableCell>
         <Shimmer className="h-[24px] bg-primary/30 w-full rounded-sm" />
       </TableCell>
@@ -258,10 +249,6 @@ export default function DocumentTable() {
   const remove = per ? per?.delete : false;
   const edit = per ? per?.edit : false;
   const add = per ? per?.add : false;
-
-  const inProgress = t("In Progress");
-  const keep = t("keep");
-  const complete = t("Complete");
   return (
     <>
       <div className="flex flex-col sm:items-baseline sm:flex-row rounded-md bg-card gap-2 flex-1 px-2 py-2 mt-4">
@@ -409,7 +396,6 @@ export default function DocumentTable() {
             <TableHead className="text-start">{t("urgency")}</TableHead>
             <TableHead className="text-start">{t("documentNumber")}</TableHead>
             <TableHead className="text-start">{t("documentDate")}</TableHead>
-            <TableHead className="text-start">{t("deadline")}</TableHead>
             <TableHead className="text-start">{t("source")}</TableHead>
             <TableHead className="text-start w-[60px]">{t("status")}</TableHead>
           </TableRow>
@@ -440,36 +426,16 @@ export default function DocumentTable() {
                 <TableCell>
                   {toLocaleDate(new Date(item.documentDate), state)}
                 </TableCell>
-                <TableCell>
-                  saas
-                  {/* <Countdown deadline={"2024-8-12T15:39:39.464Z"} /> */}
-                </TableCell>
                 {/* <TableCell>{item.deadline ? item.deadline : "N/K"}</TableCell> */}
 
                 <TableCell className="truncate">{item.source}</TableCell>
                 <TableCell>
-                  {item.status == StatusEnum.complete ? (
-                    <h1
-                      style={{ background: item.statusColor }}
-                      className="truncate text-center rtl:text-md-rtl ltr:text-lg-ltr px-1 py-[2px] shadow-md text-primary-foreground font-bold rounded-sm"
-                    >
-                      {complete}
-                    </h1>
-                  ) : item.status == StatusEnum.keep ? (
-                    <h1
-                      style={{ background: item.statusColor }}
-                      className="truncate text-center rtl:text-md-rtl ltr:text-lg-ltr px-1 py-[2px] shadow-md text-primary-foreground font-bold rounded-sm"
-                    >
-                      {keep}
-                    </h1>
-                  ) : (
-                    <h1
-                      style={{ background: item.statusColor }}
-                      className="truncate text-center rtl:text-md-rtl ltr:text-md-ltr px-1 py-[2px] text-primary-foreground font-bold rounded-sm"
-                    >
-                      {inProgress}
-                    </h1>
-                  )}
+                  <h1
+                    style={{ background: item.statusColor }}
+                    className="truncate text-center rtl:text-md-rtl ltr:text-md-ltr px-2 py-[2px] shadow-lg shadow-primary/30 text-primary-foreground font-bold rounded-lg"
+                  >
+                    {item.status}
+                  </h1>
                 </TableCell>
               </TableRowIcon>
             ))
@@ -508,7 +474,7 @@ export default function DocumentTable() {
             } catch (error: any) {
               toast({
                 toastType: "ERROR",
-                title: "Error!",
+                title: t("Error"),
                 description: error.response.data.message,
               });
             }

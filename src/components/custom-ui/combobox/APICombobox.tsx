@@ -109,7 +109,7 @@ export default function APICombobox(props: IAPIComboboxProps) {
   };
   useEffect(() => {
     initialize();
-  }, []);
+  }, [readonly]);
   useEffect(() => {
     if (selectedItem) {
       setSelected(selectedItem);

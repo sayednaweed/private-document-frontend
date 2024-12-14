@@ -18,7 +18,6 @@ export const validate = async (
       if (rule == "required") {
         // 1. If value is object return hence has a value
         if (Array.isArray(value)) {
-          console.log(item.name, "Naweed");
           if (value.length == 0) {
             errMap.set(item.name, `${t(item.name)} ${t("is required")}`);
             break;

@@ -141,7 +141,7 @@ export default function AddDocument(props: AddDocumentProps) {
                 closeText={t("Close")}
                 againText={t("Again")}
                 closeModel={closeModel}
-                description={t("Document is added")}
+                description={t("document_success")}
               />
             ),
             validationRules: [],

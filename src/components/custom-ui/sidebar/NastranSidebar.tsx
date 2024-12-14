@@ -76,7 +76,7 @@ export default function NastranSidebar() {
         className={`z-20 bg-primary dark:bg-card dark:text-card-foreground text-primary-foreground overflow-auto absolute lg:relative top-[50%] lg:top-0 ltr:left-[-300px] ltr:lg:!left-0 rtl:lg:!right-0 rtl:right-[-300px] translate-y-[-50%] lg:translate-y-0 rounded-[12px] lg:rounded-none h-[98vh] lg:h-screen w-[240px] dark:border-primary/10`}
       >
         <X
-          className="size-[18px] lg:hidden text-primary mb-4 mt-2 ltr:ml-2 rtl:mr-2 cursor-pointer"
+          className="size-[18px] lg:hidden text-primary mt-2 ltr:ml-2 rtl:mr-2 cursor-pointer"
           onClick={resizeSidebar}
         />
         {/* Header */}

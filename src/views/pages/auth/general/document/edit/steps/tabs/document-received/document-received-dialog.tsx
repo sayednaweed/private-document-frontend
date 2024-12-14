@@ -13,26 +13,38 @@ import Card from "@/components/custom-ui/card/Card";
 import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import { Button } from "@/components/ui/button";
 import { useModelOnRequestHide } from "@/components/custom-ui/model/hook/useModelOnRequestHide";
-import { ComboboxItem } from "@/components/custom-ui/combobox/APICombobox";
+import { DestinationTypeEnum } from "@/lib/constants";
 
 export interface Recieved {
   id: string;
   feedback: string;
-  fromDestination: string;
+  previousPosition:
+    | string
+    | {
+        id: string;
+        name: string;
+      };
   feedback_date: DateObject;
   reference: Option[];
-  deadline: DateObject;
+  deadline: DateObject | undefined;
   scan: File | undefined;
+  qaidSadiraNumber: string;
+  qaidSadiraDate: DateObject | undefined;
+  savedFile: string;
   activeTab: string | undefined;
   hasFeedback: boolean;
+  keep: boolean;
+  changeDeputy: boolean;
 }
 export interface RecievedFromDirectorate {
   id: string;
   qaidSadiraNumber: string;
   qaidSadiraDate: DateObject;
   feedback: string;
+  reference: string;
+  savedFile: string;
   feedback_date: DateObject;
-  fromDestination: {
+  previousPosition: {
     id: string;
     name: string;
   }[];
@@ -42,11 +54,12 @@ export interface RecievedFromDirectorate {
 
 export interface DocumentReceivedDialogProps {
   documentId: string;
+  onComplete: () => void;
 }
 export default function DocumentReceivedDialog(
   props: DocumentReceivedDialogProps
 ) {
-  const { documentId } = props;
+  const { documentId, onComplete } = props;
   const { modelOnRequestHide } = useModelOnRequestHide();
   const [documentData, setDocumentData] = useState<
     Recieved | RecievedFromDirectorate
@@ -57,13 +70,18 @@ export default function DocumentReceivedDialog(
     reference: [],
     deadline: new DateObject(new Date()),
     scan: undefined,
-
-    fromDestination: "",
+    qaidSadiraDate: undefined,
+    qaidSadiraNumber: "",
+    previousPosition: "",
+    savedFile: "",
     activeTab: undefined,
-    hasFeedback: false,
+    hasFeedback: true,
+    keep: false,
+    changeDeputy: false,
   });
   const [failed, setFailed] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [noReference, setNoReference] = useState(false);
   const { t } = useTranslation();
   useEffect(() => {
     retry();
@@ -80,29 +98,48 @@ export default function DocumentReceivedDialog(
         const destination = response.data.destination;
         if (Array.isArray(destination)) {
           // Hence document was in Ministry
-          if (destination.length == 1) {
+          if (destination.length == 0) {
+            // Show no data is transfered
+            setNoReference(true);
+          }
+          let isMuqam = false;
+          for (let i = 0; i < destination.length; i++) {
+            const item = destination[i];
+            if (item.destination_type_id == DestinationTypeEnum.muqam) {
+              isMuqam = true;
+              break;
+            }
+          }
+          if (isMuqam) {
             setDocumentData({
               id: documentId,
-              fromDestination: destination.at(0).name,
+              previousPosition: destination.at(0).name,
               feedback: "",
               feedback_date: new DateObject(new Date()),
               reference: [],
-              deadline: new DateObject(new Date()),
+              deadline: undefined,
+              qaidSadiraDate: undefined,
+              savedFile: "",
+              qaidSadiraNumber: "",
               activeTab: "deputy",
-              hasFeedback: false,
+              hasFeedback: true,
+              keep: false,
               scan: undefined,
+              changeDeputy: false,
             });
           } else {
             // Hence came from Directorates
             setDocumentData({
               id: documentId,
-              fromDestination: destination,
+              previousPosition: destination,
               qaidSadiraDate: new DateObject(new Date()),
               qaidSadiraNumber: "",
               feedback: "",
+              savedFile: "",
               feedback_date: new DateObject(new Date()),
               activeTab: "directorate",
               scan: undefined,
+              reference: "",
             });
           }
         }
@@ -123,9 +160,10 @@ export default function DocumentReceivedDialog(
   const cancel = () => {
     setLoading(false);
     modelOnRequestHide();
+    onComplete();
   };
   return (
-    <Card className=" w-full md:w-[80%] h-fit lg:w-[70%] self-center my-4 dark:!bg-black/40">
+    <Card className=" w-full md:w-[80%] h-fit lg:w-[70%] self-center my-4 dark:!bg-black/40 bg-card">
       <Tabs
         value={documentData.activeTab}
         onValueChange={(value: string) =>
@@ -139,7 +177,7 @@ export default function DocumentReceivedDialog(
           <TabsTrigger
             disabled={documentData.activeTab != "deputy"}
             value="deputy"
-            className="gap-x-1 shadow rtl:text-2xl-rtl ltr:text-xl-ltr data-[state=active]:bg-primary data-[state=active]:text-tertiary"
+            className="gap-x-1 shadow rtl:text-3xl-rtl rtl:py-[2px] rtl:px-3 ltr:text-xl-ltr data-[state=active]:bg-primary data-[state=active]:text-tertiary"
           >
             <Crown className="size-[16px] ltr:mr-1 rtl:ml-1" />
             {t("deputy")}
@@ -147,7 +185,7 @@ export default function DocumentReceivedDialog(
           <TabsTrigger
             disabled={documentData.activeTab != "directorate"}
             value="directorate"
-            className="gap-x-1 shadow rtl:text-2xl-rtl ltr:text-xl-ltr data-[state=active]:bg-primary data-[state=active]:text-tertiary"
+            className="gap-x-1 shadow rtl:text-3xl-rtl rtl:py-[2px] rtl:px-3 ltr:text-xl-ltr data-[state=active]:bg-primary data-[state=active]:text-tertiary"
           >
             <Grid className="size-[16px] ltr:mr-1 rtl:ml-1" />
             {t("directorate")}
@@ -155,6 +193,8 @@ export default function DocumentReceivedDialog(
         </TabsList>
         {loading ? (
           <NastranSpinner className=" mt-32" />
+        ) : noReference ? (
+          <h1>{t("no_refrence_desc")}</h1>
         ) : (
           <>
             <TabsContent value="deputy" className="w-full px-4 pt-8">
@@ -164,6 +204,7 @@ export default function DocumentReceivedDialog(
                 setDocumentData={setDocumentData}
                 retry={retry}
                 failed={failed}
+                onComplete={cancel}
               />
             </TabsContent>
             <TabsContent value="directorate" className="w-full px-4 pt-8">
@@ -172,6 +213,7 @@ export default function DocumentReceivedDialog(
                 documentData={documentData as RecievedFromDirectorate}
                 setDocumentData={setDocumentData}
                 retry={retry}
+                onComplete={cancel}
                 failed={failed}
               />
             </TabsContent>
@@ -179,7 +221,8 @@ export default function DocumentReceivedDialog(
         )}
       </Tabs>
       {loading ||
-        (failed && (
+        failed ||
+        (noReference && (
           <div className="flex justify-end mt-8">
             <Button
               variant="outline"

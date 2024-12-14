@@ -14,15 +14,19 @@ import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import FileChooser from "@/components/custom-ui/chooser/FileChooser";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
 import { RefreshCcw } from "lucide-react";
+import { UserPermission } from "@/database/tables";
 interface Scan {
   scanId: string;
   name: string;
   username: string;
+  destination: string;
+  color: string;
   path: string;
   uploadedDate: string;
 }
 export interface EditDocumentReferProps {
   id: string | undefined;
+  permission: UserPermission;
 }
 
 export function EditDocumentScan(props: EditDocumentReferProps) {
@@ -52,13 +56,13 @@ export function EditDocumentScan(props: EditDocumentReferProps) {
   }, []);
 
   return (
-    <Card>
+    <Card className=" relative">
       <CardHeader className="space-y-0">
         <CardTitle className="rtl:text-3xl-rtl ltr:text-2xl-ltr">
-          {t("Update account password")}
+          {t("document_scan")}
         </CardTitle>
         <CardDescription className="rtl:text-xl-rtl ltr:text-lg-ltr">
-          {t("Update_Password_Description")}
+          {t("document_scan_desc")}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -67,24 +71,36 @@ export function EditDocumentScan(props: EditDocumentReferProps) {
         ) : !scanData ? (
           <NastranSpinner />
         ) : (
-          <div className="grid gap-4 w-full sm:w-[70%] md:w-1/2 pb-8">
+          <div className="grid gap-y-8 w-full md:w-[80%] pb-8 overflow-auto">
             {scanData.map((scan: Scan, index: number) => (
-              <FileChooser
-                disabled={true}
-                downloadParam={{ path: scan.path, fileName: scan.name }}
-                key={scan.scanId}
-                lable={`${t("scan")} - ${index + 1}`}
-                required={true}
-                requiredHint={`* ${t("Required")}`}
-                defaultFile={scan.name}
-                onchange={
-                  (_file: File | undefined) => {}
-                  // setScanData({ ...scanData, scan: file })
-                }
-                validTypes={["application/pdf"]}
-                maxSize={8}
-                accept=".pdf"
-              />
+              <div key={scan.uploadedDate}>
+                <h1
+                  style={{
+                    backgroundColor: scan.color,
+                  }}
+                  className="rounded-t-md py-1 px-[6px] text-primary/90 rtl:text-lg-rtl font-semibold"
+                >
+                  {scan.destination}
+                </h1>
+                <h1 className="bg-primary/20 mb-1 text-primary/90 rtl:text-md-rtl px-1 pt-[2px]">
+                  {scan.username}
+                </h1>
+                <FileChooser
+                  disabled={true}
+                  downloadParam={{ path: scan.path, fileName: scan.name }}
+                  key={scan.scanId}
+                  lable={`${t("scan")} - ${index + 1}`}
+                  required={true}
+                  defaultFile={scan.name}
+                  onchange={
+                    (_file: File | undefined) => {}
+                    // setScanData({ ...scanData, scan: file })
+                  }
+                  validTypes={["application/pdf"]}
+                  maxSize={8}
+                  accept=".pdf"
+                />
+              </div>
             ))}
           </div>
         )}

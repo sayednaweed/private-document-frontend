@@ -508,12 +508,13 @@ const MultipleSelector = React.forwardRef<
         </label>
         <div
           className={cn(
-            "relative min-h-[38px] rounded-lg border border-input text-sm transition-shadow has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50",
+            "relative min-h-[38px] rounded-lg border text-sm transition-shadow has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50",
             {
               "p-1": selected.length !== 0,
               "cursor-text": !disabled && selected.length !== 0,
             },
             !hideClearAllButton && "pe-9",
+            errorMessage ? "border-red-400" : "border-input",
             className
           )}
           onClick={() => {
@@ -527,7 +528,7 @@ const MultipleSelector = React.forwardRef<
                 <div
                   key={option.name}
                   className={cn(
-                    "animate-fadeIn relative ltr:text-xl-ltr bg-primary inline-flex h-fit cursor-default items- text-start rounded-md border border-solid rtl:ps-6 rtl:pe-2 ltr:pe-7 ltr:pl-2 rtl:pr-2 font-medium text-primary-foreground transition-all hover:bg-primary/70 disabled:cursor-not-allowed disabled:opacity-50 data-[fixed]:pe-2",
+                    "animate-fadeIn relative ltr:text-xl-ltr bg-primary inline-flex h-fit cursor-default rtl:text-xl-rtl items- text-start rounded-md border border-solid rtl:ps-6 rtl:pe-2 ltr:pe-7 ltr:pl-2 rtl:pr-2 font-medium text-primary-foreground transition-all hover:bg-primary/70 disabled:cursor-not-allowed disabled:opacity-50 data-[fixed]:pe-2",
                     badgeClassName
                   )}
                   data-fixed={option.fixed}

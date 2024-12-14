@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import { UserInformation, UserPassword } from "@/lib/types";
 import axiosClient from "@/lib/axois-client";
 import { useAuthState } from "@/context/AuthContextProvider";
-import { SECTION_NAMES } from "@/lib/constants";
+import { ROLE_SUPER, SECTION_NAMES } from "@/lib/constants";
 import { setServerError } from "@/validation/validation";
 import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import ButtonSpinner from "@/components/custom-ui/spinner/ButtonSpinner";
@@ -37,7 +37,7 @@ export function EditUserPassword(props: EditUserPasswordProps) {
   const [passwordData, setPasswordData] = useState<UserPassword>({
     newPassword: "",
     confirmPassword: "",
-    oldPassword: undefined,
+    oldPassword: "",
   });
   const [error, setError] = useState<Map<string, string>>(new Map());
 
@@ -51,7 +51,7 @@ export function EditUserPassword(props: EditUserPasswordProps) {
       const formData = new FormData();
       formData.append("id", id);
       formData.append("newPassword", passwordData.newPassword);
-      if (passwordData.oldPassword !== undefined)
+      if (user.role.role != ROLE_SUPER)
         formData.append("oldPassword", passwordData.oldPassword);
       formData.append("confirmPassword", passwordData.confirmPassword);
       try {
@@ -109,7 +109,7 @@ export function EditUserPassword(props: EditUserPasswordProps) {
           <NastranSpinner />
         ) : (
           <div className="grid gap-4 w-full sm:w-[70%] md:w-1/2">
-            {user.id == id && (
+            {user.role.role != ROLE_SUPER && (
               <CustomInput
                 size_="sm"
                 name="oldPassword"
@@ -177,8 +177,7 @@ export function EditUserPassword(props: EditUserPasswordProps) {
           hasEdit && (
             <PrimaryButton
               onClick={async () => {
-                if (user?.permissions.get(SECTION_NAMES.users)?.edit)
-                  await saveData();
+                await saveData();
               }}
               className={`shadow-lg`}
             >

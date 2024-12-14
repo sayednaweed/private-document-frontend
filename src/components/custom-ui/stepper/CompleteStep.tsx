@@ -15,7 +15,7 @@ export default function CompleteStep(props: ICompleteStepProps) {
   const { handleDirection, setUserData } = useContext(StepperContext);
   const { description, closeModel, closeText, againText, successText } = props;
   return (
-    <div className="flex flex-col items-center mt-12">
+    <div className="flex flex-col items-center mt-8">
       <div
         className={`rounded-full transition duration-500 ease-in-out border-2 size-[80px] flex items-center justify-center py-3 bg-green-600 text-white font-bold border-green-600`}
       >
@@ -38,16 +38,18 @@ export default function CompleteStep(props: ICompleteStepProps) {
           />
         </svg>
       </div>
-      <h1 className="text-green-600 rtl:text-4xl-rtl ltr:text-lg-ltr font-semibold uppercase mt-8">
+      <h1 className="text-green-600 rtl:text-[24px] ltr:text-lg-ltr font-semibold uppercase mt-4">
         {successText}
       </h1>
-      <h1 className="rtl:text-xl-rtl ltr:text-lg-ltr">{description}</h1>
-      <button
-        className="border text-red-400 mt-12 rtl:text-lg-rtl ltr:text-lg-ltr border-red-400 hover:bg-red-400 font-semibold hover:text-white transition w-fit rounded-md px-4 py-[6px]"
+      <h1 className="rtl:text-3xl-rtl font-medium text-primary ltr:text-lg-ltr">
+        {description}
+      </h1>
+      <PrimaryButton
+        className="rounded-md mt-14 shadow-md rtl:text-2xl-rtl bg-red-500 hover:bg-red-500"
         onClick={closeModel}
       >
         {closeText}
-      </button>
+      </PrimaryButton>
       <PrimaryButton
         className="rounded-md mt-4 shadow-md rtl:text-2xl-rtl"
         onClick={() => {

@@ -7,7 +7,7 @@ export const SECTION_NAMES = {
   audit: "audit",
   documents: "documents",
 };
-export const ROLE_USER = 1;
+export const ROLE_USER = 3;
 export const ROLE_ADMIN = 2;
 export const ROLE_SUPER = 4;
 export const PERMISSIONS_OPERATION = ["Add", "Edit", "Delete", "View"];
@@ -16,6 +16,10 @@ export const StatusEnum = {
   inProgres: "1",
   keep: "2",
   complete: "3",
+};
+export const DestinationTypeEnum = {
+  muqam: "1",
+  directorate: "2",
 };
 export const afgMonthNamesFa = [
   "حمل",
@@ -63,4 +67,5 @@ export const CALENDAR_FORMAT = {
 };
 export const PAGINATION_COUNT = "pagination_count";
 export const DOCUMENT_PAGINATION_COUNT = "doc_pagination_count";
+export const AUDIT_PAGINATION_COUNT = "audit_pagination_count";
 export const SYSTEM_CALENDAR = "system_calendar";

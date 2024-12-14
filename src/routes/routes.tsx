@@ -288,7 +288,7 @@ export const getUserRouter = (user: User) => {
           {site}
         </Route>
 
-        {/* Super Routes (Protected) */}
+        {/* User Routes (Protected) */}
         <Route
           path="/"
           element={
@@ -318,16 +318,6 @@ export const getUserRouter = (user: User) => {
             }
           />
           <Route path="profile" element={<ProfilePage />} />
-          <Route
-            path="settings"
-            element={
-              <ProtectedRoute
-                element={<SuperSettingsPage />}
-                routeName="settings"
-                permissions={permissions}
-              />
-            }
-          />
           <Route
             path="documents"
             element={

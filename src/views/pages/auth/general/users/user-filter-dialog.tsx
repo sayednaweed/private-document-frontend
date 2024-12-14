@@ -55,7 +55,7 @@ export default function UserFilterDialog(props: UserFilterDialogProps) {
           headerName={t("Sort by")}
           items={[
             {
-              name: "date",
+              name: "createdAt",
               translate: t("date"),
               onClick: handleSort,
             },

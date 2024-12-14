@@ -16,7 +16,7 @@ export default function DocumentInformationTab() {
   };
 
   return (
-    <div className="flex flex-col gap-y-6 md:w-[80%] lg:w-1/2">
+    <div className="flex flex-col gap-y-6 w-full md:w-[90%]">
       <APICombobox
         placeholderText={t("Search item")}
         errorText={t("No item")}

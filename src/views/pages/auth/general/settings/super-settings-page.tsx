@@ -6,7 +6,6 @@ import {
   ClipboardMinus,
   Languages,
   MapPinHouse,
-  Settings2,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import LanguageTab from "./tabs/language/language-tab";
@@ -16,7 +15,6 @@ import StatusTab from "./tabs/status/status-tab";
 import SourceTab from "./tabs/source/source-tab";
 import DocumentTypeTab from "./tabs/document-type/document-type-tab";
 import DestinationTab from "./tabs/destination/destination-tab";
-import ApplicationTab from "./tabs/application/application-tab";
 
 export default function SuperSettingsPage() {
   const { t, i18n } = useTranslation();
@@ -78,19 +76,9 @@ export default function SuperSettingsPage() {
           <MapPinHouse className="size-[16px] ltr:mr-1 rtl:ml-1" />
           {t("reference")}
         </TabsTrigger>
-        <TabsTrigger
-          value="application"
-          className="gap-x-1 bg-card shadow rtl:text-2xl-rtl ltr:text-xl-ltr data-[state=active]:bg-primary data-[state=active]:text-tertiary"
-        >
-          <Settings2 className="size-[16px] ltr:mr-1 rtl:ml-1" />
-          {t("application")}
-        </TabsTrigger>
       </TabsList>
       <TabsContent value="lang" className="overflow-y-auto self-start w-1/2">
         <LanguageTab />
-      </TabsContent>
-      <TabsContent value="application" className="w-full px-4 pt-8">
-        <ApplicationTab />
       </TabsContent>
       <TabsContent value="job" className="w-full px-4 pt-8">
         <JobTab />

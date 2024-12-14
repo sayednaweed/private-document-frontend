@@ -2,7 +2,6 @@ import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { useEffect, useState } from "react";
 import Shimmer from "../shimmer/Shimmer";
-import { useTranslation } from "react-i18next";
 import ShimmerItem from "../shimmer/ShimmerItem";
 import { cn } from "@/lib/utils";
 // import { useTranslation } from "react-i18next";
@@ -26,7 +25,6 @@ export default function RadialBarChart(props: RadialBarChartProps) {
     showToolbar,
     shimmerClassName,
   } = props;
-  const { t } = useTranslation();
   const [series, setSeries] = useState<any>([]);
   const sleep = async (seconds: number) =>
     new Promise((resolve) => setTimeout(resolve, seconds * 1000));

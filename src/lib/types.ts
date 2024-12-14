@@ -40,7 +40,7 @@ export interface UserInformation {
   createdAt: string;
 }
 export interface UserPassword {
-  oldPassword?: string;
+  oldPassword: string;
   newPassword: string;
   confirmPassword: string;
 }
@@ -57,7 +57,12 @@ export interface UserData {
   data: any;
 }
 export type Order = "desc" | "asc";
-export type UserSort = "date" | "username" | "destination" | "status" | "job";
+export type UserSort =
+  | "createdAt"
+  | "username"
+  | "destination"
+  | "status"
+  | "job";
 export type UserSearch = "username" | "contact" | "email";
 export interface UserFilter {
   sort: UserSort;
@@ -111,26 +116,24 @@ export interface AuditData {
   data: any;
 }
 
-export type AuditSort =
-  | "name"
-  | "ipAddress"
-  | "status"
-  | "date"
-  | "username"
-  | "action"
-  | "table";
-export type AuditSearch = "name" | "ipaddress" | "date" | "username" | "table";
+export type AuditSort = "id" | "date" | "user" | "user_id" | "action" | "table";
+export type AuditSearch = "user" | "user_id" | "table";
+export type AuditFilterBy = "none" | "user" | "table" | "user_id";
 
 export interface AuditFilter {
   sort: AuditSort;
   order: Order;
+  filterBy: {
+    column: AuditFilterBy;
+    value: string;
+  };
   search: {
     column: AuditSearch;
     value: string;
   };
   date: DateObject[];
 }
-export interface PaginationAuditData {
+export interface AuditPaginationData {
   data: Audit[];
   lastPage: number;
   perPage: number;

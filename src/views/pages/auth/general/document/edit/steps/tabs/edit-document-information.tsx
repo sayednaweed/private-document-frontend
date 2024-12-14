@@ -1,6 +1,6 @@
 import APICombobox from "@/components/custom-ui/combobox/APICombobox";
 import CustomInput from "@/components/custom-ui/input/CustomInput";
-import { LockKeyhole, RefreshCcw, UnlockKeyhole } from "lucide-react";
+import { FileDown, LockKeyhole, RefreshCcw, UnlockKeyhole } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "@/components/ui/use-toast";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
@@ -16,15 +16,13 @@ import { useTranslation } from "react-i18next";
 import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
 import axiosClient from "@/lib/axois-client";
 import { useAuthState } from "@/context/AuthContextProvider";
-import { SECTION_NAMES } from "@/lib/constants";
+import { SECTION_NAMES, StatusEnum } from "@/lib/constants";
 import { setServerError, validate } from "@/validation/validation";
 import ButtonSpinner from "@/components/custom-ui/spinner/ButtonSpinner";
 import { UserPermission } from "@/database/tables";
 import CustomDatePicker from "@/components/custom-ui/DatePicker/CustomDatePicker";
 import { DateObject } from "react-multi-date-picker";
 import CustomTextarea from "@/components/custom-ui/input/CustomTextarea";
-import Countdown from "@/components/custom-ui/counter/Countdown";
-import DocumentUnlockDialog from "./document-unlock-dialog";
 import NastranModel from "@/components/custom-ui/model/NastranModel";
 import {
   Tooltip,
@@ -32,9 +30,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import DocumentReceivedDialog from "./document-received/document-received-dialog";
+import Countdown from "@/components/custom-ui/counter/Countdown";
 interface Information {
   id: string;
   status: string;
+  statusId: string;
   documentType: string;
   urgency: string;
   source: string;
@@ -45,19 +46,20 @@ interface Information {
   qaidSadiraDate?: DateObject;
   qaidSadiraNumber?: string;
   subject: string;
-  muqamStatement: string;
   savedFile: string;
+  deadline: string | null;
+  feedbackDate: string | null;
   locked: boolean;
   oldDoc: boolean;
-  deadline: DateObject;
 }
 export interface EditDocumentInformationProps {
   id: string | undefined;
+  permission: UserPermission;
 }
 export default function EditDocumentInformation(
   props: EditDocumentInformationProps
 ) {
-  const { id } = props;
+  const { id, permission } = props;
   const { user } = useAuthState();
   const { t } = useTranslation();
   const [failed, setFailed] = useState(false);
@@ -71,6 +73,7 @@ export default function EditDocumentInformation(
         setDocumentData({
           id: info.id,
           status: info.status,
+          statusId: info.status_id,
           documentType: info.documentType,
           urgency: info.urgency,
           source: info.source,
@@ -81,11 +84,11 @@ export default function EditDocumentInformation(
           qaidSadiraDate: info.qaidSadiraDate,
           qaidSadiraNumber: info.qaidSadiraNumber,
           subject: info.subject,
-          muqamStatement: info.muqamStatement,
           savedFile: info.savedFile,
-          locked: info.lock == "1" ? true : false,
-          oldDoc: info.oldDoc == "1" ? true : false,
           deadline: info.deadline,
+          feedbackDate: info.feedbackDate,
+          locked: info.locked == "1" ? true : false,
+          oldDoc: info.oldDoc == "1" ? true : false,
         });
       }
     } catch (error: any) {
@@ -162,8 +165,55 @@ export default function EditDocumentInformation(
 
   const lock = documentData?.locked == true ? true : hasEdit ? false : true;
 
+  let recieveButton = undefined;
+  let keepButton = undefined;
+  if (permission?.add && documentData) {
+    if (documentData.statusId == StatusEnum.keep) {
+      keepButton = (
+        <NastranModel
+          size="lg"
+          isDismissable={false}
+          button={
+            <PrimaryButton className="gap-x-2 px-2 h-[32px]">
+              <FileDown className="size-[18px]" />
+              {t("continue_process")}
+            </PrimaryButton>
+          }
+          showDialog={async () => true}
+        >
+          <DocumentReceivedDialog
+            onComplete={loadInformation}
+            documentId={id ? id : ""}
+          />
+        </NastranModel>
+      );
+    } else if (documentData.statusId != StatusEnum.complete) {
+      recieveButton = (
+        <NastranModel
+          size="lg"
+          isDismissable={false}
+          button={
+            <PrimaryButton className="gap-x-2 px-2 h-[32px]">
+              <FileDown className="size-[18px]" />
+              {t("documentReceived")}
+            </PrimaryButton>
+          }
+          showDialog={async () => true}
+        >
+          <DocumentReceivedDialog
+            onComplete={loadInformation}
+            documentId={id ? id : ""}
+          />
+        </NastranModel>
+      );
+    }
+  }
   return (
-    <Card>
+    <Card className=" relative">
+      <div className="absolute inset-0 -top-10 flex gap-x-3">
+        {recieveButton}
+        {keepButton}
+      </div>
       <CardHeader className="space-y-0 justify-between relative">
         <div>
           <CardTitle className="rtl:text-3xl-rtl ltr:text-2xl-ltr">
@@ -176,18 +226,10 @@ export default function EditDocumentInformation(
         {documentData && documentData?.locked == true ? (
           <TooltipProvider>
             <Tooltip>
-              <NastranModel
-                size="lg"
-                isDismissable={false}
-                button={
-                  <TooltipTrigger asChild>
-                    <LockKeyhole className="size-[22px] cursor-pointer absolute top-4 rtl:left-4 ltr:right-4 text-red-500 text:bg-red-400" />
-                  </TooltipTrigger>
-                }
-                showDialog={async () => true}
-              >
-                <DocumentUnlockDialog documentId={documentData.id} />
-              </NastranModel>
+              <TooltipTrigger asChild>
+                <LockKeyhole className="size-[22px] cursor-pointer absolute top-4 rtl:left-4 ltr:right-4 text-red-500 text:bg-red-400" />
+              </TooltipTrigger>
+
               <TooltipContent>
                 <p>{t("lock_desc")}</p>
               </TooltipContent>
@@ -209,8 +251,12 @@ export default function EditDocumentInformation(
         {documentData?.deadline && (
           <Countdown
             className="border p-4 rounded-lg shadow"
-            targetDate={new Date("2024-12-08T22:39:39.464Z")}
-            feedbackDate={false ? new Date("2024-12-01T15:39:39.464Z") : null}
+            targetDate={new Date(documentData?.deadline)}
+            feedbackDate={
+              documentData?.feedbackDate
+                ? new Date(documentData?.feedbackDate)
+                : null
+            }
             info={{
               remaining: {
                 title: t("remaining_time"),
@@ -220,7 +266,7 @@ export default function EditDocumentInformation(
               warning: {
                 title: t("remaining_time"),
                 color: "bg-red-400",
-                startDay: 1,
+                startDay: 3,
               },
               completed: {
                 title: t("Complete"),
@@ -424,23 +470,6 @@ export default function EditDocumentInformation(
             />
             <CustomTextarea
               onChange={(e: any) =>
-                setDocumentData({
-                  ...documentData,
-                  muqamStatement: e.target.value,
-                })
-              }
-              required={true}
-              name="muqamStatement"
-              parantClassName="mt-9"
-              placeholder={`${t("enter")}`}
-              requiredHint={`* ${t("Required")}`}
-              defaultValue={documentData["muqamStatement"]}
-              lable={t("muqamStatement")}
-              errorMessage={error.get("muqamStatement")}
-              readOnly={lock}
-            />
-            <CustomTextarea
-              onChange={(e: any) =>
                 setDocumentData({ ...documentData, savedFile: e.target.value })
               }
               required={true}
@@ -467,7 +496,8 @@ export default function EditDocumentInformation(
           </PrimaryButton>
         ) : (
           documentData &&
-          hasEdit && (
+          hasEdit &&
+          !documentData?.locked && (
             <PrimaryButton
               onClick={async () => {
                 if (user?.permissions.get(SECTION_NAMES.users)?.edit)

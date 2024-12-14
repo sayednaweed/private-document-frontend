@@ -132,7 +132,7 @@ function calculateTimeDifference(
     elapsed.complete = true;
   } else if (days >= info.remaining.startDay) {
     elapsed.remaining = true;
-  } else if (days >= info.warning.startDay) {
+  } else if (days <= info.warning.startDay && days >= info.expire.startDay) {
     elapsed.warning = true;
   } else {
     elapsed.expire = true;

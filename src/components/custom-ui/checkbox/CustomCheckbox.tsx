@@ -9,6 +9,7 @@ export interface CustomCheckboxProps
   text?: string;
   description?: string;
   requiredHint?: string;
+  hintColor?: string;
   errorMessage?: string;
   parentClassName?: string;
 }
@@ -24,13 +25,19 @@ const CustomCheckbox = React.forwardRef<HTMLInputElement, CustomCheckboxProps>(
       requiredHint,
       errorMessage,
       readOnly,
+      hintColor,
       parentClassName,
     } = props;
     const error = errorMessage != undefined;
     return (
       <div>
         {required && (
-          <h1 className="text-red-600 w-full px-3 text-end rtl:text-[13px] ltr:text-[11px] font-semibold">
+          <h1
+            className={cn(
+              "text-red-600 w-full px-3 text-end rtl:text-[13px] ltr:text-[11px] font-semibold",
+              hintColor
+            )}
+          >
             {requiredHint}
           </h1>
         )}

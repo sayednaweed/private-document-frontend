@@ -151,7 +151,7 @@ const FileChooser = React.forwardRef<HTMLInputElement, FileChooserProps>(
           htmlFor="initail_scan"
           className={`w-fit rounded-s-md shadow-md bg-primary px-4 hover:opacity-90 transition-opacity cursor-pointer py-2 flex items-center gap-x-3 text-primary-foreground`}
         >
-          <h1 className="rtl:text-lg-rtl ltr:text-lg-ltr pb-[1px] cursor-pointer">
+          <h1 className="rtl:text-lg-rtl font-semibold ltr:text-lg-ltr pb-[1px] cursor-pointer">
             {lable}
           </h1>
           <input
@@ -163,7 +163,7 @@ const FileChooser = React.forwardRef<HTMLInputElement, FileChooserProps>(
             id="initail_scan"
             className={cn("hidden cursor-pointer", className)}
           />
-          <Paperclip className="size-[20px] cursor-pointer" />
+          <Paperclip className="min-h-[18px] min-w-[18px] size-[18px] cursor-pointer" />
         </Label>
         {isDownloading ? (
           <div className="relative bg-primary/10 ltr:rounded-r-sm rtl:rounded-l-sm">
@@ -179,7 +179,7 @@ const FileChooser = React.forwardRef<HTMLInputElement, FileChooserProps>(
         ) : (
           <label
             htmlFor="initail_scan"
-            className={`font-semibold flex items-center justify-between px-3 border rounded-e-md flex-1 text-[12px] ${
+            className={`font-medium flex items-center justify-between px-3 border rounded-e-md flex-1 rtl:text-lg-rtl ltr:text-md-ltr ${
               errorMessage && "border-red-400"
             }`}
           >
@@ -190,21 +190,21 @@ const FileChooser = React.forwardRef<HTMLInputElement, FileChooserProps>(
                     {userData}
                     <ArrowDownToLine
                       onClick={download}
-                      className="inline-block cursor-pointer text-primary/90 size-[18px] ltr:ml-2 rtl:mr-2"
+                      className="inline-block cursor-pointer min-h-[18px] min-w-[18px] size-[18px] text-primary/90 ltr:ml-2 rtl:mr-2"
                     />
                   </>
                 ) : (
                   <>
-                    {userData?.name}
+                    <h1 className="rtl:pt-1"> {userData?.name}</h1>
                     <Trash2
                       onClick={deleteFile}
-                      className="inline-block cursor-pointer text-red-500 size-[18px] ltr:ml-2 rtl:mr-2"
+                      className="inline-block cursor-pointer text-red-500 min-h-[18px] min-w-[18px] size-[18px] ltr:ml-2 rtl:mr-2"
                     />
                   </>
                 )}
               </>
             ) : (
-              "No File Chosen"
+              t("No File Chosen")
             )}
           </label>
         )}

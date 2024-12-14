@@ -15,7 +15,7 @@ export default function ReferTab() {
     setUserData({ ...userData, [name]: value });
   };
   return (
-    <div className="flex flex-col gap-y-6 md:w-[80%] lg:w-1/2">
+    <div className="flex flex-col gap-y-6 md:w-[80%] lg:w-1/2 pb-12">
       <CustomInput
         required={true}
         lable={t("qaidWarida")}

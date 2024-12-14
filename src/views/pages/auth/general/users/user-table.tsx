@@ -51,7 +51,7 @@ export function UserTable() {
   const sort = searchParams.get("sort");
   const order = searchParams.get("order");
   const [filters, setFilters] = useState<UserFilter>({
-    sort: sort == null ? "date" : (sort as UserSort),
+    sort: sort == null ? "createdAt" : (sort as UserSort),
     order: order == null ? "asc" : (order as Order),
     search: {
       column: search == null ? "username" : (search as UserSearch),
@@ -126,7 +126,7 @@ export function UserTable() {
     } catch (error: any) {
       toast({
         toastType: "ERROR",
-        title: "Error!",
+        title: t("Error"),
         description: error.response.data.message,
       });
     } finally {
@@ -202,7 +202,7 @@ export function UserTable() {
     } catch (error: any) {
       toast({
         toastType: "ERROR",
-        title: "Error!",
+        title: t("Error"),
         description: error.response.data.message,
       });
     }
@@ -263,7 +263,7 @@ export function UserTable() {
               if (user?.permissions.get(SECTION_NAMES.users)?.add) return true;
               toast({
                 toastType: "ERROR",
-                title: "Error!",
+                title: t("Error"),
                 description: t("You don't have the permission to add"),
               });
               return false;
@@ -399,14 +399,12 @@ export function UserTable() {
             <TableHead className="text-center px-1 w-[60px]">
               {t("Profile")}
             </TableHead>
-            <TableHead className="text-start px-1">{t("username")}</TableHead>
-            <TableHead className="text-start px-1">{t("role")}</TableHead>
-            <TableHead className="text-start px-1">{t("email")}</TableHead>
-            <TableHead className="text-start px-1">{t("contact")}</TableHead>
-            <TableHead className="text-start px-1">{t("Join date")}</TableHead>
-            <TableHead className="text-start px-1 w-[60px]">
-              {t("status")}
-            </TableHead>
+            <TableHead className="text-start">{t("username")}</TableHead>
+            <TableHead className="text-start">{t("role")}</TableHead>
+            <TableHead className="text-start">{t("email")}</TableHead>
+            <TableHead className="text-start">{t("contact")}</TableHead>
+            <TableHead className="text-start">{t("Join date")}</TableHead>
+            <TableHead className="text-start w-[60px]">{t("status")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="rtl:text-xl-rtl ltr:text-2xl-ltr">
@@ -504,7 +502,7 @@ export function UserTable() {
             } catch (error: any) {
               toast({
                 toastType: "ERROR",
-                title: "Error!",
+                title: t("Error"),
                 description: error.response.data.message,
               });
             }

@@ -13,11 +13,12 @@ import {
 import { useTranslation } from "react-i18next";
 import axiosClient from "@/lib/axois-client";
 import NastranSpinner from "@/components/custom-ui/spinner/NastranSpinner";
-import { Progress } from "@/database/tables";
+import { Progress, UserPermission } from "@/database/tables";
 import FileProgress from "@/components/custom-ui/progress/FileProgress";
 import { useGlobalState } from "@/context/GlobalStateContext";
 export interface EditDocumentReferProps {
   id: string | undefined;
+  permission: UserPermission;
 }
 
 export function EditDocumentProgress(props: EditDocumentReferProps) {
@@ -49,7 +50,7 @@ export function EditDocumentProgress(props: EditDocumentReferProps) {
     loadInformation();
   }, []);
   return (
-    <Card>
+    <Card className="relative">
       <CardHeader className="space-y-0">
         <CardTitle className="rtl:text-3xl-rtl ltr:text-2xl-ltr">
           {t("document_ref")}

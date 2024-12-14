@@ -86,7 +86,7 @@ export default function AddUserInformation() {
         required={true}
         requiredHint={`* ${t("Required")}`}
         selectedItem={userData["destination"]?.name}
-        placeHolder={t("Select a destination")}
+        placeHolder={t("select_destination")}
         errorMessage={error.get("destination")}
         apiUrl={"destinations"}
         mode="single"
