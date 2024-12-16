@@ -37,7 +37,7 @@ const loadLangs = () => {
   i18n.use(initReactI18next).init({
     fallbackLng: "en",
     // lng: language, // default language
-    debug: true,
+    // debug: true,
     returnObjects: true,
     resources: resources,
     interpolation: {
