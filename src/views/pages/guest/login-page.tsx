@@ -6,7 +6,7 @@ import { validate } from "@/validation/validation";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/components/ui/use-toast";
 import AnimUserIcon from "@/components/custom-ui/icons/AnimUserIcon";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { useAuthState } from "@/context/AuthContextProvider";
 import PrimaryButton from "@/components/custom-ui/button/PrimaryButton";
 
@@ -123,13 +123,6 @@ export default function LoginPage() {
           }
           type={isVisible ? "text" : "password"}
         />
-        <Link
-          to={"/forget-password"}
-          replace={true}
-          className="text-red-500 self-end text-[14px] mb-4 mt-1 cursor-pointer transition hover:text-red-600 font-semibold"
-        >
-          {t("Forgot Password?")}
-        </Link>
         <PrimaryButton
           className={`w-full mt-8 uppercase ${loading && "opacity-90"}`}
           type="submit"

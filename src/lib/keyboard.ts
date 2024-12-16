@@ -9,7 +9,7 @@ export const handleKeyPress = async (props: handleKeyPressProps) => {
   const { event, logout, navigate } = props;
   if (event.altKey) {
     if (event.altKey && event.key === "p")
-      navigate("/users/profile", { replace: true });
+      navigate("/profile", { replace: true });
     if (event.altKey && event.key === "s")
       navigate("/settings", { replace: true });
     if (event.altKey && event.key === "d")
@@ -18,6 +18,8 @@ export const handleKeyPress = async (props: handleKeyPressProps) => {
       navigate("/reports", { replace: true });
     if (event.altKey && event.key === "u")
       navigate("/users", { replace: true });
+    if (event.altKey && event.key === "d")
+      navigate("/documents", { replace: true });
     if (event.altKey && event.key === "q") await logout();
   }
 };

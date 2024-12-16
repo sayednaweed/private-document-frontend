@@ -6,7 +6,7 @@ import { handleKeyPress } from "@/lib/keyboard";
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router";
 
-export default function UserLayout() {
+export default function AuthLayout() {
   const { logout } = useAuthState();
   const navigate = useNavigate();
   useEffect(() => {
@@ -30,7 +30,6 @@ export default function UserLayout() {
       );
     };
   }, []);
-
   return (
     <section className="min-h-[100vh] max-h-[100vh] flex bg-secondary">
       <NastranSidebar />

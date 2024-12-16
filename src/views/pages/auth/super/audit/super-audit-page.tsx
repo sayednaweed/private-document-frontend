@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
-import { AuditTable } from "./audit-table";
 
 export default function SuperReportsPage() {
   const { t } = useTranslation();
@@ -30,7 +29,8 @@ export default function SuperReportsPage() {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <AuditTable />
+      <h1 className="p-4"> Comming Soon...</h1>
+      {/* <AuditTable /> */}
     </div>
   );
 }

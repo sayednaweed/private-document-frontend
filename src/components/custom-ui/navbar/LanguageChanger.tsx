@@ -40,7 +40,7 @@ function LanguageChanger(props: LanguageChangerProps) {
       });
     }
     const direction = language === "en" ? "ltr" : "rtl";
-    localStorage.setItem("language", language); // Store preference
+    localStorage.setItem(import.meta.env.VITE_LANGUAGE, language); // Store preference
     i18n.changeLanguage(language);
     setLanguageDirection(direction);
   };
