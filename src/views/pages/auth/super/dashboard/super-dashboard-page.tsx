@@ -11,10 +11,9 @@ import { toast } from "@/components/ui/use-toast";
 const LazySimplePieChart = React.lazy(
   () => import("@/components/custom-ui/charts/SimplePieChart")
 );
-const LazyDashedLineChart = React.lazy(
-  () => import("@/components/custom-ui/charts/DashedLineChart")
+const LazyColumnLabelBarChart = React.lazy(
+  () => import("@/components/custom-ui/charts/ColumnLabelBarChart")
 );
-
 export default function SuperDashboardPage() {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -29,7 +28,7 @@ export default function SuperDashboardPage() {
       labels: string[];
       data: number[];
     };
-    montlyTypeCount: {
+    monthlyDocumentCounts: {
       name: string;
       data: number[];
     }[];
@@ -41,23 +40,15 @@ export default function SuperDashboardPage() {
       urgency_name: string;
       document_count: number;
     }[];
-    monthlyDocumentCounts: {
-      labels: string[];
-      data: number[];
-    };
   }>({
     statuses: [],
     documentTypePercentages: {
       labels: [],
       data: [],
     },
-    montlyTypeCount: [],
     documenttypesixmonth: [],
     documentUrgencyCounts: [],
-    monthlyDocumentCounts: {
-      labels: [],
-      data: [],
-    },
+    monthlyDocumentCounts: [],
   });
   const fetchDashboardData = async () => {
     try {
@@ -71,10 +62,14 @@ export default function SuperDashboardPage() {
       setDashboardData({
         statuses: data.statuses,
         documentTypePercentages: documentTypePercentages,
-        montlyTypeCount: data.montlyTypeCount,
         documenttypesixmonth: data.documenttypesixmonth,
         documentUrgencyCounts: data.documentUrgencyCounts,
-        monthlyDocumentCounts: data.monthlyDocumentCounts,
+        monthlyDocumentCounts: [
+          {
+            name: "Document",
+            data: data.monthlyDocumentCounts[1],
+          },
+        ],
       });
     } catch (error: any) {
       console.error("Error fetching data:", error);
@@ -142,14 +137,13 @@ export default function SuperDashboardPage() {
       </div>
       {/* Charts */}
       <div className="grid md:grid-cols-5 md:grid-rows-1 gap-x-2 gap-y-4 px-2 mt-4">
-        <Card className="h-[420px] min-w-full md:col-span-3 p-0">
+        <Card className="h-[420px] min-w-full md:col-span-5 xl:col-span-2 p-0">
           <Suspense fallback={cardLoader}>
-            <LazyDashedLineChart
-              series={dashboardData.montlyTypeCount}
+            <LazyColumnLabelBarChart
               subtitle={t("Category Names as DataLabels inside bars")}
-              title={t("Total Register Documents")}
+              title={t("Page statistic")}
               theme={theme}
-              loading={loading}
+              series={dashboardData.monthlyDocumentCounts}
             />
           </Suspense>
         </Card>
