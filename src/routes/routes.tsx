@@ -343,6 +343,7 @@ export const getGuestRouter = () => {
             </I18nextProvider>
           }
         >
+          <Route path="/" element={<LoginPage />} />
           <Route path="/login" element={<LoginPage />} />
         </Route>
         {/* Catch-all Route for Errors */}
