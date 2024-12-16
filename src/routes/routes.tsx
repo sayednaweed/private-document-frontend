@@ -1,7 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import { I18nextProvider } from "react-i18next";
 import i18n from "@/lib/i18n";
-import AdminDashboardPage from "@/views/pages/auth/admin/dashboard/admin-dashboard-page";
 import UserPage from "@/views/pages/auth/general/users/user-page";
 import ProfilePage from "@/views/pages/auth/general/profile/profile-page";
 import LogsPage from "@/views/pages/auth/super/logs/logs-page";
@@ -16,10 +15,11 @@ import ProtectedRoute from "@/routes/protected-route";
 import Unauthorized from "@/views/pages/error/unauthorized";
 import DocumentsPage from "@/views/pages/auth/general/document/document-page";
 import SuperReportsPage from "@/views/pages/auth/general/reports/super-reports-page";
-import UserDashboardPage from "@/views/pages/auth/user/dashboard/user-dashboard-page";
 import GuestLayout from "@/views/layout/guest-layout";
 import DocumentEditPage from "@/views/pages/auth/general/document/edit/document-edit-page";
 import AuthLayout from "@/views/layout/auth-layout";
+import UserDashboardPage from "@/views/pages/auth/user/dashboard/user-dashboard-page";
+import AdminDashboardPage from "@/views/pages/auth/admin/dashboard/admin-dashboard-page";
 
 export const getSuperRouter = (user: User) => {
   const permissions: Map<string, UserPermission> = user.permissions;

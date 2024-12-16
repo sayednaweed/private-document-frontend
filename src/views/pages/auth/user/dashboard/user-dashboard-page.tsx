@@ -4,17 +4,16 @@ import Card from "@/components/custom-ui/card/Card";
 import { useTheme } from "@/context/theme-provider";
 import Shimmer from "@/components/custom-ui/shimmer/Shimmer";
 import ShimmerItem from "@/components/custom-ui/shimmer/ShimmerItem";
-import { BarChart2 } from "lucide-react";
+import { BarChart2, PersonStanding } from "lucide-react";
 import DashboardCard from "@/components/custom-ui/card/DashboardCard";
 import axiosClient from "@/lib/axois-client";
 import { toast } from "@/components/ui/use-toast";
 const LazySimplePieChart = React.lazy(
   () => import("@/components/custom-ui/charts/SimplePieChart")
 );
-const LazyDashedLineChart = React.lazy(
-  () => import("@/components/custom-ui/charts/DashedLineChart")
+const LazyColumnLabelBarChart = React.lazy(
+  () => import("@/components/custom-ui/charts/ColumnLabelBarChart")
 );
-
 export default function UserDashboardPage() {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -29,7 +28,7 @@ export default function UserDashboardPage() {
       labels: string[];
       data: number[];
     };
-    montlyTypeCount: {
+    monthlyDocumentCounts: {
       name: string;
       data: number[];
     }[];
@@ -41,23 +40,15 @@ export default function UserDashboardPage() {
       urgency_name: string;
       document_count: number;
     }[];
-    monthlyDocumentCounts: {
-      labels: string[];
-      data: number[];
-    };
   }>({
     statuses: [],
     documentTypePercentages: {
       labels: [],
       data: [],
     },
-    montlyTypeCount: [],
     documenttypesixmonth: [],
     documentUrgencyCounts: [],
-    monthlyDocumentCounts: {
-      labels: [],
-      data: [],
-    },
+    monthlyDocumentCounts: [],
   });
   const fetchDashboardData = async () => {
     try {
@@ -71,10 +62,14 @@ export default function UserDashboardPage() {
       setDashboardData({
         statuses: data.statuses,
         documentTypePercentages: documentTypePercentages,
-        montlyTypeCount: data.montlyTypeCount,
         documenttypesixmonth: data.documenttypesixmonth,
         documentUrgencyCounts: data.documentUrgencyCounts,
-        monthlyDocumentCounts: data.monthlyDocumentCounts,
+        monthlyDocumentCounts: [
+          {
+            name: "Document",
+            data: data.monthlyDocumentCounts[1],
+          },
+        ],
       });
     } catch (error: any) {
       console.error("Error fetching data:", error);
@@ -92,21 +87,20 @@ export default function UserDashboardPage() {
     fetchDashboardData();
   }, []);
 
-  console.log(dashboardData);
   const cardLoader = (
-    <Shimmer className="hover:shadow-lg shadow-md w-full h-full overflow-hidden">
+    <Shimmer className="flex-1 space-y-2 p-4 h-full w-full overflow-hidden">
       <ShimmerItem className="font-bold ml-1 mt-1 pl-1 w-1/2 rounded-[5px]" />
       <ShimmerItem className="ml-1 mt-1 pl-1 w-1/3 rounded-[5px]" />
-      <ShimmerItem className=" mt-1 pl-1 w-full h-full animate-none rounded-none" />
+      <ShimmerItem className=" pl-1 mt-8 mb-1 w-full h-[64px] animate-none rounded-[5px]" />
     </Shimmer>
   );
 
   const renderDashboardCards = (data: any[], icon: JSX.Element) =>
-    data.map((item) => {
+    data.map((item, index: number) => {
       return (
         <DashboardCard
           loading={loading}
-          key={item.urgency_name}
+          key={index}
           title={item.status_name || item.urgency_name}
           description={t("January")}
           className="overflow-hidden flex-1 space-y-2 h-full p-4"
@@ -119,26 +113,37 @@ export default function UserDashboardPage() {
   return (
     <>
       {/* Cards */}
-      <div className="px-1 sm:px-2 pt-4 gird columns-5">
-        {renderDashboardCards(
-          dashboardData.statuses,
-          <BarChart2 className="absolute text-primary/90 top-10 hidden md:block rtl:md:left-2 rtl:lg:left-4 ltr:md:right-2 size-[70px]" />
-        )}
-        {renderDashboardCards(
-          dashboardData.documentUrgencyCounts,
-          <BarChart2 className="absolute text-primary/90 top-10 hidden md:block rtl:md:left-2 rtl:lg:left-4 ltr:md:right-2 size-[70px]" />
+      <div className="px-1 sm:px-2 pt-4 grid grid-cols-2 md:grid-cols-5">
+        {loading ? (
+          <>
+            {cardLoader}
+            {cardLoader}
+            {cardLoader}
+            {cardLoader}
+            {cardLoader}
+          </>
+        ) : (
+          <>
+            {renderDashboardCards(
+              dashboardData.statuses,
+              <BarChart2 className="absolute text-primary/90 top-10 rtl:left-2 rtl:lg:left-4 ltr:right-2 size-[50px] sm:size-[70px]" />
+            )}
+            {renderDashboardCards(
+              dashboardData.documentUrgencyCounts,
+              <PersonStanding className="absolute text-primary/90 top-10 rtl:left-2 rtl:lg:left-4 ltr:right-2 size-[50px] sm:size-[70px]" />
+            )}
+          </>
         )}
       </div>
       {/* Charts */}
       <div className="grid md:grid-cols-5 md:grid-rows-1 gap-x-2 gap-y-4 px-2 mt-4">
-        <Card className="h-[420px] min-w-full md:col-span-3 p-0">
+        <Card className="h-[420px] min-w-full md:col-span-5 xl:col-span-2 p-0">
           <Suspense fallback={cardLoader}>
-            <LazyDashedLineChart
-              series={dashboardData.montlyTypeCount}
+            <LazyColumnLabelBarChart
               subtitle={t("Category Names as DataLabels inside bars")}
-              title={t("Total Register Documents")}
+              title={t("Page statistic")}
               theme={theme}
-              loading={loading}
+              series={dashboardData.monthlyDocumentCounts}
             />
           </Suspense>
         </Card>
