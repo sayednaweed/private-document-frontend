@@ -101,11 +101,11 @@ export default function SuperDashboardPage() {
   );
 
   const renderDashboardCards = (data: any[], icon: JSX.Element) =>
-    data.map((item) => {
+    data.map((item, index: number) => {
       return (
         <DashboardCard
           loading={loading}
-          key={item.urgency_name}
+          key={index}
           title={item.status_name || item.urgency_name}
           description={t("January")}
           className="overflow-hidden flex-1 space-y-2 h-full p-4"
