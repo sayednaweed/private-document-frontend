@@ -3,7 +3,7 @@ import { I18nextProvider } from "react-i18next";
 import i18n from "@/lib/i18n";
 import UserPage from "@/views/pages/auth/general/users/user-page";
 import ProfilePage from "@/views/pages/auth/general/profile/profile-page";
-import LogsPage from "@/views/pages/auth/super/logs/logs-page";
+import LogsPage from "@/views/pages/auth/debugger/logs/logs-page";
 import ErrorPage from "@/views/pages/error/error-page";
 import SuperDashboardPage from "@/views/pages/auth/super/dashboard/super-dashboard-page";
 import SuperSettingsPage from "@/views/pages/auth/general/settings/super-settings-page";
@@ -105,16 +105,6 @@ export const getSuperRouter = (user: User) => {
               <ProtectedRoute
                 element={<SuperAuditPage />}
                 routeName="audit"
-                permissions={permissions}
-              />
-            }
-          />
-          <Route
-            path="logs"
-            element={
-              <ProtectedRoute
-                element={<LogsPage />}
-                routeName="logs"
                 permissions={permissions}
               />
             }
@@ -330,11 +320,59 @@ export const getUserRouter = (user: User) => {
     </BrowserRouter>
   );
 };
+export const getDebuggerRouter = (user: User) => {
+  const permissions: Map<string, UserPermission> = user.permissions;
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Unauthorized Route */}
+        <Route path="/unauthorized" element={<Unauthorized />} />
+
+        {/* User Routes (Protected) */}
+        <Route
+          path="/"
+          element={
+            <I18nextProvider i18n={i18n}>
+              <AuthLayout />
+            </I18nextProvider>
+          }
+        >
+          <Route path="profile" element={<ProfilePage />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute
+                element={<LogsPage />}
+                routeName="logs"
+                permissions={permissions}
+              />
+            }
+          />
+          <Route
+            path="logs"
+            element={
+              <ProtectedRoute
+                element={<LogsPage />}
+                routeName="logs"
+                permissions={permissions}
+              />
+            }
+          />
+        </Route>
+
+        {/* Catch-all Route for Errors */}
+        <Route path="*" element={<ErrorPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
 
 export const getGuestRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/unauthorized" element={<Unauthorized />} />
+
         <Route
           path="/"
           element={

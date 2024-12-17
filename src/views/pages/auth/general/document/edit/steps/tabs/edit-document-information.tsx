@@ -37,8 +37,11 @@ interface Information {
   status: string;
   statusId: string;
   documentType: string;
+  documentTypeId: string;
   urgency: string;
+  urgencyId: string;
   source: string;
+  sourceId: string;
   documentDate: DateObject;
   documentNumber: string;
   qaidWaridaNumber: string;
@@ -75,12 +78,15 @@ export default function EditDocumentInformation(
           status: info.status,
           statusId: info.status_id,
           documentType: info.documentType,
+          documentTypeId: info.documentTypeId,
           urgency: info.urgency,
+          urgencyId: info.urgencyId,
           source: info.source,
-          documentDate: info.documentDate,
+          sourceId: info.sourceId,
+          documentDate: new DateObject(new Date(info.documentDate)),
           documentNumber: info.documentNumber,
           qaidWaridaNumber: info.qaidWaridaNumber,
-          qaidWaridaDate: info.qaidWaridaDate,
+          qaidWaridaDate: new DateObject(new Date(info.qaidWaridaDate)),
           qaidSadiraDate: info.qaidSadiraDate,
           qaidSadiraNumber: info.qaidSadiraNumber,
           subject: info.subject,
@@ -120,12 +126,36 @@ export default function EditDocumentInformation(
     const passed = await validate(
       [
         {
-          name: "fullName",
-          rules: ["required", "max:45", "min:3"],
+          name: "documentType",
+          rules: ["required"],
         },
         {
-          name: "username",
-          rules: ["required", "max:45", "min:3"],
+          name: "urgency",
+          rules: ["required"],
+        },
+        {
+          name: "source",
+          rules: ["required"],
+        },
+        {
+          name: "documentDate",
+          rules: ["required"],
+        },
+        {
+          name: "documentNumber",
+          rules: ["required"],
+        },
+        {
+          name: "qaidWaridaDate",
+          rules: ["required"],
+        },
+        {
+          name: "qaidWaridaNumber",
+          rules: ["required"],
+        },
+        {
+          name: "subject",
+          rules: ["required"],
         },
       ],
       documentData,
@@ -138,12 +168,25 @@ export default function EditDocumentInformation(
     // 2. Store
     const formData = new FormData();
     formData.append("id", id);
-    formData.append("fullName", documentData.documentNumber);
+    formData.append("documentTypeId", documentData.documentTypeId);
+    formData.append("urgencyId", documentData.urgencyId);
+    formData.append("sourceId", documentData.sourceId);
+    formData.append(
+      "documentDate",
+      documentData.documentDate.toDate().toISOString()
+    );
+    formData.append("documentNumber", documentData.documentNumber);
+    formData.append(
+      "qaidWaridaDate",
+      documentData.qaidWaridaDate.toDate().toISOString()
+    );
+    formData.append("qaidWarida", documentData.qaidWaridaNumber);
+    formData.append("subject", documentData.subject);
+
     try {
-      const response = await axiosClient.post("user/update", formData);
+      const response = await axiosClient.post("document/update", formData);
       if (response.status == 200) {
         // Update user state
-        setDocumentData(documentData);
         toast({
           toastType: "SUCCESS",
           title: t("Success"),
@@ -164,30 +207,28 @@ export default function EditDocumentInformation(
   };
 
   const lock = documentData?.locked == true ? true : hasEdit ? false : true;
+  console.log(documentData, "Naweed");
 
   let recieveButton = undefined;
-  let keepButton = undefined;
+  let savedFile =
+    documentData?.statusId == StatusEnum.complete ? (
+      <CustomTextarea
+        onChange={(e: any) =>
+          setDocumentData({ ...documentData, savedFile: e.target.value })
+        }
+        required={true}
+        name="savedFile"
+        parantClassName="mt-9"
+        placeholder={`${t("enter")}`}
+        requiredHint={`* ${t("Required")}`}
+        defaultValue={documentData["savedFile"]}
+        lable={t("savedFile")}
+        errorMessage={error.get("savedFile")}
+        readOnly={lock}
+      />
+    ) : undefined;
   if (permission?.add && documentData) {
-    if (documentData.statusId == StatusEnum.keep) {
-      keepButton = (
-        <NastranModel
-          size="lg"
-          isDismissable={false}
-          button={
-            <PrimaryButton className="gap-x-2 px-2 h-[32px]">
-              <FileDown className="size-[18px]" />
-              {t("continue_process")}
-            </PrimaryButton>
-          }
-          showDialog={async () => true}
-        >
-          <DocumentReceivedDialog
-            onComplete={loadInformation}
-            documentId={id ? id : ""}
-          />
-        </NastranModel>
-      );
-    } else if (documentData.statusId != StatusEnum.complete) {
+    if (documentData.statusId != StatusEnum.complete) {
       recieveButton = (
         <NastranModel
           size="lg"
@@ -209,10 +250,9 @@ export default function EditDocumentInformation(
     }
   }
   return (
-    <Card className=" relative">
+    <Card className="relative">
       <div className="absolute inset-0 -top-10 flex gap-x-3">
         {recieveButton}
-        {keepButton}
       </div>
       <CardHeader className="space-y-0 justify-between relative">
         <div>
@@ -293,7 +333,11 @@ export default function EditDocumentInformation(
                 placeholderText={t("Search item")}
                 errorText={t("No item")}
                 onSelect={(selection: any) =>
-                  setDocumentData({ ...documentData, status: selection })
+                  setDocumentData({
+                    ...documentData,
+                    status: selection.name,
+                    statusId: selection.id,
+                  })
                 }
                 placeHolder={`${t("select")} ${t("status")}`}
                 lable={t("status")}
@@ -303,19 +347,23 @@ export default function EditDocumentInformation(
                 errorMessage={error.get("status")}
                 apiUrl={"statuses"}
                 mode="single"
-                readonly={lock}
+                readonly={true}
               />
               <APICombobox
                 placeholderText={t("Search item")}
                 errorText={t("No item")}
                 onSelect={(selection: any) =>
-                  setDocumentData({ ...documentData, documentType: selection })
+                  setDocumentData({
+                    ...documentData,
+                    documentType: selection.name,
+                    documentTypeId: selection.id,
+                  })
                 }
                 placeHolder={`${t("select")} ${t("type")}`}
                 lable={t("documentType")}
                 required={true}
                 requiredHint={`* ${t("Required")}`}
-                selectedItem={documentData["documentType"]}
+                selectedItem={documentData.documentType}
                 errorMessage={error.get("documentType")}
                 apiUrl={"document-types"}
                 mode="single"
@@ -325,7 +373,11 @@ export default function EditDocumentInformation(
                 placeholderText={t("Search item")}
                 errorText={t("No item")}
                 onSelect={(selection: any) =>
-                  setDocumentData({ ...documentData, urgency: selection })
+                  setDocumentData({
+                    ...documentData,
+                    urgency: selection.name,
+                    urgencyId: selection.id,
+                  })
                 }
                 placeHolder={`${t("select")} ${t("urgency")}`}
                 lable={t("urgency")}
@@ -341,7 +393,11 @@ export default function EditDocumentInformation(
                 placeholderText={t("Search item")}
                 errorText={t("No item")}
                 onSelect={(selection: any) =>
-                  setDocumentData({ ...documentData, ["source"]: selection })
+                  setDocumentData({
+                    ...documentData,
+                    ["source"]: selection.name,
+                    sourceId: selection.id,
+                  })
                 }
                 lable={t("source")}
                 required={true}
@@ -468,20 +524,7 @@ export default function EditDocumentInformation(
               errorMessage={error.get("subject")}
               readOnly={lock}
             />
-            <CustomTextarea
-              onChange={(e: any) =>
-                setDocumentData({ ...documentData, savedFile: e.target.value })
-              }
-              required={true}
-              name="savedFile"
-              parantClassName="mt-9"
-              placeholder={`${t("enter")}`}
-              requiredHint={`* ${t("Required")}`}
-              defaultValue={documentData["savedFile"]}
-              lable={t("savedFile")}
-              errorMessage={error.get("savedFile")}
-              readOnly={lock}
-            />
+            {savedFile}
           </>
         )}
       </CardContent>
@@ -499,11 +542,8 @@ export default function EditDocumentInformation(
           hasEdit &&
           !documentData?.locked && (
             <PrimaryButton
-              onClick={async () => {
-                if (user?.permissions.get(SECTION_NAMES.users)?.edit)
-                  await saveData();
-              }}
-              className={`shadow-lg`}
+              onClick={async () => await saveData()}
+              className={`shadow-lg z-10`}
             >
               <ButtonSpinner loading={loading}>{t("Save")}</ButtonSpinner>
             </PrimaryButton>

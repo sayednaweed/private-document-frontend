@@ -10,6 +10,7 @@ export const SECTION_NAMES = {
 export const ROLE_USER = 3;
 export const ROLE_ADMIN = 2;
 export const ROLE_SUPER = 4;
+export const ROLE_DEBUGGER = 10;
 export const PERMISSIONS_OPERATION = ["Add", "Edit", "Delete", "View"];
 
 export const StatusEnum = {

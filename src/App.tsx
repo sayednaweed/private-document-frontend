@@ -1,11 +1,17 @@
 import {
   getAdminRouter,
+  getDebuggerRouter,
   getGuestRouter,
   getSuperRouter,
   getUserRouter,
 } from "./routes/routes";
 import { useAuthState } from "./context/AuthContextProvider";
-import { ROLE_ADMIN, ROLE_SUPER, ROLE_USER } from "./lib/constants";
+import {
+  ROLE_ADMIN,
+  ROLE_DEBUGGER,
+  ROLE_SUPER,
+  ROLE_USER,
+} from "./lib/constants";
 
 export default function App() {
   const { user, loading, authenticated } = useAuthState();
@@ -20,6 +26,8 @@ export default function App() {
         ? getAdminRouter(user)
         : user.role.role == ROLE_SUPER
         ? getSuperRouter(user)
+        : user.role.role == ROLE_DEBUGGER
+        ? getDebuggerRouter(user)
         : getGuestRouter();
   }
   return routes;

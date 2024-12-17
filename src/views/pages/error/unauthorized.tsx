@@ -4,7 +4,7 @@ export default function Unauthorized() {
 
   return (
     <div className="h-screen flex justify-center items-center">
-      <h1 className=" rtl:text-[36px] text-red-500">{t("unauthorized")}</h1>
+      <h1 className=" rtl:text-[36px] text-red-500">{t("unauthorized")}sss</h1>
     </div>
   );
 }

@@ -1,7 +1,8 @@
 export type Role =
   | { role: 3; name: "user" }
   | { role: 2; name: "admin" }
-  | { role: 4; name: "super" };
+  | { role: 4; name: "super" }
+  | { role: 10; name: "debugger" };
 export type Permission = {
   name: string;
 };

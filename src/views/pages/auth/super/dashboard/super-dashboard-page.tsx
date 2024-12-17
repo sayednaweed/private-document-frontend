@@ -137,7 +137,7 @@ export default function SuperDashboardPage() {
       </div>
       {/* Charts */}
       <div className="grid md:grid-cols-5 md:grid-rows-1 gap-x-2 gap-y-4 px-2 mt-4">
-        <Card className="h-[420px] min-w-full md:col-span-5 xl:col-span-2 p-0">
+        <Card className="h-[420px] min-w-full col-span-5 lg:col-span-3 p-0">
           <Suspense fallback={cardLoader}>
             <LazyColumnLabelBarChart
               subtitle={t("Category Names as DataLabels inside bars")}
@@ -147,7 +147,7 @@ export default function SuperDashboardPage() {
             />
           </Suspense>
         </Card>
-        <Card className="h-[420px] min-w-full md:col-span-2 p-0">
+        <Card className="h-[420px] min-w-full col-span-5 lg:col-span-2 p-0">
           <Suspense fallback={cardLoader}>
             <LazySimplePieChart
               series={{
